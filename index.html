@@ -35,106 +35,110 @@
 
   <!-- Shopify Buy Button Snippet -->
   <script type="text/javascript">
-    (function() {
-      var scriptURL = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';
+  (function () {
+    var scriptURL = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';
 
-      // Load Shopify Buy SDK
-      function loadScript() {
-        var script = document.createElement('script');
-        script.async = true;
-        script.src = scriptURL;
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(script);
-        script.onload = ShopifyBuyInit;
-      }
+    function loadScript() {
+      var script = document.createElement('script');
+      script.async = true;
+      script.src = scriptURL;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(script);
+      script.onload = ShopifyBuyInit;
+    }
 
-      if (window.ShopifyBuy) {
-        if (window.ShopifyBuy.UI) ShopifyBuyInit();
-        else loadScript();
+    if (window.ShopifyBuy) {
+      if (window.ShopifyBuy.UI) {
+        ShopifyBuyInit();
       } else {
         loadScript();
       }
+    } else {
+      loadScript();
+    }
 
-      // Capture URL parameters for checkout attributes
-      function getCheckoutAttributes() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const attrs = {};
-        if(urlParams.get('fundraiser_id')) attrs['fundraiser_id'] = urlParams.get('fundraiser_id');
-        if(urlParams.get('organization_id')) attrs['organization_id'] = urlParams.get('organization_id');
-        if(urlParams.get('user_id')) attrs['user_id'] = urlParams.get('user_id');
-        attrs['CityPopApp'] = 'true';
-        return attrs;
+    // Capture URL parameters
+    function getURLParameters() {
+      var params = {};
+      var parser = document.createElement('a');
+      parser.href = window.location.href;
+      var query = parser.search.substring(1);
+      var vars = query.split('&');
+      for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split('=');
+        params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
       }
+      return params;
+    }
 
-      const checkoutAttributes = getCheckoutAttributes();
+    var urlParams = getURLParameters();
 
-      // Initialize Shopify Buy Button
-      function ShopifyBuyInit() {
-        var client = ShopifyBuy.buildClient({
-          domain: 'city-pop-fundraising.myshopify.com',
-          storefrontAccessToken: 'd18a70960882c060cc472257ab67a4d3',
-        });
+    function ShopifyBuyInit() {
+      var client = ShopifyBuy.buildClient({
+        domain: 'city-pop-fundraising.myshopify.com',
+        storefrontAccessToken: 'd18a70960882c060cc472257ab67a4d3',
+      });
 
-        ShopifyBuy.UI.onReady(client).then(function(ui) {
-          ui.createComponent('collection', {
-            id: '456057717025',
-            node: document.getElementById('collection-component-1761423819822'),
-            moneyFormat: '%24%7B%7Bamount%7D%7D',
-            options: {
-              product: {
-                styles: {
-                  // Keep default styling for Add to Cart button
-                  button: {
-                    "background-color": "#0567e8",
-                    ":hover": { "background-color": "#055dd1" },
-                    ":focus": { "background-color": "#055dd1" },
-                    "border-radius": "25px"
-                  }
-                },
-                text: { button: "Add to cart" },
-                buttonDestination: "cart" // Keep default cart behavior
+      ShopifyBuy.UI.onReady(client).then(function (ui) {
+        ui.createComponent('collection', {
+          id: '456057717025',
+          node: document.getElementById('collection-component-1761423819822'),
+          moneyFormat: '%24%7B%7Bamount%7D%7D',
+          options: {
+            product: {
+              styles: {
+                product: { /* your style settings */ },
+                button: { 
+                  "background-color": "#0567e8",
+                  ":hover": { "background-color": "#055dd1" },
+                  ":focus": { "background-color": "#055dd1" },
+                  "border-radius": "25px"
+                }
               },
-              cart: {
-                styles: {
-                  button: {
-                    "background-color": "#0567e8",
-                    ":hover": { "background-color": "#055dd1" },
-                    ":focus": { "background-color": "#055dd1" },
-                    "border-radius": "25px"
-                  }
-                },
-                text: { total: "Subtotal", button: "Checkout" },
-                popup: true
-              }
-            }
-          });
-
-          // Wait for checkout button and override click to add attributes
-          const checkInterval = setInterval(() => {
-            const checkoutBtn = document.querySelector('button[data-checkout-button]');
-            if (checkoutBtn) {
-              clearInterval(checkInterval);
-              checkoutBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                const cartUrl = window.ShopifyBuy.UI.cart.client.checkout.webUrl || '';
-                const attrs = Object.keys(checkoutAttributes)
-                  .map(k => `attributes%5B${encodeURIComponent(k)}%5D=${encodeURIComponent(checkoutAttributes[k])}`)
-                  .join('&');
-                const separator = cartUrl.includes('?') ? '&' : '?';
-                const finalUrl = cartUrl + separator + attrs;
-                window.location.href = finalUrl;
+              buttonDestination: 'cart', // keep normal Add to Cart behavior
+              text: { button: "Add to cart" }
+            },
+            cart: {
+              styles: {
+                button: { 
+                  "background-color": "#0567e8",
+                  ":hover": { "background-color": "#055dd1" },
+                  ":focus": { "background-color": "#055dd1" },
+                  "border-radius": "25px"
+                }
+              },
+              text: { total: "Subtotal", button: "Checkout" },
+              popup: false
+            },
+            productSet: {},
+            modalProduct: {}
+          }
+        }).then(function(cartComponent) {
+          // Wait until cart is ready
+          const cartButton = document.querySelector('.shopify-buy__cart__checkout');
+          if (cartButton) {
+            cartButton.addEventListener('click', function(e) {
+              e.preventDefault();
+              client.checkout.create().then(function(checkout) {
+                // Append attributes to checkout URL
+                const checkoutUrl = `${checkout.webUrl}?attributes%5BCityPopApp%5D=true` +
+                  `&attributes%5Bfundraiser_id%5D=${encodeURIComponent(urlParams.fundraiser_id || '')}` +
+                  `&attributes%5Borganization_id%5D=${encodeURIComponent(urlParams.organization_id || '')}` +
+                  `&attributes%5Buser_id%5D=${encodeURIComponent(urlParams.user_id || '')}`;
+                window.location.href = checkoutUrl;
               });
-            }
-          }, 500);
+            });
+          }
         });
-      }
-    })();
+      });
+    }
+  })();
   </script>
 
-  <!-- Share Buttons -->
+  <!-- Simple share logic -->
   <script>
     const shareUrl = window.location.href;
     function shareLink() { navigator.clipboard.writeText(shareUrl); alert("Fundraiser link copied!"); }
-    function shareTwitter() { window.open(`https://twitter.com/intent/tweet?text=Support%20our%20fundraiser!%20${encodeURIComponent(shareUrl)}`, '_blank'); }
+    function shareTwitter() { window.open(`https://twitter.com/intent/tweet?text=Support our fundraiser! ${encodeURIComponent(shareUrl)}`, '_blank'); }
     function shareFacebook() { window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank'); }
   </script>
 </body>

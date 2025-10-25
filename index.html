@@ -17,13 +17,6 @@
     <p><strong>Organization:</strong> City Pop Fundraising</p>
     <p class="metrics"><strong>Days Left:</strong> 12 days remaining</p>
     <p class="metrics"><strong>Amount Raised:</strong> $2,430 / $5,000 Goal</p>
-
-    <div class="share-section">
-      <p>Share this fundraiser:</p>
-      <button onclick="shareLink()">Share via Link</button>
-      <button onclick="shareTwitter()">Share on X</button>
-      <button onclick="shareFacebook()">Share on Facebook</button>
-    </div>
   </section>
 
   <!-- Shopify Collection Component -->
@@ -34,97 +27,84 @@
   </footer>
 
   <script type="text/javascript">
-  (function () {
-    var scriptURL = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';
+    // Get fundraiser parameters from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const fundraiserId = urlParams.get('fundraiser_id');
+    const organizationId = urlParams.get('organization_id');
+    const userId = urlParams.get('user_id');
 
-    if (window.ShopifyBuy) {
-      if (window.ShopifyBuy.UI) {
-        ShopifyBuyInit();
+    (function () {
+      const scriptURL = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';
+
+      if (window.ShopifyBuy) {
+        if (window.ShopifyBuy.UI) {
+          ShopifyBuyInit();
+        } else {
+          loadScript();
+        }
       } else {
         loadScript();
       }
-    } else {
-      loadScript();
-    }
 
-    function loadScript() {
-      var script = document.createElement('script');
-      script.async = true;
-      script.src = scriptURL;
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(script);
-      script.onload = ShopifyBuyInit;
-    }
+      function loadScript() {
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = scriptURL;
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(script);
+        script.onload = ShopifyBuyInit;
+      }
 
-    function ShopifyBuyInit() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const fundraiserId = urlParams.get('fundraiser_id');
-      const organizationId = urlParams.get('organization_id');
-      const userId = urlParams.get('user_id');
+      function ShopifyBuyInit() {
+        const client = ShopifyBuy.buildClient({
+          domain: 'city-pop-fundraising.myshopify.com',
+          storefrontAccessToken: 'd18a70960882c060cc472257ab67a4d3',
+        });
 
-      var client = ShopifyBuy.buildClient({
-        domain: 'city-pop-fundraising.myshopify.com',
-        storefrontAccessToken: 'd18a70960882c060cc472257ab67a4d3',
-      });
-
-      ShopifyBuy.UI.onReady(client).then(function (ui) {
-        ui.createComponent('collection', {
-          id: '456057717025',
-          node: document.getElementById('collection-component-1761423819822'),
-          moneyFormat: '%24%7B%7Bamount%7D%7D',
-          options: {
-            cart: {
-              startOpen: false,
-              popup: false,
-              attributes: [
-                { key: "fundraiser_id", value: fundraiserId },
-                { key: "organization_id", value: organizationId },
-                { key: "CityPopApp", value: "true" },
-                { key: "user_id", value: userId }
-              ],
-              text: { total: "Subtotal", button: "Checkout" },
-              styles: {
-                button: {
-                  "background-color": "#0567e8",
-                  ":hover": { "background-color": "#055dd1" },
-                  ":focus": { "background-color": "#055dd1" },
-                  "border-radius": "25px"
+        ShopifyBuy.UI.onReady(client).then(function (ui) {
+          ui.createComponent('collection', {
+            id: '456057717025',
+            node: document.getElementById('collection-component-1761423819822'),
+            moneyFormat: '%24%7B%7Bamount%7D%7D',
+            options: {
+              product: {
+                text: { button: "Add to cart" },
+                styles: {
+                  button: {
+                    "background-color": "#0567e8",
+                    ":hover": { "background-color": "#055dd1" },
+                    ":focus": { "background-color": "#055dd1" },
+                    "border-radius": "25px"
+                  }
                 }
-              }
-            },
-            modalProduct: {
-              contents: { buttonWithQuantity: true },
-              text: { button: "Add to cart" }
-            },
-            product: {
-              text: { button: "Add to cart" },
-              styles: {
-                button: {
-                  "background-color": "#0567e8",
-                  ":hover": { "background-color": "#055dd1" },
-                  ":focus": { "background-color": "#055dd1" },
-                  "border-radius": "25px"
+              },
+              cart: {
+                popup: false,
+                startOpen: false,
+                styles: {
+                  button: {
+                    "background-color": "#0567e8",
+                    ":hover": { "background-color": "#055dd1" },
+                    ":focus": { "background-color": "#055dd1" },
+                    "border-radius": "25px"
+                  }
+                },
+                text: { total: "Subtotal", button: "Checkout" },
+                // OVERRIDE checkout click
+                checkoutRedirect: function(cart) {
+                  const baseCheckoutUrl = cart.checkoutUrl; // Shopify-generated URL
+                  const fullUrl = baseCheckoutUrl + 
+                    `&attributes[fundraiser_id]=${fundraiserId}` +
+                    `&attributes[organization_id]=${organizationId}` +
+                    `&attributes[CityPopApp]=true` +
+                    `&attributes[user_id]=${userId}`;
+                  window.location.href = fullUrl;
                 }
               }
             }
-          }
+          });
         });
-      });
-    }
-  })();
-  </script>
-
-  <script>
-    const shareUrl = window.location.href;
-    function shareLink() {
-      navigator.clipboard.writeText(shareUrl);
-      alert("Fundraiser link copied to clipboard!");
-    }
-    function shareTwitter() {
-      window.open(`https://twitter.com/intent/tweet?text=Support%20our%20fundraiser!%20${encodeURIComponent(shareUrl)}`, '_blank');
-    }
-    function shareFacebook() {
-      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
-    }
+      }
+    })();
   </script>
 </body>
 </html>

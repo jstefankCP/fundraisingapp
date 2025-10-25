@@ -56,7 +56,6 @@
     }
 
     function ShopifyBuyInit() {
-      // Grab URL parameters
       const urlParams = new URLSearchParams(window.location.search);
       const fundraiserId = urlParams.get('fundraiser_id');
       const organizationId = urlParams.get('organization_id');
@@ -68,7 +67,7 @@
       });
 
       ShopifyBuy.UI.onReady(client).then(function (ui) {
-        ui.createComponent('collection', {
+        const collectionComponent = ui.createComponent('collection', {
           id: '456057717025',
           node: document.getElementById('collection-component-1761423819822'),
           moneyFormat: '%24%7B%7Bamount%7D%7D',
@@ -84,18 +83,6 @@
                   ":focus": { "background-color": "#055dd1" },
                   "border-radius": "25px"
                 }
-              },
-              // Intercept checkout to append attributes
-              checkout: function(cart) {
-                let checkoutUrl = cart.checkoutUrl;
-
-                const params = new URLSearchParams();
-                params.append('attributes[fundraiser_id]', fundraiserId);
-                params.append('attributes[organization_id]', organizationId);
-                params.append('attributes[CityPopApp]', 'true');
-                params.append('attributes[user_id]', userId);
-
-                window.location.href = checkoutUrl + '&' + params.toString();
               }
             },
             modalProduct: {
@@ -115,6 +102,28 @@
             }
           }
         });
+
+        // Listen for checkout event and redirect with attributes
+        collectionComponent.cart.on('open', function() {
+          const checkoutButton = document.querySelector('.shopify-buy__cart__checkout');
+          if (checkoutButton) {
+            checkoutButton.addEventListener('click', function(e) {
+              e.preventDefault(); // Prevent default Shopify redirect
+
+              const cart = collectionComponent.cart; 
+              const checkoutUrl = cart.checkoutUrl;
+
+              const params = new URLSearchParams();
+              params.append('attributes[fundraiser_id]', fundraiserId);
+              params.append('attributes[organization_id]', organizationId);
+              params.append('attributes[CityPopApp]', 'true');
+              params.append('attributes[user_id]', userId);
+
+              window.location.href = checkoutUrl + '&' + params.toString();
+            });
+          }
+        });
+
       });
     }
   })();

@@ -1,25 +1,271 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+
+<html lang="en">
+
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2575.7">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-  </style>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Shop Popcorn | City Pop Fundraising</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+
 </head>
+
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;Shop Popcorn Fundraiser&lt;/title&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;h1&gt;Welcome to Shop Popcorn!&lt;/h1&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;p&gt;This is a standalone fundraising page.&lt;/p&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+
+  <header>
+
+    <h1>Shop Popcorn for Our Fundraiser!</h1>
+
+  </header>
+
+
+
+  <section class="fundraiser-details">
+
+    <p><strong>Fundraising Cause:</strong> City Pop Fundraiser for Local Teams</p>
+
+    <p><strong>Organization:</strong> City Pop Fundraising</p>
+
+    <p class="metrics"><strong>Days Left:</strong> 12 days remaining</p>
+
+    <p class="metrics"><strong>Amount Raised:</strong> $2,430 / $5,000 Goal</p>
+
+
+
+    <div class="share-section">
+
+      <p>Share this fundraiser:</p>
+
+      <button onclick="shareLink()">Share via Link</button>
+
+      <button onclick="shareTwitter()">Share on X</button>
+
+      <button onclick="shareFacebook()">Share on Facebook</button>
+
+    </div>
+
+  </section>
+
+
+
+  <!-- Shopify Collection Component -->
+
+  <div id="collection-component-1761347789407"></div>
+
+
+
+  <footer>
+
+    © 2025 City Pop Fundraising. All rights reserved.
+
+  </footer>
+
+
+
+  <!-- Shopify Buy Button Snippet -->
+
+  <script type="text/javascript">
+
+  (function () {
+
+    var scriptURL = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';
+
+    if (window.ShopifyBuy) {
+
+      if (window.ShopifyBuy.UI) {
+
+        ShopifyBuyInit();
+
+      } else {
+
+        loadScript();
+
+      }
+
+    } else {
+
+      loadScript();
+
+    }
+
+    function loadScript() {
+
+      var script = document.createElement('script');
+
+      script.async = true;
+
+      script.src = scriptURL;
+
+      (document.head || document.body).appendChild(script);
+
+      script.onload = ShopifyBuyInit;
+
+    }
+
+    function ShopifyBuyInit() {
+
+      var client = ShopifyBuy.buildClient({
+
+        domain: 'city-pop-fundraising.myshopify.com',
+
+        storefrontAccessToken: 'd18a70960882c060cc472257ab67a4d3',
+
+      });
+
+      ShopifyBuy.UI.onReady(client).then(function (ui) {
+
+        ui.createComponent('collection', {
+
+          id: '456057717025',
+
+          node: document.getElementById('collection-component-1761347789407'),
+
+          moneyFormat: '%24%7B%7Bamount%7D%7D',
+
+          options: {
+
+            "product": {
+
+              "styles": {
+
+                "product": {
+
+                  "@media (min-width: 601px)": {
+
+                    "max-width": "calc(25% - 20px)",
+
+                    "margin-left": "20px",
+
+                    "margin-bottom": "50px",
+
+                    "width": "calc(25% - 20px)"
+
+                  },
+
+                  "img": {
+
+                    "height": "calc(100% - 15px)",
+
+                    "position": "absolute",
+
+                    "left": "0",
+
+                    "right": "0",
+
+                    "top": "0"
+
+                  },
+
+                  "imgWrapper": {
+
+                    "padding-top": "calc(75% + 15px)",
+
+                    "position": "relative",
+
+                    "height": "0"
+
+                  }
+
+                },
+
+                "button": {
+
+                  ":hover": {"background-color": "#055dd1"},
+
+                  "background-color": "#0567e8",
+
+                  ":focus": {"background-color": "#055dd1"},
+
+                  "border-radius": "25px"
+
+                }
+
+              },
+
+              "text": {"button": "Add to cart"}
+
+            },
+
+            "cart": {
+
+              "styles": {"button": {
+
+                ":hover": {"background-color": "#055dd1"},
+
+                "background-color": "#0567e8",
+
+                ":focus": {"background-color": "#055dd1"},
+
+                "border-radius": "25px"
+
+              }},
+
+              "text": {"total": "Subtotal", "button": "Checkout"}
+
+            },
+
+            "toggle": {
+
+              "styles": {"toggle": {
+
+                "background-color": "#0567e8",
+
+                ":hover": {"background-color": "#055dd1"},
+
+                ":focus": {"background-color": "#055dd1"}
+
+              }}
+
+            }
+
+          },
+
+        });
+
+      });
+
+    }
+
+  })();
+
+  </script>
+
+
+
+  <!-- Simple share logic -->
+
+  <script>
+
+    const shareUrl = window.location.href;
+
+    function shareLink() {
+
+      navigator.clipboard.writeText(shareUrl);
+
+      alert("Fundraiser link copied to clipboard!");
+
+    }
+
+    function shareTwitter() {
+
+      window.open(`https://twitter.com/intent/tweet?text=Support%20our%20fundraiser!%20${encodeURIComponent(shareUrl)}`, '_blank');
+
+    }
+
+    function shareFacebook() {
+
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
+
+    }
+
+  </script>
+
 </body>
+
 </html>

@@ -17,6 +17,13 @@
     <p><strong>Organization:</strong> City Pop Fundraising</p>
     <p class="metrics"><strong>Days Left:</strong> 12 days remaining</p>
     <p class="metrics"><strong>Amount Raised:</strong> $2,430 / $5,000 Goal</p>
+
+    <div class="share-section">
+      <p>Share this fundraiser:</p>
+      <button onclick="shareLink()">Share via Link</button>
+      <button onclick="shareTwitter()">Share on X</button>
+      <button onclick="shareFacebook()">Share on Facebook</button>
+    </div>
   </section>
 
   <!-- Shopify Collection Component -->
@@ -26,83 +33,133 @@
     © 2025 City Pop Fundraising. All rights reserved.
   </footer>
 
+  <!-- Shopify Buy Button Snippet with Hidden Cart Attributes -->
   <script type="text/javascript">
-    const urlParams = new URLSearchParams(window.location.search);
-    const fundraiserId = urlParams.get('fundraiser_id');
-    const organizationId = urlParams.get('organization_id');
-    const userId = urlParams.get('user_id');
-
-    (function () {
-      const scriptURL = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';
-
-      if (window.ShopifyBuy) {
-        if (window.ShopifyBuy.UI) {
-          ShopifyBuyInit();
-        } else {
-          loadScript();
-        }
+  (function () {
+    var scriptURL = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';
+    if (window.ShopifyBuy) {
+      if (window.ShopifyBuy.UI) {
+        ShopifyBuyInit();
       } else {
         loadScript();
       }
+    } else {
+      loadScript();
+    }
+    function loadScript() {
+      var script = document.createElement('script');
+      script.async = true;
+      script.src = scriptURL;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(script);
+      script.onload = ShopifyBuyInit;
+    }
 
-      function loadScript() {
-        const script = document.createElement('script');
-        script.async = true;
-        script.src = scriptURL;
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(script);
-        script.onload = ShopifyBuyInit;
-      }
+    function ShopifyBuyInit() {
+      var client = ShopifyBuy.buildClient({
+        domain: 'city-pop-fundraising.myshopify.com',
+        storefrontAccessToken: 'd18a70960882c060cc472257ab67a4d3',
+      });
 
-      function ShopifyBuyInit() {
-        const client = ShopifyBuy.buildClient({
-          domain: 'city-pop-fundraising.myshopify.com',
-          storefrontAccessToken: 'd18a70960882c060cc472257ab67a4d3',
-        });
-
-        ShopifyBuy.UI.onReady(client).then(function (ui) {
-          ui.createComponent('collection', {
-            id: '456057717025',
-            node: document.getElementById('collection-component-1761423819822'),
-            moneyFormat: '%24%7B%7Bamount%7D%7D',
-            options: {
-              product: {
-                text: { button: "Add to cart" },
-                styles: {
-                  button: {
-                    "background-color": "#0567e8",
-                    ":hover": { "background-color": "#055dd1" },
-                    ":focus": { "background-color": "#055dd1" },
-                    "border-radius": "25px"
-                  }
-                }
-              },
-              cart: {
-                popup: false,
-                startOpen: false,
-                styles: {
-                  button: {
-                    "background-color": "#0567e8",
-                    ":hover": { "background-color": "#055dd1" },
-                    ":focus": { "background-color": "#055dd1" },
-                    "border-radius": "25px"
+      ShopifyBuy.UI.onReady(client).then(function (ui) {
+        ui.createComponent('collection', {
+          id: '456057717025',
+          node: document.getElementById('collection-component-1761423819822'),
+          moneyFormat: '%24%7B%7Bamount%7D%7D',
+          options: {
+            product: {
+              styles: {
+                product: {
+                  "@media (min-width: 601px)": {
+                    "max-width": "calc(25% - 20px)",
+                    "margin-left": "20px",
+                    "margin-bottom": "50px",
+                    "width": "calc(25% - 20px)"
+                  },
+                  "img": {
+                    "height": "calc(100% - 15px)",
+                    "position": "absolute",
+                    "left": "0",
+                    "right": "0",
+                    "top": "0"
+                  },
+                  "imgWrapper": {
+                    "padding-top": "calc(75% + 15px)",
+                    "position": "relative",
+                    "height": "0"
                   }
                 },
-                text: { total: "Subtotal", button: "Checkout" },
-                checkoutRedirect: function(cart) {
-                  const baseCheckoutUrl = cart.checkoutUrl;
-                  const fullUrl = baseCheckoutUrl +
-                    `&attributes[fundraiser_id]=${fundraiserId}` +
-                    `&attributes[organization_id]=${organizationId}` +
-                    `&attributes[CityPopApp]=true` +
-                    `&attributes[user_id]=${userId}`;
-                  window.location.href = fullUrl;
+                button: {
+                  ":hover": { "background-color": "#055dd1" },
+                  "background-color": "#0567e8",
+                  ":focus": { "background-color": "#055dd1" },
+                  "border-radius": "25px"
                 }
-              }
+              },
+              text: { button: "Add to cart" }
+            },
+            modalProduct: {
+              contents: { img: false, imgWithCarousel: true, button: false, buttonWithQuantity: true },
+              styles: {
+                product: {
+                  "@media (min-width: 601px)": { "max-width": "100%", "margin-left": "0px", "margin-bottom": "0px" }
+                },
+                button: {
+                  ":hover": { "background-color": "#055dd1" },
+                  "background-color": "#0567e8",
+                  ":focus": { "background-color": "#055dd1" },
+                  "border-radius": "25px"
+                }
+              },
+              text: { button: "Add to cart" }
+            },
+            cart: {
+              startOpen: false,
+              styles: {
+                button: {
+                  ":hover": { "background-color": "#055dd1" },
+                  "background-color": "#0567e8",
+                  ":focus": { "background-color": "#055dd1" },
+                  "border-radius": "25px"
+                }
+              },
+              text: { total: "Subtotal", button: "Checkout" },
+              popup: false,
+              contents: { note: false }
             }
-          });
+          },
+          // Add cart attributes
+          node: document.getElementById('collection-component-1761423819822'),
+          cart: {
+            onCreate: function(cart) {
+              cart.attributes['fundraiser_id'] = getParameterByName('fundraiser_id');
+              cart.attributes['organization_id'] = getParameterByName('organization_id');
+              cart.attributes['CityPopApp'] = 'true';
+              cart.attributes['user_id'] = getParameterByName('user_id');
+            }
+          }
         });
-      }
-    })();
+      });
+    }
+
+    // Helper function to read URL parameters
+    function getParameterByName(name) {
+      const url = window.location.href;
+      name = name.replace(/[\[\]]/g, '\\$&');
+      const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
+      const results = regex.exec(url);
+      if (!results) return '';
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+  })();
+  </script>
+
+  <!-- Simple share logic -->
+  <script>
+    const shareUrl = window.location.href;
+    function shareLink() { navigator.clipboard.writeText(shareUrl); alert("Fundraiser link copied to clipboard!"); }
+    function shareTwitter() { window.open(`https://twitter.com/intent/tweet?text=Support%20our%20fundraiser!%20${encodeURIComponent(shareUrl)}`, '_blank'); }
+    function shareFacebook() { window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank'); }
   </script>
 </body>
 </html>

@@ -46,11 +46,11 @@
 
     const customParams = getCustomParams();
 
-    function serializeParams(params) {
-      return Object.keys(params)
-        .map(k => `attributes[${encodeURIComponent(k)}]=${encodeURIComponent(params[k])}`)
+    function serializeAttributes(params) {
+    return Object.keys(params)
+        .map(key => `attributes%5B${encodeURIComponent(key)}%5D=${encodeURIComponent(params[key])}`)
         .join('&');
-    }
+}
   </script>
 
   <!-- Shopify Buy Button Snippet -->

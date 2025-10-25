@@ -33,10 +33,10 @@
     © 2025 City Pop Fundraising. All rights reserved.
   </footer>
 
-  <!-- Shopify Buy Button Snippet with checkout attributes -->
   <script type="text/javascript">
   (function () {
     var scriptURL = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';
+
     if (window.ShopifyBuy) {
       if (window.ShopifyBuy.UI) {
         ShopifyBuyInit();
@@ -56,6 +56,7 @@
     }
 
     function ShopifyBuyInit() {
+      // Grab URL parameters
       const urlParams = new URLSearchParams(window.location.search);
       const fundraiserId = urlParams.get('fundraiser_id');
       const organizationId = urlParams.get('organization_id');
@@ -75,10 +76,7 @@
             cart: {
               startOpen: false,
               popup: false,
-              text: {
-                total: "Subtotal",
-                button: "Checkout"
-              },
+              text: { total: "Subtotal", button: "Checkout" },
               styles: {
                 button: {
                   "background-color": "#0567e8",
@@ -86,6 +84,18 @@
                   ":focus": { "background-color": "#055dd1" },
                   "border-radius": "25px"
                 }
+              },
+              // Intercept checkout to append attributes
+              checkout: function(cart) {
+                let checkoutUrl = cart.checkoutUrl;
+
+                const params = new URLSearchParams();
+                params.append('attributes[fundraiser_id]', fundraiserId);
+                params.append('attributes[organization_id]', organizationId);
+                params.append('attributes[CityPopApp]', 'true');
+                params.append('attributes[user_id]', userId);
+
+                window.location.href = checkoutUrl + '&' + params.toString();
               }
             },
             modalProduct: {
@@ -103,17 +113,6 @@
                 }
               }
             }
-          },
-          // Pass checkout attributes
-          nodeOptions: {
-            onCartCheckout: function(cart) {
-              const baseUrl = cart.checkoutUrl.split('?')[0];
-              const params = new URLSearchParams();
-              params.append('attributes[campaign_slug]', fundraiserId);
-              params.append('attributes[campaign_id]', organizationId);
-              params.append('attributes[user_id]', userId);
-              window.location.href = baseUrl + '?' + params.toString();
-            }
           }
         });
       });
@@ -121,7 +120,6 @@
   })();
   </script>
 
-  <!-- Simple share logic -->
   <script>
     const shareUrl = window.location.href;
 
@@ -138,6 +136,5 @@
       window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
     }
   </script>
-
 </body>
 </html>

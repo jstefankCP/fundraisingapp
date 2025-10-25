@@ -17,13 +17,6 @@
     <p><strong>Organization:</strong> City Pop Fundraising</p>
     <p class="metrics"><strong>Days Left:</strong> 12 days remaining</p>
     <p class="metrics"><strong>Amount Raised:</strong> $2,430 / $5,000 Goal</p>
-
-    <div class="share-section">
-      <p>Share this fundraiser:</p>
-      <button onclick="shareLink()">Share via Link</button>
-      <button onclick="shareTwitter()">Share on X</button>
-      <button onclick="shareFacebook()">Share on Facebook</button>
-    </div>
   </section>
 
   <!-- Shopify Collection Component -->
@@ -33,7 +26,7 @@
     © 2025 City Pop Fundraising. All rights reserved.
   </footer>
 
-  <!-- Shopify Buy Button Snippet -->
+  <!-- Shopify Buy Button with custom attributes -->
   <script type="text/javascript">
 /*<![CDATA[*/
 (function () {
@@ -69,7 +62,7 @@
     var script = document.createElement('script');
     script.async = true;
     script.src = scriptURL;
-    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(script);
+    (document.head || document.body).appendChild(script);
     script.onload = ShopifyBuyInit;
   }
 
@@ -128,6 +121,12 @@
             text: {
               total: "Subtotal",
               button: "Checkout"
+            },
+            // ✅ Automatically attach fundraiser metadata to the order
+            attributes: {
+              "Fundraiser ID": fundraiserParams.fundraiser_id || "",
+              "Organization ID": fundraiserParams.organization_id || "",
+              "User ID": fundraiserParams.user_id || ""
             },
             events: {
               afterInit: (cart) => {

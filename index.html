@@ -27,7 +27,6 @@
   </footer>
 
   <script type="text/javascript">
-    // Get fundraiser parameters from URL
     const urlParams = new URLSearchParams(window.location.search);
     const fundraiserId = urlParams.get('fundraiser_id');
     const organizationId = urlParams.get('organization_id');
@@ -89,10 +88,9 @@
                   }
                 },
                 text: { total: "Subtotal", button: "Checkout" },
-                // OVERRIDE checkout click
                 checkoutRedirect: function(cart) {
-                  const baseCheckoutUrl = cart.checkoutUrl; // Shopify-generated URL
-                  const fullUrl = baseCheckoutUrl + 
+                  const baseCheckoutUrl = cart.checkoutUrl;
+                  const fullUrl = baseCheckoutUrl +
                     `&attributes[fundraiser_id]=${fundraiserId}` +
                     `&attributes[organization_id]=${organizationId}` +
                     `&attributes[CityPopApp]=true` +

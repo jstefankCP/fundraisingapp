@@ -35,9 +35,33 @@
     © 2025 City Pop Fundraising. All rights reserved.
   </footer>
 
-  <!-- Shopify Buy Button Snippet -->
+  <!-- Shopify Buy Button Snippet with UTM/attribute serialization -->
   <script type="text/javascript">
     (function () {
+      // Function to capture URL parameters
+      function getURLParameters() {
+        var params = {};
+        var parser = document.createElement('a');
+        parser.href = window.location.href;
+        var query = parser.search.substring(1);
+        var vars = query.split('&');
+        for (var i = 0; i < vars.length; i++) {
+          var pair = vars[i].split('=');
+          if (pair[0]) { // capture all parameters
+            params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+          }
+        }
+        return params;
+      }
+
+      var urlParams = getURLParameters();
+      // Only keep our keys
+      var serializedParams = ['fundraiser_id', 'organization_id', 'user_id'].map(function (key) {
+        if (urlParams[key]) return key + '=' + encodeURIComponent(urlParams[key]);
+        return null;
+      }).filter(Boolean).join('&');
+      serializedParams += serializedParams ? '&CityPopApp=true' : 'CityPopApp=true';
+
       var scriptURL = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';
       if (window.ShopifyBuy) {
         if (window.ShopifyBuy.UI) {
@@ -70,48 +94,32 @@
             moneyFormat: '%24%7B%7Bamount%7D%7D',
             options: {
               product: {
-                styles: {
-                  product: {
-                    "@media (min-width: 601px)": {
-                      "max-width": "calc(25% - 20px)",
-                      "margin-left": "20px",
-                      "margin-bottom": "50px",
-                      "width": "calc(25% - 20px)"
-                    },
-                    img: { "height": "calc(100% - 15px)", "position": "absolute", "left": "0", "right": "0", "top": "0" },
-                    imgWrapper: { "padding-top": "calc(75% + 15px)", "position": "relative", "height": "0" }
-                  },
-                  button: { ":hover": { "background-color": "#055dd1" }, "background-color": "#0567e8", ":focus": { "background-color": "#055dd1" }, "border-radius": "25px" }
+                styles: {},
+                // Override the checkout behavior to append serialized URL parameters
+                buttonDestination: function (that) {
+                  that._userEvent('openCheckout');
+                  that.props.tracker.track('Direct Checkout', {});
+                  let checkoutWindow = that.config.cart.popup ? window.open('', 'checkout') : window;
+                  const input = {
+                    lineItems: [{
+                      variantId: that.selectedVariant.id,
+                      quantity: that.selectedQuantity
+                    }]
+                  };
+                  that.props.client.checkout.create(input).then((checkout) => {
+                    let suffix = checkout.webUrl.indexOf('?') === -1 ? '?' : '&';
+                    const checkoutUrl = checkout.webUrl + suffix + serializedParams;
+                    checkoutWindow.location = checkoutUrl;
+                  });
                 },
-                text: { button: "Add to cart" }
-              },
-              modalProduct: {
-                contents: { img: false, imgWithCarousel: true, button: false, buttonWithQuantity: true },
-                styles: {
-                  button: { ":hover": { "background-color": "#055dd1" }, "background-color": "#0567e8", ":focus": { "background-color": "#055dd1" }, "border-radius": "25px" }
-                },
-                text: { button: "Add to cart" }
+                text: { button: "Buy now" }
               },
               cart: {
                 popup: false,
-                styles: {
-                  button: { ":hover": { "background-color": "#055dd1" }, "background-color": "#0567e8", ":focus": { "background-color": "#055dd1" }, "border-radius": "25px" }
-                },
-                text: { total: "Subtotal", button: "Checkout" },
-                // Add our URL params as cart attributes
-                onCartUpdate: function (cart) {
-                  const urlParams = new URLSearchParams(window.location.search);
-                  const fundraiser_id = urlParams.get('fundraiser_id') || '';
-                  const organization_id = urlParams.get('organization_id') || '';
-                  const user_id = urlParams.get('user_id') || '';
-
-                  if (fundraiser_id) cart.attributes['fundraiser_id'] = fundraiser_id;
-                  if (organization_id) cart.attributes['organization_id'] = organization_id;
-                  if (user_id) cart.attributes['user_id'] = user_id;
-                  cart.attributes['CityPopApp'] = 'true';
-                }
+                styles: {},
+                text: { total: "Subtotal", button: "Checkout" }
               }
-            },
+            }
           });
         });
       }
@@ -121,16 +129,9 @@
   <!-- Simple share logic -->
   <script>
     const shareUrl = window.location.href;
-    function shareLink() {
-      navigator.clipboard.writeText(shareUrl);
-      alert("Fundraiser link copied to clipboard!");
-    }
-    function shareTwitter() {
-      window.open(`https://twitter.com/intent/tweet?text=Support%20our%20fundraiser!%20${encodeURIComponent(shareUrl)}`, '_blank');
-    }
-    function shareFacebook() {
-      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
-    }
+    function shareLink() { navigator.clipboard.writeText(shareUrl); alert("Fundraiser link copied!"); }
+    function shareTwitter() { window.open(`https://twitter.com/intent/tweet?text=Support our fundraiser! ${encodeURIComponent(shareUrl)}`, '_blank'); }
+    function shareFacebook() { window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank'); }
   </script>
 </body>
 </html>

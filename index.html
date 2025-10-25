@@ -17,7 +17,6 @@
     <p><strong>Organization:</strong> City Pop Fundraising</p>
     <p class="metrics"><strong>Days Left:</strong> 12 days remaining</p>
     <p class="metrics"><strong>Amount Raised:</strong> $2,430 / $5,000 Goal</p>
-
     <div class="share-section">
       <p>Share this fundraiser:</p>
       <button onclick="shareLink()">Share via Link</button>
@@ -33,7 +32,7 @@
     © 2025 City Pop Fundraising. All rights reserved.
   </footer>
 
-  <!-- Capture custom URL parameters -->
+  <!-- Capture URL Parameters -->
   <script>
     function getCustomParams() {
       const params = new URLSearchParams(window.location.search);
@@ -89,53 +88,38 @@
           moneyFormat: '%24%7B%7Bamount%7D%7D',
           options: {
             product: {
-              styles: {
-                button: {
-                  "background-color": "#0567e8",
-                  ":hover": { "background-color": "#055dd1" },
-                  ":focus": { "background-color": "#055dd1" },
-                  "border-radius": "25px"
-                }
-              },
+              styles: { button: { "background-color": "#0567e8", ":hover": { "background-color": "#055dd1" }, ":focus": { "background-color": "#055dd1" }, "border-radius": "25px" } },
               buttonDestination: "cart",
               text: { button: "Add to cart" }
             },
             cart: {
-              styles: {
-                button: {
-                  "background-color": "#0567e8",
-                  ":hover": { "background-color": "#055dd1" },
-                  ":focus": { "background-color": "#055dd1" },
-                  "border-radius": "25px"
-                }
-              },
+              styles: { button: { "background-color": "#0567e8", ":hover": { "background-color": "#055dd1" }, ":focus": { "background-color": "#055dd1" }, "border-radius": "25px" } },
               text: { total: "Subtotal", button: "Checkout" },
               popup: false
             }
           }
         });
 
-        // Override cart's checkout button to append custom attributes
-        const cartObserver = setInterval(() => {
+        // Intercept checkout click to append order attributes
+        const observer = setInterval(() => {
           const checkoutBtn = document.querySelector('.shopify-buy__cart__checkout');
           if (checkoutBtn) {
             checkoutBtn.addEventListener('click', function(e) {
               e.preventDefault();
-              const cartUrl = checkoutBtn.getAttribute('href');
-              const separator = cartUrl.includes('?') ? '&' : '?';
-              const finalUrl = cartUrl + separator + serializeParams(customParams);
+              const baseUrl = checkoutBtn.getAttribute('href');
+              const separator = baseUrl.includes('?') ? '&' : '?';
+              const finalUrl = baseUrl + separator + serializeParams(customParams);
               window.location.href = finalUrl;
             });
-            clearInterval(cartObserver);
+            clearInterval(observer);
           }
         }, 500);
-
       });
     }
   })();
   </script>
 
-  <!-- Share buttons logic -->
+  <!-- Share buttons -->
   <script>
     const shareUrl = window.location.href;
     function shareLink() { navigator.clipboard.writeText(shareUrl); alert("Fundraiser link copied!"); }

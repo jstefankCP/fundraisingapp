@@ -17,6 +17,7 @@
     <p><strong>Organization:</strong> City Pop Fundraising</p>
     <p class="metrics"><strong>Days Left:</strong> 12 days remaining</p>
     <p class="metrics"><strong>Amount Raised:</strong> $2,430 / $5,000 Goal</p>
+
     <div class="share-section">
       <p>Share this fundraiser:</p>
       <button onclick="shareLink()">Share via Link</button>
@@ -32,30 +33,38 @@
     © 2025 City Pop Fundraising. All rights reserved.
   </footer>
 
-  <!-- Capture URL Parameters -->
-  <script>
-    function getCustomParams() {
-      const params = new URLSearchParams(window.location.search);
-      return {
-        fundraiser_id: params.get('fundraiser_id'),
-        organization_id: params.get('organization_id'),
-        user_id: params.get('user_id'),
-        CityPopApp: 'true'
-      };
-    }
-
-    const customParams = getCustomParams();
-
-    function serializeAttributes(params) {
-    return Object.keys(params)
-        .map(key => `attributes%5B${encodeURIComponent(key)}%5D=${encodeURIComponent(params[key])}`)
-        .join('&');
-}
-  </script>
-
   <!-- Shopify Buy Button Snippet -->
   <script type="text/javascript">
-  (function () {
+  (function() {
+    // Capture your URL parameters
+    function getURLParameters() {
+      const params = {};
+      const query = window.location.search.substring(1).split('&');
+      query.forEach(pair => {
+        const [key, value] = pair.split('=');
+        if (key && value) params[decodeURIComponent(key)] = decodeURIComponent(value);
+      });
+      return params;
+    }
+
+    const urlParams = getURLParameters();
+
+    // Serialize your attributes for Shopify checkout
+    function serializeAttributes(attrs) {
+      return Object.keys(attrs)
+        .map(key => `attributes%5B${encodeURIComponent(key)}%5D=${encodeURIComponent(attrs[key])}`)
+        .join('&');
+    }
+
+    const checkoutAttributes = {
+      fundraiser_id: urlParams.fundraiser_id || '',
+      organization_id: urlParams.organization_id || '',
+      user_id: urlParams.user_id || '',
+      CityPopApp: 'true'
+    };
+
+    const serializedAttributes = serializeAttributes(checkoutAttributes);
+
     var scriptURL = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';
     if (window.ShopifyBuy) {
       if (window.ShopifyBuy.UI) {
@@ -81,50 +90,76 @@
         storefrontAccessToken: 'd18a70960882c060cc472257ab67a4d3',
       });
 
-      ShopifyBuy.UI.onReady(client).then(function (ui) {
+      ShopifyBuy.UI.onReady(client).then(function(ui) {
         ui.createComponent('collection', {
           id: '456057717025',
           node: document.getElementById('collection-component-1761423819822'),
           moneyFormat: '%24%7B%7Bamount%7D%7D',
           options: {
             product: {
-              styles: { button: { "background-color": "#0567e8", ":hover": { "background-color": "#055dd1" }, ":focus": { "background-color": "#055dd1" }, "border-radius": "25px" } },
-              buttonDestination: "cart",
-              text: { button: "Add to cart" }
+              styles: {
+                // Add your style overrides here
+              },
+              text: { button: "Add to cart" },
+              // Custom checkout redirect to include serialized attributes
+              buttonDestination: function(that) {
+                that._userEvent('openCheckout');
+                that.props.tracker.track('Direct Checkout', {});
+
+                let checkoutWindow;
+                if (that.config.cart.popup) {
+                  checkoutWindow = window.open('', 'checkout');
+                } else {
+                  checkoutWindow = window;
+                }
+
+                const input = {
+                  lineItems: [{
+                    variantId: that.selectedVariant.id,
+                    quantity: that.selectedQuantity,
+                  }],
+                };
+
+                // Create a checkout with Shopify Storefront API
+                that.props.client.checkout.create(input).then((checkout) => {
+                  let suffix = checkout.webUrl.includes('?') ? '&' : '?';
+                  const checkoutUrl = `${checkout.webUrl}${suffix}${serializedAttributes}`;
+                  checkoutWindow.location = checkoutUrl;
+                });
+              }
             },
             cart: {
-              styles: { button: { "background-color": "#0567e8", ":hover": { "background-color": "#055dd1" }, ":focus": { "background-color": "#055dd1" }, "border-radius": "25px" } },
+              styles: {
+                button: {
+                  ":hover": { "background-color": "#055dd1" },
+                  "background-color": "#0567e8",
+                  ":focus": { "background-color": "#055dd1" },
+                  "border-radius": "25px"
+                }
+              },
               text: { total: "Subtotal", button: "Checkout" },
               popup: false
             }
           }
         });
-
-        // Intercept checkout click to append order attributes
-        const observer = setInterval(() => {
-          const checkoutBtn = document.querySelector('.shopify-buy__cart__checkout');
-          if (checkoutBtn) {
-            checkoutBtn.addEventListener('click', function(e) {
-              e.preventDefault();
-              const baseUrl = checkoutBtn.getAttribute('href');
-              const separator = baseUrl.includes('?') ? '&' : '?';
-              const finalUrl = baseUrl + separator + serializeParams(customParams);
-              window.location.href = finalUrl;
-            });
-            clearInterval(observer);
-          }
-        }, 500);
       });
     }
   })();
   </script>
 
-  <!-- Share buttons -->
+  <!-- Share logic -->
   <script>
     const shareUrl = window.location.href;
-    function shareLink() { navigator.clipboard.writeText(shareUrl); alert("Fundraiser link copied!"); }
-    function shareTwitter() { window.open(`https://twitter.com/intent/tweet?text=Support%20our%20fundraiser!%20${encodeURIComponent(shareUrl)}`, '_blank'); }
-    function shareFacebook() { window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank'); }
+    function shareLink() {
+      navigator.clipboard.writeText(shareUrl);
+      alert("Fundraiser link copied to clipboard!");
+    }
+    function shareTwitter() {
+      window.open(`https://twitter.com/intent/tweet?text=Support%20our%20fundraiser!%20${encodeURIComponent(shareUrl)}`, '_blank');
+    }
+    function shareFacebook() {
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
+    }
   </script>
 </body>
 </html>

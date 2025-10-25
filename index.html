@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,7 +7,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
   <header>
     <h1>Shop Popcorn for Our Fundraiser!</h1>
@@ -29,111 +27,130 @@
   </section>
 
   <!-- Shopify Collection Component -->
-  <div id='collection-component-1761423819822'></div>
+  <div id="collection-component-1761423819822"></div>
 
   <footer>
     © 2025 City Pop Fundraising. All rights reserved.
   </footer>
 
-  <!-- Shopify Buy Button Snippet with Cart Attributes -->
+  <!-- Shopify Buy Button Snippet -->
   <script type="text/javascript">
-    (function () {
-      var scriptURL = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';
-
-      if (window.ShopifyBuy) {
-        if (window.ShopifyBuy.UI) {
-          ShopifyBuyInit();
-        } else {
-          loadScript();
-        }
+  (function () {
+    var scriptURL = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';
+    if (window.ShopifyBuy) {
+      if (window.ShopifyBuy.UI) {
+        ShopifyBuyInit();
       } else {
         loadScript();
       }
-
-      function loadScript() {
-        var script = document.createElement('script');
-        script.async = true;
-        script.src = scriptURL;
-        (document.head || document.body).appendChild(script);
-        script.onload = ShopifyBuyInit;
-      }
-
-      function ShopifyBuyInit() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const fundraiser_id = urlParams.get("fundraiser_id");
-        const organization_id = urlParams.get("organization_id");
-        const user_id = urlParams.get("user_id");
-
-        var client = ShopifyBuy.buildClient({
-          domain: 'city-pop-fundraising.myshopify.com',
-          storefrontAccessToken: 'd18a70960882c060cc472257ab67a4d3',
-        });
-
-        ShopifyBuy.UI.onReady(client).then(function (ui) {
-          ui.createComponent('collection', {
-            id: '456057717025',
-            node: document.getElementById('collection-component-1761423819822'),
-            moneyFormat: '%24%7B%7Bamount%7D%7D',
-            options: {
-              product: {
-                styles: {
-                  product: {
-                    "@media (min-width: 601px)": {
-                      "max-width": "calc(25% - 20px)",
-                      "margin-left": "20px",
-                      "margin-bottom": "50px",
-                      "width": "calc(25% - 20px)"
-                    },
-                    img: { "height": "calc(100% - 15px)", "position": "absolute", "left": "0", "right": "0", "top": "0" },
-                    imgWrapper: { "padding-top": "calc(75% + 15px)", "position": "relative", "height": "0" }
+    } else {
+      loadScript();
+    }
+    function loadScript() {
+      var script = document.createElement('script');
+      script.async = true;
+      script.src = scriptURL;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(script);
+      script.onload = ShopifyBuyInit;
+    }
+    function ShopifyBuyInit() {
+      var client = ShopifyBuy.buildClient({
+        domain: 'city-pop-fundraising.myshopify.com',
+        storefrontAccessToken: 'd18a70960882c060cc472257ab67a4d3',
+      });
+      ShopifyBuy.UI.onReady(client).then(function (ui) {
+        ui.createComponent('collection', {
+          id: '456057717025',
+          node: document.getElementById('collection-component-1761423819822'),
+          moneyFormat: '%24%7B%7Bamount%7D%7D',
+          options: {
+            product: {
+              styles: {
+                product: {
+                  "@media (min-width: 601px)": {
+                    "max-width": "calc(25% - 20px)",
+                    "margin-left": "20px",
+                    "margin-bottom": "50px",
+                    "width": "calc(25% - 20px)"
                   },
-                  button: { ":hover": { "background-color": "#055dd1" }, "background-color": "#0567e8", ":focus": { "background-color": "#055dd1" }, "border-radius": "25px" }
+                  img: {
+                    height: "calc(100% - 15px)",
+                    position: "absolute",
+                    left: "0",
+                    right: "0",
+                    top: "0"
+                  },
+                  imgWrapper: { padding-top: "calc(75% + 15px)", position: "relative", height: "0" }
                 },
-                text: { button: "Add to cart" }
-              },
-              modalProduct: {
-                contents: { img: false, imgWithCarousel: true, button: false, buttonWithQuantity: true },
-                styles: { button: { ":hover": { "background-color": "#055dd1" }, "background-color": "#0567e8", ":focus": { "background-color": "#055dd1" }, "border-radius": "25px" } },
-                text: { button: "Add to cart" }
-              },
-              cart: {
-                popup: false,
-                styles: { button: { ":hover": { "background-color": "#055dd1" }, "background-color": "#0567e8", ":focus": { "background-color": "#055dd1" }, "border-radius": "25px" } },
-                text: { total: "Subtotal", button: "Checkout" },
-                events: {
-                  beforeCheckout: function (cart) {
-                    // Add tracking parameters as cart attributes
-                    if (fundraiser_id) cart.attributes.fundraiser_id = fundraiser_id;
-                    if (organization_id) cart.attributes.organization_id = organization_id;
-                    if (user_id) cart.attributes.user_id = user_id;
-                  }
+                button: {
+                  ":hover": { "background-color": "#055dd1" },
+                  "background-color": "#0567e8",
+                  ":focus": { "background-color": "#055dd1" },
+                  "border-radius": "25px"
                 }
               },
-              toggle: { styles: { toggle: { "background-color": "#0567e8", ":hover": { "background-color": "#055dd1" }, ":focus": { "background-color": "#055dd1" } } } }
+              text: { button: "Add to cart" }
+            },
+            productSet: {
+              styles: { products: { "@media (min-width: 601px)": { "margin-left": "-20px" } } }
+            },
+            modalProduct: {
+              contents: { img: false, imgWithCarousel: true, button: false, buttonWithQuantity: true },
+              styles: {
+                product: { "@media (min-width: 601px)": { "max-width": "100%", "margin-left": "0px", "margin-bottom": "0px" } },
+                button: { ":hover": { "background-color": "#055dd1" }, "background-color": "#0567e8", ":focus": { "background-color": "#055dd1" }, "border-radius": "25px" }
+              },
+              text: { button: "Add to cart" }
+            },
+            cart: {
+              popup: false,
+              styles: { button: { ":hover": { "background-color": "#055dd1" }, "background-color": "#0567e8", ":focus": { "background-color": "#055dd1" }, "border-radius": "25px" } },
+              text: { total: "Subtotal", button: "Checkout" },
+              events: {
+                checkout: function(cart) {
+                  const urlParams = new URLSearchParams(window.location.search);
+                  const fundraiser_id = urlParams.get("fundraiser_id");
+                  const organization_id = urlParams.get("organization_id");
+                  const user_id = urlParams.get("user_id");
+
+                  const attributes = {
+                    "campaign_slug": fundraiser_id,
+                    "campaign_id": organization_id,
+                    "CityPopApp": "true",
+                    "user_id": user_id
+                  };
+
+                  const attrParams = Object.keys(attributes)
+                    .map(key => `attributes[${encodeURIComponent(key)}]=${encodeURIComponent(attributes[key])}`)
+                    .join("&");
+
+                  window.location.href = `${cart.checkoutUrl}&${attrParams}`;
+                }
+              }
+            },
+            toggle: {
+              styles: { toggle: { "background-color": "#0567e8", ":hover": { "background-color": "#055dd1" }, ":focus": { "background-color": "#055dd1" } } }
             }
-          });
+          }
         });
-      }
-    })();
+      });
+    }
+  })();
   </script>
 
   <!-- Simple share logic -->
   <script>
     const shareUrl = window.location.href;
-
     function shareLink() {
       navigator.clipboard.writeText(shareUrl);
       alert("Fundraiser link copied to clipboard!");
     }
-
     function shareTwitter() {
       window.open(`https://twitter.com/intent/tweet?text=Support%20our%20fundraiser!%20${encodeURIComponent(shareUrl)}`, '_blank');
     }
-
     function shareFacebook() {
       window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
     }
   </script>
-
 </body>
 </html>

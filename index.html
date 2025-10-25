@@ -37,7 +37,7 @@
   <script type="text/javascript">
 /*<![CDATA[*/
 (function () {
-  // Utility: Extract specific query parameters from URL
+  // Extract specific URL parameters
   function getFundraiserParams() {
     const params = {};
     const urlParams = new URLSearchParams(window.location.search);
@@ -54,7 +54,7 @@
     .join('&');
 
   var scriptURL = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';
-  
+
   if (window.ShopifyBuy) {
     if (window.ShopifyBuy.UI) {
       ShopifyBuyInit();
@@ -82,69 +82,61 @@
     ShopifyBuy.UI.onReady(client).then(function (ui) {
       ui.createComponent('collection', {
         id: '456057717025',
-        node: document.getElementById('collection-component-1761432432677'),
+        node: document.getElementById('collection-component-1761423819822'),
         moneyFormat: '%24%7B%7Bamount%7D%7D',
         options: {
-  product: {
-    contents: {
-      button: false,           // hide standard button
-      buttonWithQuantity: true // show only button with quantity
-    },
-    styles: {
-      button: {
-        "background-color": "#0567e8",
-        ":hover": { "background-color": "#055dd1" },
-        ":focus": { "background-color": "#055dd1" },
-        "border-radius": "25px"
-      }
-    },
-    text: { button: "Add to cart" }
-  },
-  modalProduct: {
-    contents: {
-      button: false,
-      buttonWithQuantity: true
-    },
-    styles: {
-      button: {
-        "background-color": "#0567e8",
-        ":hover": { "background-color": "#055dd1" },
-        ":focus": { "background-color": "#055dd1" },
-        "border-radius": "25px"
-      }
-    },
-    text: { button: "Add to cart" }
-  },
-  cart: {
-    popup: false,
-    styles: {
-      button: {
-        "background-color": "#0567e8",
-        ":hover": { "background-color": "#055dd1" },
-        ":focus": { "background-color": "#055dd1" },
-        "border-radius": "25px"
-      }
-    },
-    text: {
-      total: "Subtotal",
-      button: "Checkout"
-    },
-    events: {
-      afterInit: (cart) => {
-        cart.onCheckout = () => {
-          const checkoutUrl = cart.model.webUrl + (shopifyParams ? '&' + shopifyParams : '');
-          cart.checkout.open(checkoutUrl);
-        };
-      }
-    }
-  }
-},
           product: {
-            contents: { buttonWithQuantity: true },
+            contents: {
+              button: false,
+              buttonWithQuantity: true
+            },
+            styles: {
+              button: {
+                "background-color": "#0567e8",
+                ":hover": { "background-color": "#055dd1" },
+                ":focus": { "background-color": "#055dd1" },
+                "border-radius": "25px"
+              }
+            },
             text: { button: "Add to cart" }
           },
           modalProduct: {
-            contents: { buttonWithQuantity: true }
+            contents: {
+              button: false,
+              buttonWithQuantity: true
+            },
+            styles: {
+              button: {
+                "background-color": "#0567e8",
+                ":hover": { "background-color": "#055dd1" },
+                ":focus": { "background-color": "#055dd1" },
+                "border-radius": "25px"
+              }
+            },
+            text: { button: "Add to cart" }
+          },
+          cart: {
+            popup: false,
+            styles: {
+              button: {
+                "background-color": "#0567e8",
+                ":hover": { "background-color": "#055dd1" },
+                ":focus": { "background-color": "#055dd1" },
+                "border-radius": "25px"
+              }
+            },
+            text: {
+              total: "Subtotal",
+              button: "Checkout"
+            },
+            events: {
+              afterInit: (cart) => {
+                cart.onCheckout = () => {
+                  const checkoutUrl = cart.model.webUrl + (shopifyParams ? '&' + shopifyParams : '');
+                  cart.checkout.open(checkoutUrl);
+                };
+              }
+            }
           },
           toggle: {},
           productSet: {}

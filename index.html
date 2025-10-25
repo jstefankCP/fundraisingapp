@@ -35,121 +35,126 @@
 
   <!-- Shopify Buy Button Snippet -->
   <script type="text/javascript">
-    (function() {
-      // Capture URL parameters
-      function getUrlParams() {
-        const params = {};
-        const query = window.location.search.substring(1);
-        const vars = query.split('&');
-        vars.forEach(pairStr => {
-          const pair = pairStr.split('=');
-          params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
-        });
-        return params;
-      }
-      const urlParams = getUrlParams();
-
-      // Load Shopify SDK
-      const scriptURL = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';
-      if (window.ShopifyBuy) {
-        if (window.ShopifyBuy.UI) {
-          ShopifyBuyInit();
-        } else {
-          loadScript();
-        }
+  (function () {
+    var scriptURL = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';
+    if (window.ShopifyBuy) {
+      if (window.ShopifyBuy.UI) {
+        ShopifyBuyInit();
       } else {
         loadScript();
       }
+    } else {
+      loadScript();
+    }
 
-      function loadScript() {
-        const script = document.createElement('script');
-        script.async = true;
-        script.src = scriptURL;
-        document.head.appendChild(script);
-        script.onload = ShopifyBuyInit;
-      }
+    function loadScript() {
+      var script = document.createElement('script');
+      script.async = true;
+      script.src = scriptURL;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(script);
+      script.onload = ShopifyBuyInit;
+    }
 
-      function ShopifyBuyInit() {
-        const client = ShopifyBuy.buildClient({
-          domain: 'city-pop-fundraising.myshopify.com',
-          storefrontAccessToken: 'd18a70960882c060cc472257ab67a4d3',
-        });
+    function ShopifyBuyInit() {
+      var client = ShopifyBuy.buildClient({
+        domain: 'city-pop-fundraising.myshopify.com',
+        storefrontAccessToken: 'd18a70960882c060cc472257ab67a4d3',
+      });
 
-        ShopifyBuy.UI.onReady(client).then(function(ui) {
-          ui.createComponent('collection', {
-            id: '456057717025',
-            node: document.getElementById('collection-component-1761423819822'),
-            moneyFormat: '%24%7B%7Bamount%7D%7D',
-            options: {
-              "product": {
-                "styles": {
-                  "product": {
-                    "@media (min-width: 601px)": {
-                      "max-width": "calc(25% - 20px)",
-                      "margin-left": "20px",
-                      "margin-bottom": "50px",
-                      "width": "calc(25% - 20px)"
-                    },
-                    "img": { "height": "calc(100% - 15px)", "position": "absolute", "left": "0", "right": "0", "top": "0" },
-                    "imgWrapper": { "padding-top": "calc(75% + 15px)", "position": "relative", "height": "0" }
+      ShopifyBuy.UI.onReady(client).then(function (ui) {
+        ui.createComponent('collection', {
+          id: '456057717025',
+          node: document.getElementById('collection-component-1761423819822'),
+          moneyFormat: '%24%7B%7Bamount%7D%7D',
+          options: {
+            product: {
+              styles: {
+                product: {
+                  "@media (min-width: 601px)": {
+                    "max-width": "calc(25% - 20px)",
+                    "margin-left": "20px",
+                    "margin-bottom": "50px",
+                    "width": "calc(25% - 20px)"
                   },
-                  "button": {
-                    ":hover": { "background-color": "#055dd1" },
-                    "background-color": "#0567e8",
-                    ":focus": { "background-color": "#055dd1" },
-                    "border-radius": "25px"
+                  img: {
+                    height: "calc(100% - 15px)",
+                    position: "absolute",
+                    left: "0",
+                    right: "0",
+                    top: "0"
+                  },
+                  imgWrapper: {
+                    padding-top: "calc(75% + 15px)",
+                    position: "relative",
+                    height: "0"
                   }
                 },
-                "buttonDestination": "cart",
-                "text": { "button": "Add to Cart" }
+                button: {
+                  ":hover": { "background-color": "#055dd1" },
+                  "background-color": "#0567e8",
+                  ":focus": { "background-color": "#055dd1" },
+                  "border-radius": "25px"
+                }
               },
-              "cart": {
-                "styles": {
-                  "button": {
-                    ":hover": { "background-color": "#055dd1" },
-                    "background-color": "#0567e8",
-                    ":focus": { "background-color": "#055dd1" },
-                    "border-radius": "25px"
-                  }
-                },
-                "text": { "total": "Subtotal", "button": "Checkout" }
+              text: { button: "Add to cart" },
+              buttonDestination: "cart" // Keep default cart functionality
+            },
+            cart: {
+              styles: {
+                button: {
+                  ":hover": { "background-color": "#055dd1" },
+                  "background-color": "#0567e8",
+                  ":focus": { "background-color": "#055dd1" },
+                  "border-radius": "25px"
+                }
+              },
+              text: { total: "Subtotal", button: "Checkout" },
+              popup: false,
+              // Add cart attributes on cart creation
+              contents: {
+                note: false
+              },
+              onCreate: function(cart) {
+                const urlParams = new URLSearchParams(window.location.search);
+                const fundraiserId = urlParams.get('fundraiser_id');
+                const organizationId = urlParams.get('organization_id');
+                const userId = urlParams.get('user_id');
+
+                const attributes = {
+                  CityPopApp: 'true',
+                  fundraiser_id: fundraiserId,
+                  organization_id: organizationId,
+                  user_id: userId
+                };
+
+                Object.keys(attributes).forEach(function(key) {
+                  cart.attrs.set(key, attributes[key]);
+                });
               }
             }
-          });
-
-          // Intercept the checkout button to append attributes
-          const observer = new MutationObserver(() => {
-            const checkoutButton = document.querySelector('.shopify-buy__cart__checkout');
-            if (checkoutButton && !checkoutButton.hasAttribute('data-attributes-added')) {
-              checkoutButton.setAttribute('data-attributes-added', 'true');
-              checkoutButton.addEventListener('click', function(e) {
-                e.preventDefault();
-                const checkoutWindow = window;
-                client.checkout.create({ lineItems: window.ShopifyBuy.cart ? window.ShopifyBuy.cart.lineItems : [] })
-                  .then(checkout => {
-                    let suffix = checkout.webUrl.includes('?') ? '&' : '?';
-                    const checkoutUrl = `${checkout.webUrl}${suffix}` +
-                      `attributes%5BCityPopApp%5D=true` +
-                      `&attributes%5Bfundraiser_id%5D=${encodeURIComponent(urlParams.fundraiser_id || '')}` +
-                      `&attributes%5Borganization_id%5D=${encodeURIComponent(urlParams.organization_id || '')}` +
-                      `&attributes%5Buser_id%5D=${encodeURIComponent(urlParams.user_id || '')}`;
-                    checkoutWindow.location.href = checkoutUrl;
-                  });
-              });
-            }
-          });
-          observer.observe(document.body, { childList: true, subtree: true });
+          }
         });
-      }
-    })();
+      });
+    }
+  })();
   </script>
 
-  <!-- Share Buttons -->
+  <!-- Simple share logic -->
   <script>
     const shareUrl = window.location.href;
-    function shareLink() { navigator.clipboard.writeText(shareUrl); alert("Fundraiser link copied!"); }
-    function shareTwitter() { window.open(`https://twitter.com/intent/tweet?text=Support%20our%20fundraiser!%20${encodeURIComponent(shareUrl)}`, '_blank'); }
-    function shareFacebook() { window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank'); }
+
+    function shareLink() {
+      navigator.clipboard.writeText(shareUrl);
+      alert("Fundraiser link copied to clipboard!");
+    }
+
+    function shareTwitter() {
+      window.open(`https://twitter.com/intent/tweet?text=Support%20our%20fundraiser!%20${encodeURIComponent(shareUrl)}`, '_blank');
+    }
+
+    function shareFacebook() {
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
+    }
   </script>
 </body>
 </html>

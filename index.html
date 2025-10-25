@@ -6,7 +6,11 @@
   <title>Shop Popcorn | City Pop Fundraising</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+
+  <!-- Meta tag to pre-populate checkout URL with fundraiser attributes -->
+  <meta name="serialized-login-url" content="&quot;https://shop.app/customer_authentication/login?locale=en-US&amp;return_to=https%3A%2F%2Fcity-pop-fundraising.myshopify.com%2Fcheckouts%2Fcn%2FhWN4XKIYduI9KYpIYwvqhnnN%2Fen-us%2Finformation%3F_fd%3D0%26auto_redirect%3Dfalse%26channel%3Dbuy_button%26edge_redirect%3Dtrue%26skip_shop_pay%3Dtrue%26attributes%255Bfundraiser_id%255D%3D79843360-4db8-473a-822f-c38272c716ed%26attributes%255Borganization_id%255D%3D37d833d8-be39-41a9-814c-17316ac72882%26attributes%255BCityPopApp%255D%3Dtrue%26attributes%255Buser_id%255D%3D12284c05-d265-4347-8b18-e5d9406e43b1&quot;">
 </head>
+
 <body>
   <header>
     <h1>Shop Popcorn for Our Fundraiser!</h1>
@@ -46,7 +50,6 @@
     } else {
       loadScript();
     }
-
     function loadScript() {
       var script = document.createElement('script');
       script.async = true;
@@ -54,64 +57,64 @@
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(script);
       script.onload = ShopifyBuyInit;
     }
-
     function ShopifyBuyInit() {
       var client = ShopifyBuy.buildClient({
         domain: 'city-pop-fundraising.myshopify.com',
         storefrontAccessToken: 'd18a70960882c060cc472257ab67a4d3',
       });
-
       ShopifyBuy.UI.onReady(client).then(function (ui) {
         ui.createComponent('collection', {
           id: '456057717025',
           node: document.getElementById('collection-component-1761423819822'),
           moneyFormat: '%24%7B%7Bamount%7D%7D',
           options: {
-            product: { 
-              text: { button: 'Add to cart' } 
+            product: {
+              styles: {
+                product: {
+                  "@media (min-width: 601px)": {
+                    "max-width": "calc(25% - 20px)",
+                    "margin-left": "20px",
+                    "margin-bottom": "50px",
+                    "width": "calc(25% - 20px)"
+                  },
+                  img: {
+                    height: "calc(100% - 15px)",
+                    position: "absolute",
+                    left: "0",
+                    right: "0",
+                    top: "0"
+                  },
+                  imgWrapper: {
+                    padding-top: "calc(75% + 15px)",
+                    position: "relative",
+                    height: "0"
+                  }
+                },
+                button: {
+                  ":hover": { "background-color": "#055dd1" },
+                  "background-color": "#0567e8",
+                  ":focus": { "background-color": "#055dd1" },
+                  "border-radius": "25px"
+                }
+              },
+              text: { button: "Add to cart" }
             },
+            productSet: { styles: { products: { "@media (min-width: 601px)": { "margin-left": "-20px" } } } },
+            modalProduct: { contents: { img: false, imgWithCarousel: true, button: false, buttonWithQuantity: true },
+              styles: { product: { "@media (min-width: 601px)": { "max-width": "100%", "margin-left": "0px", "margin-bottom": "0px" } },
+              button: { ":hover": { "background-color": "#055dd1" }, "background-color": "#0567e8", ":focus": { "background-color": "#055dd1" }, "border-radius": "25px" } },
+              text: { button: "Add to cart" }
+            },
+            option: {},
             cart: {
-              startOpen: false,
-              popup: false,
-              text: { total: 'Subtotal', button: 'Checkout' },
-              styles: { button: { 'background-color': '#0567e8', ':hover': { 'background-color': '#055dd1' }, 'border-radius': '25px' } }
-            }
-          }
-        }).then((collection) => {
-          // Override the checkout button to include attributes
-          const checkoutButtonSelector = 'button[data-action="checkout"]';
-          const interval = setInterval(() => {
-            const checkoutBtn = document.querySelector(checkoutButtonSelector);
-            if (checkoutBtn) {
-              checkoutBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                const fundraiser_id = getParameterByName('fundraiser_id');
-                const organization_id = getParameterByName('organization_id');
-                const user_id = getParameterByName('user_id');
-
-                // Get Shopify cart checkout URL
-                client.checkout.create().then((checkout) => {
-                  const checkoutUrl = checkout.webUrl;
-                  // Append attributes to URL
-                  const urlWithAttributes = `${checkoutUrl}&attributes[fundraiser_id]=${encodeURIComponent(fundraiser_id)}&attributes[organization_id]=${encodeURIComponent(organization_id)}&attributes[CityPopApp]=true&attributes[user_id]=${encodeURIComponent(user_id)}`;
-                  window.location.href = urlWithAttributes;
-                });
-              });
-              clearInterval(interval);
-            }
-          }, 500);
+              styles: { button: { ":hover": { "background-color": "#055dd1" }, "background-color": "#0567e8", ":focus": { "background-color": "#055dd1" }, "border-radius": "25px" } },
+              text: { total: "Subtotal", button: "Checkout" },
+              popup: false
+            },
+            toggle: { styles: { toggle: { "background-color": "#0567e8", ":hover": { "background-color": "#055dd1" }, ":focus": { "background-color": "#055dd1" } } } }
+          },
         });
       });
-    }
-
-    function getParameterByName(name) {
-      const url = window.location.href;
-      name = name.replace(/[\[\]]/g, '\\$&');
-      const regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)');
-      const results = regex.exec(url);
-      if (!results) return '';
-      if (!results[2]) return '';
-      return decodeURIComponent(results[2].replace(/\+/g, ' '));
     }
   })();
   </script>
@@ -123,5 +126,6 @@
     function shareTwitter() { window.open(`https://twitter.com/intent/tweet?text=Support%20our%20fundraiser!%20${encodeURIComponent(shareUrl)}`, '_blank'); }
     function shareFacebook() { window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank'); }
   </script>
+
 </body>
 </html>

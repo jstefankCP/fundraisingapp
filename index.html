@@ -260,5 +260,56 @@ checkoutBtn.addEventListener("click", ()=>{
 });
 </script>
 
+  <!-- Footer -->
+<footer style="background:#0567e8; color:#fff; text-align:center; padding:1.5rem; margin-top:2rem; border-radius:10px;">
+  <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:1rem; font-size:0.95rem;">
+    <a href="#" class="footer-link" data-url="https://citypopdenver.com/pages/website-accessibility" style="color:#fff; text-decoration:underline; cursor:pointer;">Accessibility</a>
+    <a href="https://citypop.gorgias.help/en-US" target="_blank" style="color:#fff; text-decoration:underline;">Contact Us</a>
+    <a href="https://citypop.gorgias.help/en-US" target="_blank" style="color:#fff; text-decoration:underline;">Help Center</a>
+    <a href="#" class="footer-link" data-url="https://citypopdenver.com/pages/return-and-refund-policy" style="color:#fff; text-decoration:underline; cursor:pointer;">Returns & Refund Policy</a>
+    <a href="#" class="footer-link" data-url="https://citypopdenver.com/pages/privacy-policy" style="color:#fff; text-decoration:underline; cursor:pointer;">Privacy Policy</a>
+    <a href="#" class="footer-link" data-url="https://citypopdenver.com/pages/terms-of-service" style="color:#fff; text-decoration:underline; cursor:pointer;">Terms of Service</a>
+    <a href="#" class="footer-link" data-url="https://citypopdenver.com/pages/shipping-policy" style="color:#fff; text-decoration:underline; cursor:pointer;">Shipping Policy</a>
+  </div>
+</footer>
+
+<!-- Modal -->
+<div id="footer-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2000; justify-content:center; align-items:center;">
+  <div style="background:#fff; color:#000; padding:2rem; max-width:90%; max-height:90%; overflow-y:auto; border-radius:10px; position:relative;">
+    <button id="modal-close" style="position:absolute; top:10px; right:10px; background:#0567e8; color:#fff; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer;">×</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script>
+const footerLinks = document.querySelectorAll(".footer-link");
+const modal = document.getElementById("footer-modal");
+const modalContent = document.getElementById("modal-content");
+const modalClose = document.getElementById("modal-close");
+
+footerLinks.forEach(link => {
+  link.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const url = link.dataset.url;
+
+    try {
+      const res = await fetch(url);
+      const text = await res.text();
+
+      // Strip <script> and external <link> for safety
+      const cleaned = text.replace(/<script[\s\S]*?<\/script>/gi,'').replace(/<link[\s\S]*?>/gi,'');
+      modalContent.innerHTML = cleaned;
+      modal.style.display = "flex";
+    } catch (err) {
+      modalContent.innerHTML = `<p>Unable to load content. <a href="${url}" target="_blank">Open in new tab</a></p>`;
+      modal.style.display = "flex";
+    }
+  });
+});
+
+modalClose.addEventListener("click", () => { modal.style.display = "none"; });
+modal.addEventListener("click", (e) => { if(e.target===modal) modal.style.display="none"; });
+</script>
+
 </body>
 </html>

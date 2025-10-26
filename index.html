@@ -99,9 +99,13 @@
 </button>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>  
-
 <script>
-  // 1️⃣ Get fundraiser params
+  // 1️⃣ Initialize Supabase first
+  const SUPABASE_URL = "https://krjdhmpxojascmkimfru.supabase.co"; 
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtyamRobXB4b2phc2Nta2ltZnJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMzU0MTEsImV4cCI6MjA3MzYxMTQxMX0.DoT40NSvuNZ2_HjwNfhA2qaxmWNXA57Isf1jK43TQP8"; 
+  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // 2️⃣ Then get URL params
   function getFundraiserParams() {
     const params = {};
     const urlParams = new URLSearchParams(window.location.search);
@@ -113,6 +117,29 @@
   }
   const fundraiserParams = getFundraiserParams();
   console.log("Fundraiser URL params:", fundraiserParams);
+
+  // 3️⃣ Now it’s safe to call loadFundraiser
+  async function loadFundraiser() {
+    if (!fundraiserParams.fundraiser_id) {
+      console.error("No fundraiser_id in URL");
+      return;
+    }
+
+    console.log("Fetching fundraiser with ID:", fundraiserParams.fundraiser_id);
+
+    const { data, error } = await supabase
+      .from("fundraisers")
+      .select("*")
+      .eq("id", fundraiserParams.fundraiser_id)
+      .single();
+
+    if (error) {
+      console.error("Error loading fundraiser:", error);
+      return;
+    }
+
+    console.log("Fundraiser data:", data);
+  }
 
   loadFundraiser();
 

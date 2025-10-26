@@ -43,7 +43,7 @@
 
   const fundraiserParams = getFundraiserParams();
   const shopifyParams = Object.entries(fundraiserParams)
-    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+    .map(([key, value]) => `attributes%5b${key}%5D=${encodeURIComponent(value)}`)
     .join('&');
 
   var scriptURL = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';
@@ -131,7 +131,7 @@
             events: {
               afterInit: (cart) => {
                 cart.onCheckout = () => {
-                  const checkoutUrl = cart.model.webUrl + 'attributes%5B' + (shopifyParams ? '&' + shopifyParams : '');
+                  const checkoutUrl = cart.model.webUrl + (shopifyParams ? '&' + shopifyParams : '');
                   cart.checkout.open(checkoutUrl);
                 };
               }

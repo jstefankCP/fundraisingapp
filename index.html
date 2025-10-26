@@ -1,20 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>City Pop Fundraiser</title>
 <style>
-  body { font-family: sans-serif; background-color:#f9f9f9; color:#333; margin:0; padding:1rem; }
-  h1 { color:#0567e8; text-align:center; margin-bottom:0.5rem; }
-  h2,h3,p { text-align:center; margin:0.3rem 0; }
-  #fundraiser-closed { display:none; text-align:center; color:red; font-weight:bold; margin-top:1rem; }
-  .product-grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin-top:1.5rem; }
+  body { font-family: sans-serif; background-color: #f9f9f9; color: #333; margin:0; padding:1rem; }
+  h1 { color: #0567e8; text-align:center; margin-bottom:0.5rem; }
+  h2 { color: #0567e8; text-align:center; margin-top:0; }
+  .product-grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; margin-top:1rem; }
   .product-item { background:#fff; border-radius:10px; padding:1rem; flex:1 1 250px; max-width:250px; box-shadow:0 2px 6px rgba(0,0,0,0.1); display:flex; flex-direction:column; align-items:center; }
   .product-item img { width:100%; height:auto; border-radius:10px; }
   .product-title { font-weight:600; margin:0.5rem 0; text-align:center; }
   .product-price { font-weight:bold; margin-bottom:0.5rem; color:#0567e8; }
-  .nutrition-link { font-size:0.9rem; color:#66cbed; text-decoration:underline; margin-bottom:0.5rem; cursor:pointer; }
   .quantity-selector { display:flex; align-items:center; justify-content:center; margin-bottom:0.5rem; }
   .quantity-selector button { background:#0567e8; color:#fff; border:none; padding:0.2rem 0.6rem; cursor:pointer; border-radius:5px; margin:0 0.3rem; font-size:1rem; }
   .quantity-selector span { width:30px; text-align:center; font-weight:bold; }
@@ -30,29 +28,62 @@
   .cart-item-title { flex:1; font-size:0.9rem; margin-right:0.5rem; }
   .cart-item-controls { display:flex; align-items:center; gap:0.3rem; }
   .cart-item-controls button { background:#0567e8; color:#fff; border:none; padding:0.2rem 0.6rem; cursor:pointer; border-radius:5px; }
-  .trash-btn { background:none; border:none; color:#aaa; font-size:1rem; cursor:pointer; padding:0; line-height:1; }
-  .trash-btn:hover { color:#555; }
+  .trash-btn { background: none; border: none; color: #aaa; font-size: 1rem; cursor: pointer; padding: 0; line-height: 1; }
+  .trash-btn:hover { color: #555; }
   #subtotal { font-weight:bold; margin:1rem 0; text-align:right; color:#0567e8; }
   .checkout-btn { background:#0567e8; color:#fff; border:none; padding:0.6rem 1.2rem; border-radius:25px; width:100%; cursor:pointer; font-size:1rem; }
   .checkout-btn:hover { background:#055dd1; }
   #cart-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.3); z-index:999; }
 
   /* Floating Cart Button (mobile only) */
-  #floating-cart-btn { position:fixed; bottom:20px; right:20px; background-color:#66cbed; color:#fff; border:none; border-radius:50%; width:60px; height:60px; font-size:1.5rem; box-shadow:0 4px 10px rgba(0,0,0,0.2); display:none; align-items:center; justify-content:center; cursor:pointer; z-index:1100; }
-  #floating-cart-btn .cart-count { position:absolute; top:8px; right:8px; background:#ff5a5f; color:#fff; border-radius:50%; width:20px; height:20px; font-size:0.8rem; font-weight:bold; display:flex; align-items:center; justify-content:center; }
-  @media (max-width:768px){ #floating-cart-btn{ display:flex } .product-grid{ flex-direction:column; align-items:center} .product-item{ max-width:100% } }
+  #floating-cart-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #66cbed;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1100;
+  }
+  #floating-cart-btn .cart-count {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #ff5a5f;
+    color: #fff;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  @media (max-width: 768px) {
+    #floating-cart-btn { display: flex; }
+    .product-grid { flex-direction: column; align-items: center; }
+    .product-item { max-width: 100%; }
+  }
 </style>
 </head>
 <body>
 
-<!-- Dynamic header -->
 <h1 id="fundraiser-header">Support Our Fundraiser!</h1>
 <h2 id="fundraiser-subheader"></h2>
 <p id="fundraiser-cause"></p>
 <p id="fundraiser-countdown"></p>
-<div id="fundraiser-closed" style="display:none; text-align:center; color:red; font-weight:bold; margin:1rem 0;">This fundraiser has ended and is no longer accepting orders.</div>
+<p id="fundraiser-closed" style="display:none;color:red;font-weight:bold;">This fundraiser has ended.</p>
 
-<!-- Products -->
 <div class="product-grid" id="product-grid"></div>
 
 <!-- Slide-out cart -->
@@ -66,264 +97,199 @@
 </div>
 
 <!-- Floating Cart Button -->
-<button id="floating-cart-btn" onclick="openCart()">🛒 <span class="cart-count" id="cart-count">0</span></button>
+<button id="floating-cart-btn" onclick="openCart()">
+  🛒
+  <span class="cart-count" id="cart-count">0</span>
+</button>
 
-<!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
-/* -------------------------------
-   1. SUPABASE CONFIGURATION
-   Replace the KEY with your anon public key
---------------------------------*/
-const SUPABASE_URL = "https://krjdhmpxojascmkimfru.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtyamRobXB4b2phc2Nta2ltZnJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMzU0MTEsImV4cCI6MjA3MzYxMTQxMX0.DoT40NSvuNZ2_HjwNfhA2qaxmWNXA57Isf1jK43TQP8";
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  // 1️⃣ SUPABASE CONFIGURATION
+  const SUPABASE_URL = "https://krjdhmpxojascmkimfru.supabase.co";
+  const SUPABASE_KEY = "YOUR_PUBLIC_ANON_KEY_HERE";
+  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-/* -------------------------------
-   2. URL PARAMETERS
---------------------------------*/
-function getParams() {
-  const params = {};
-  const urlParams = new URLSearchParams(window.location.search);
-  ['fundraiser_id','organization_id','user_id'].forEach(k=>{
-    const v = urlParams.get(k);
-    if (v) params[k] = v;
-  });
-  return params;
-}
-const params = getParams();
+  // 2️⃣ GET URL PARAMETERS
+  const params = Object.fromEntries(new URLSearchParams(window.location.search));
+  console.log("URL Parameters:", params);
 
-/* -------------------------------
-   3. FETCH FUNDRAISER & RELATED DATA
---------------------------------*/
-async function loadFundraiser() {
-  try {
-    if (!params.fundraiser_id) {
+  // 3️⃣ FETCH FUNDRAISER DATA
+  async function loadFundraiser() {
+    if(!params.fundraiser_id) {
       document.getElementById('fundraiser-header').textContent = "Missing fundraiser ID.";
       return;
     }
 
-    // Fundraiser
     const { data: fundraiser, error } = await supabase
-  .from('fundraisers')
-  .select('*')
-  .eq('id', params.fundraiser_id)
-  .single();
+      .from('fundraisers')
+      .select('*')
+      .eq('id', params.fundraiser_id)
+      .single();
 
-    if (fErr || !fundraiser) {
-      console.error('Fundraiser error', fErr);
-      document.getElementById('fundraiser-header').textContent = "Fundraiser not found.";
+    console.log("Fundraiser query result:", { fundraiser, error });
+
+    if (error || !fundraiser) {
+      document.getElementById('fundraiser-header').textContent = "Error loading fundraiser";
       return;
     }
 
-    // Organization
-    let org = null;
-    if (fundraiser.organization_id) {
-      const { data: orgData, error: orgErr } = await supabase
-        .from('organizations')
-        .select('name')
-        .eq('id', fundraiser.organization_id)
-        .single();
-      if (orgErr) console.warn('Org fetch error', orgErr);
-      org = orgData;
-    }
+    // Load organization
+    const { data: org } = await supabase
+      .from('organizations')
+      .select('name')
+      .eq('id', fundraiser.organization_id)
+      .single();
 
-    // User profile
-    let user = null;
-    if (fundraiser.user_id) {
-      const { data: userData, error: userErr } = await supabase
-        .from('user_profiles')
-        .select('first_name, last_name')
-        .eq('id', fundraiser.user_id)
-        .single();
-      if (userErr) console.warn('User fetch error', userErr);
-      user = userData;
-    }
+    // Load user
+    const { data: user } = await supabase
+      .from('user_profiles')
+      .select('first_name, last_name')
+      .eq('id', fundraiser.user_id)
+      .single();
 
-    // Progress (sum commission_amount)
-    const { data: ordersData, error: ordersErr } = await supabase
+    // Load orders for commission
+    const { data: orders } = await supabase
       .from('fundraiser_orders')
       .select('commission_amount')
       .eq('fundraiser_id', fundraiser.id);
-    if (ordersErr) console.warn('Orders fetch error', ordersErr);
 
-    const raised = (ordersData && ordersData.length)
-      ? ordersData.reduce((s, o) => s + (Number(o.commission_amount) || 0), 0)
-      : 0;
-    const goal = Number(fundraiser.goal_amount) || 0;
-    const progressPercent = goal > 0 ? ((raised / goal) * 100).toFixed(1) : '0';
+    const raised = orders?.reduce((sum, o) => sum + (o.commission_amount || 0), 0) || 0;
+    const goal = fundraiser.goal_amount || 0;
+    const progressPercent = goal > 0 ? ((raised / goal) * 100).toFixed(1) : 0;
 
-    // End date
-    const endDate = fundraiser.end_date ? new Date(fundraiser.end_date) : null;
-    const expired = endDate ? (endDate < new Date()) : false;
-
-    // Update UI
     document.getElementById('fundraiser-header').textContent =
-      `${user?.first_name || 'Support'} ${user?.last_name || ''}'s Fundraiser`.trim();
-
+      `${user?.first_name || "Support"} ${user?.last_name || ""}'s Fundraiser`;
     document.getElementById('fundraiser-subheader').textContent =
-      `${fundraiser.name} — Benefiting ${org?.name || 'our organization'}`;
-
+      `${fundraiser.name} — Benefiting ${org?.name || "our organization"}`;
     document.getElementById('fundraiser-cause').textContent =
-      `Goal: $${goal.toLocaleString()} • Raised: $${raised.toLocaleString()} (${progressPercent}%)`;
+      `Goal: $${goal.toLocaleString()} | Raised: $${raised.toLocaleString()} (${progressPercent}%)`;
 
-    if (expired) {
-      document.getElementById('fundraiser-closed').style.display = 'block';
-      document.getElementById('product-grid').style.display = 'none';
-      document.getElementById('floating-cart-btn').style.display = 'none';
+    const now = new Date();
+    const endDate = new Date(fundraiser.end_date);
+    if(endDate < now){
+      document.getElementById('fundraiser-closed').style.display = "block";
+      document.getElementById('product-grid').style.display = "none";
     } else {
-      if (endDate) startCountdown(endDate);
+      startCountdown(endDate);
       renderProducts();
     }
-  } catch (err) {
-    console.error('loadFundraiser error', err);
-    document.getElementById('fundraiser-header').textContent = 'Error loading fundraiser.';
   }
-}
 
-/* -------------------------------
-   4. COUNTDOWN
---------------------------------*/
-function startCountdown(endDate) {
-  const el = document.getElementById('fundraiser-countdown');
-  function tick() {
-    const now = new Date();
-    const diff = endDate - now;
-    if (diff <= 0) {
-      el.textContent = 'This fundraiser has ended.';
-      document.getElementById('product-grid').style.display = 'none';
-      document.getElementById('floating-cart-btn').style.display = 'none';
-      return;
+  // 4️⃣ COUNTDOWN TIMER
+  function startCountdown(endDate) {
+    const countdownEl = document.getElementById('fundraiser-countdown');
+    function updateCountdown() {
+      const now = new Date();
+      const diff = endDate - now;
+      if (diff <= 0) { countdownEl.textContent = "This fundraiser has ended."; return; }
+      const days = Math.floor(diff / (1000*60*60*24));
+      const hours = Math.floor((diff / (1000*60*60)) % 24);
+      const mins = Math.floor((diff / (1000*60)) % 60);
+      countdownEl.textContent = `Ends in ${days}d ${hours}h ${mins}m`;
     }
-    const days = Math.floor(diff / (1000*60*60*24));
-    const hours = Math.floor((diff / (1000*60*60)) % 24);
-    const mins = Math.floor((diff / (1000*60)) % 60);
-    const secs = Math.floor((diff / 1000) % 60);
-    el.textContent = `Ends in ${days}d ${hours}h ${mins}m ${secs}s`;
+    updateCountdown();
+    setInterval(updateCountdown, 60000);
   }
-  tick();
-  setInterval(tick, 1000);
-}
 
-/* -------------------------------
-   5. PRODUCTS + CART (full list)
---------------------------------*/
-const shopifyStore = "city-pop-fundraising.myshopify.com";
-const products = [
-  { title:"Cheese & Caramel Mix Popcorn", variantId:"47907478077729", price:16, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/CheeseCaramel.png?v=1750196665" },
-  { title:"White Cheddar Popcorn", variantId:"47949265207585", price:12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/WhiteCheddar.png?v=1750196654" },
-  { title:"Extra Buttery Popcorn", variantId:"47946797482273", price:12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/ExtraButtery.png?v=1750196660" },
-  { title:"Caramel Popcorn", variantId:"47907462676769", price:16, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/Caramel_1_d6b563d0-fcd7-4ac4-9917-3da334dc2e55.png?v=1750196695" },
-  { title:"Kettle Popcorn", variantId:"47971562193185", price:12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/Kettle.png?v=1750196658" },
-  { title:"Jalapeno Cheddar Popcorn", variantId:"47972348264737", price:12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/JalapenoCheddar_80ea7902-a107-4113-9dd3-ca2bdb62c1f7.png?v=1750196657" },
-  { title:"Cheese Popcorn", variantId:"47907469295905", price:12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/Cheese.png?v=1750196644" },
-  { title:"Sea Salt & Cracked Pepper Popcorn", variantId:"47941483856161", price:12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/SeaSaltNCrackedPepper.png?v=1750196661" },
-  { title:"Chocolate Drizzle Popcorn", variantId:"47930741424417", price:20, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/ChocolateDrizzle.png?v=1750196667" },
-  { title:"Low Salt Popcorn", variantId:"47971748217121", price:12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/LowSalt.png?v=1750196643" }
-];
+  // 5️⃣ PRODUCTS & CART
+  const shopifyStore = "city-pop-fundraising.myshopify.com";
+  const products = [
+    { title: "Cheese & Caramel Mix Popcorn", variantId: "47907478077729", price: 16, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/CheeseCaramel.png?v=1750196665" },
+    { title: "White Cheddar Popcorn", variantId: "47949265207585", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/WhiteCheddar.png?v=1750196654" },
+    { title: "Extra Buttery Popcorn", variantId: "47946797482273", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/ExtraButtery.png?v=1750196660" }
+    // Add the rest of your products here...
+  ];
 
-const cart = {};
-const grid = document.getElementById('product-grid');
-const cartSlideout = document.getElementById('cart-slideout');
-const cartOverlay = document.getElementById('cart-overlay');
-const cartItemsDiv = document.getElementById('cart-items');
-const subtotalDiv = document.getElementById('subtotal');
-const checkoutBtn = document.getElementById('checkout-btn');
-const cartCountEl = document.getElementById('cart-count');
-const floatingCartBtn = document.getElementById('floating-cart-btn');
+  const cart = {};
 
-function renderProducts(){
-  grid.innerHTML = "";
-  products.forEach(product=>{
-    const div = document.createElement('div');
-    div.className = 'product-item';
-    div.innerHTML = `
-      <img src="${product.img}" alt="${product.title}">
-      <div class="product-title">${product.title}</div>
-      <div class="product-price">$${product.price}</div>
-      <div class="nutrition-link">Nutrition Info</div>
-      <div class="quantity-selector">
-        <button class="minus">-</button>
-        <span>1</span>
-        <button class="plus">+</button>
-      </div>
-      <button class="add-to-cart-btn">Add to Cart</button>
-    `;
-    const qtySpan = div.querySelector('span');
-    div.querySelector('.minus').addEventListener('click', ()=> { let q=parseInt(qtySpan.textContent); if(q>1) qtySpan.textContent=q-1; });
-    div.querySelector('.plus').addEventListener('click', ()=> { let q=parseInt(qtySpan.textContent); qtySpan.textContent=q+1; });
-    div.querySelector('.add-to-cart-btn').addEventListener('click', ()=> {
-      const qty = parseInt(qtySpan.textContent);
-      cart[product.variantId] = (cart[product.variantId]||0) + qty;
-      openCart(); renderCart(); updateCartCount();
+  function renderProducts() {
+    const grid = document.getElementById("product-grid");
+    grid.innerHTML = "";
+    products.forEach(product => {
+      const div = document.createElement("div"); div.className="product-item";
+      div.innerHTML = `
+        <img src="${product.img}" />
+        <div class="product-title">${product.title}</div>
+        <div class="product-price">$${product.price}</div>
+        <div class="nutrition-link">Nutrition Info</div>
+        <div class="quantity-selector">
+          <button class="minus">-</button>
+          <span class="qty">1</span>
+          <button class="plus">+</button>
+        </div>
+        <button class="add-to-cart-btn">Add to Cart</button>
+      `;
+      grid.appendChild(div);
+
+      const qtySpan = div.querySelector(".qty");
+      div.querySelector(".minus").onclick = ()=>{ let q=parseInt(qtySpan.textContent); if(q>1) qtySpan.textContent=q-1; };
+      div.querySelector(".plus").onclick = ()=>{ let q=parseInt(qtySpan.textContent); qtySpan.textContent=q+1; };
+      div.querySelector(".nutrition-link").onclick = ()=>alert("Nutrition info placeholder");
+      div.querySelector(".add-to-cart-btn").onclick = ()=>{
+        const qty = parseInt(qtySpan.textContent);
+        cart[product.variantId] = (cart[product.variantId]||0)+qty;
+        renderCart();
+        openCart();
+      };
     });
-    div.querySelector('.nutrition-link').addEventListener('click', ()=> alert('Nutrition info placeholder'));
-    grid.appendChild(div);
-  });
-}
-
-/* -------------------------------
-   CART FUNCTIONS
---------------------------------*/
-function openCart(){ cartSlideout.style.right = '0'; cartOverlay.style.display = 'block'; floatingCartBtn.style.display = 'none'; }
-function closeCart(){ cartSlideout.style.right = '-100%'; cartOverlay.style.display = 'none'; floatingCartBtn.style.display = 'flex'; }
-cartOverlay.addEventListener('click', closeCart);
-
-function renderCart(){
-  cartItemsDiv.innerHTML = '';
-  let subtotal = 0;
-  for (const [variantId, qty] of Object.entries(cart)) {
-    if (qty <= 0) continue;
-    const product = products.find(p => p.variantId === variantId);
-    if (!product) continue;
-    subtotal += product.price * qty;
-    const itemDiv = document.createElement('div');
-    itemDiv.className = 'cart-item';
-    itemDiv.innerHTML = `
-      <img src="${product.img}">
-      <div class="cart-item-title">${product.title}</div>
-      <div class="cart-item-controls">
-        <button class="minus">-</button>
-        <span>${qty}</span>
-        <button class="plus">+</button>
-        <button class="trash-btn">x</button>
-      </div>
-    `;
-    itemDiv.querySelector('.minus').addEventListener('click', ()=>{ if(cart[variantId]>1){ cart[variantId]--; renderCart(); } });
-    itemDiv.querySelector('.plus').addEventListener('click', ()=>{ cart[variantId]++; renderCart(); });
-    itemDiv.querySelector('.trash-btn').addEventListener('click', ()=>{ delete cart[variantId]; renderCart(); });
-    cartItemsDiv.appendChild(itemDiv);
   }
-  subtotalDiv.textContent = `Subtotal: $${subtotal}`;
-  updateCartCount();
-}
 
-function updateCartCount(){
-  const total = Object.values(cart).reduce((a,b)=>a+b,0);
-  cartCountEl.textContent = total;
-  cartCountEl.style.display = total > 0 ? 'flex' : 'none';
-}
+  // Cart functionality
+  const cartSlideout = document.getElementById("cart-slideout");
+  const cartOverlay = document.getElementById("cart-overlay");
+  const cartItemsDiv = document.getElementById("cart-items");
+  const subtotalDiv = document.getElementById("subtotal");
+  const checkoutBtn = document.getElementById("checkout-btn");
+  const cartCountEl = document.getElementById("cart-count");
+  const floatingCartBtn = document.getElementById("floating-cart-btn");
 
-/* -------------------------------
-   CHECKOUT (Shopify cart path with attributes)
---------------------------------*/
-checkoutBtn.addEventListener('click', ()=>{
-  const items = Object.entries(cart).filter(([v,q]) => q>0);
-  if (items.length === 0) { alert('Please add at least one product.'); return; }
-  const checkoutUrl = new URL(`https://${shopifyStore}/cart`);
-  items.forEach(([variantId, qty]) => { checkoutUrl.pathname += `/${variantId}:${qty}`; });
-  // Append fundraiser attributes so checkout carries context
-  Object.entries({...params, "City Pop App":"true"}).forEach(([key,value])=>{
-    if (value) checkoutUrl.searchParams.append(`attributes[${key}]`, value);
-  });
-  window.location.href = checkoutUrl.toString();
-});
+  function openCart(){ cartSlideout.style.right="0"; cartOverlay.style.display="block"; floatingCartBtn.style.display="none"; }
+  function closeCart(){ cartSlideout.style.right="-100%"; cartOverlay.style.display="none"; floatingCartBtn.style.display="flex"; }
+  cartOverlay.addEventListener("click", closeCart);
 
-/* -------------------------------
-   INIT
---------------------------------*/
-loadFundraiser();
+  function renderCart(){
+    cartItemsDiv.innerHTML=""; let subtotal=0;
+    for(const [variantId, qty] of Object.entries(cart)){
+      if(qty>0){
+        const product = products.find(p=>p.variantId===variantId);
+        subtotal += product.price*qty;
+        const itemDiv = document.createElement("div"); itemDiv.className="cart-item";
+        itemDiv.innerHTML=`
+          <img src="${product.img}" />
+          <div class="cart-item-title">${product.title}</div>
+          <div class="cart-item-controls">
+            <button class="minus">-</button>
+            <span>${qty}</span>
+            <button class="plus">+</button>
+            <button class="trash-btn">x</button>
+          </div>`;
+        cartItemsDiv.appendChild(itemDiv);
+
+        const controls = itemDiv.querySelector(".cart-item-controls");
+        controls.querySelector(".minus").onclick=()=>{ if(cart[variantId]>1){ cart[variantId]--; renderCart(); } };
+        controls.querySelector(".plus").onclick=()=>{ cart[variantId]++; renderCart(); };
+        controls.querySelector(".trash-btn").onclick=()=>{ delete cart[variantId]; renderCart(); };
+      }
+    }
+    subtotalDiv.textContent=`Subtotal: $${subtotal}`;
+    const totalItems = Object.values(cart).reduce((a,b)=>a+b,0);
+    cartCountEl.textContent = totalItems;
+    cartCountEl.style.display = totalItems>0?"flex":"none";
+  }
+
+  checkoutBtn.onclick = ()=>{
+    const items = Object.entries(cart).filter(([v,q])=>q>0);
+    if(items.length===0){ alert("Add at least one product."); return; }
+    const checkoutUrl = new URL(`https://${shopifyStore}/cart`);
+    items.forEach(([variantId, qty])=>{ checkoutUrl.pathname += `/${variantId}:${qty}`; });
+    Object.entries({...params,"City Pop App":"true"}).forEach(([key,value])=>{
+      if(value) checkoutUrl.searchParams.append(`attributes[${key}]`, value);
+    });
+    window.location.href = checkoutUrl.toString();
+  };
+
+  // 6️⃣ INITIALIZE PAGE
+  loadFundraiser();
 </script>
 </body>
 </html>

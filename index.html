@@ -114,6 +114,8 @@
   const fundraiserParams = getFundraiserParams();
   console.log("Fundraiser URL params:", fundraiserParams);
 
+  loadFundraiser();
+
   // 2️⃣ Initialize Supabase BEFORE any calls
   const SUPABASE_URL = "https://krjdhmpxojascmkimfru.supabase.co"; 
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtyamRobXB4b2phc2Nta2ltZnJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMzU0MTEsImV4cCI6MjA3MzYxMTQxMX0.DoT40NSvuNZ2_HjwNfhA2qaxmWNXA57Isf1jK43TQP8"; 
@@ -142,8 +144,6 @@
     console.log("Fundraiser data loaded:", data);
     // TODO: populate the page with fundraiser data
   }
-
-  loadFundraiser();
 
   // 4️⃣ Products
   const shopifyStore = "city-pop-fundraising.myshopify.com";

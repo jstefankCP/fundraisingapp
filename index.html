@@ -78,13 +78,21 @@
 </head>
 <body>
 
-<!-- Unique Fundraiser Header -->
+<!-- Unique Fundraiser Header with User Name -->
 <div id="fundraiser-header" style="background:#0567e8; color:#fff; padding:1.5rem 2rem; border-radius:10px; margin-bottom:2rem; text-align:center;">
   <!-- Fundraiser Cause -->
   <div id="fundraiser-cause" style="font-size:1.2rem; font-weight:600; margin-bottom:0.3rem;">[Fundraiser Cause]</div>
 
   <!-- Organization Name -->
-  <div id="org-name-display" style="font-size:2rem; font-weight:700; margin-bottom:0.5rem;">[Organization Name]</div>
+  <div id="org-name-display" style="font-size:2rem; font-weight:700; margin-bottom:0.2rem;">[Organization Name]</div>
+
+  <!-- User Name -->
+  <div id="user-name-display" style="font-size:1rem; font-weight:500; margin-bottom:0.5rem;">[User Name]</div>
+
+  <!-- Fundraiser ID -->
+  <div style="font-size:0.85rem; margin-bottom:0.5rem;">
+    Fundraiser ID: <span id="fundraiser-id">[Fundraiser ID]</span> | Organization ID: <span id="organization-id">[Organization ID]</span> | User ID: <span id="user-id">[User ID]</span>
+  </div>
 
   <!-- Countdown Timer -->
   <div style="font-size:0.95rem; margin-bottom:1rem;">
@@ -103,16 +111,23 @@
 <script>
   // Dynamic header elements
   const orgDisplay = document.getElementById("org-name-display");
+  const userDisplay = document.getElementById("user-name-display");
   const fundraiserCause = document.getElementById("fundraiser-cause");
   const countdownEl = document.getElementById("countdown-timer");
   const progressBar = document.getElementById("progress-bar");
   const raisedEl = document.getElementById("raised-amount");
   const goalEl = document.getElementById("goal-amount");
 
+  const fundraiserIdEl = document.getElementById("fundraiser-id");
+  const orgIdEl = document.getElementById("organization-id");
+  const userIdEl = document.getElementById("user-id");
+
   // Example dynamic data (replace with real API or URL params)
   const fundraiserData = {
     cause: "Support Our Local School!",
     organization: fundraiserParams.organization_id || "[Organization Name]",
+    user: fundraiserParams.user_id || "[User Name]",
+    fundraiserId: fundraiserParams.fundraiser_id || "[Fundraiser ID]",
     endDate: "2025-11-10", // YYYY-MM-DD
     raised: 450,
     goal: 1000
@@ -121,6 +136,12 @@
   // Populate static text
   fundraiserCause.textContent = fundraiserData.cause;
   orgDisplay.textContent = fundraiserData.organization;
+  userDisplay.textContent = fundraiserData.user;
+
+  fundraiserIdEl.textContent = fundraiserData.fundraiserId;
+  orgIdEl.textContent = fundraiserData.organization;
+  userIdEl.textContent = fundraiserData.user;
+
   raisedEl.textContent = `$${fundraiserData.raised}`;
   goalEl.textContent = `$${fundraiserData.goal}`;
 

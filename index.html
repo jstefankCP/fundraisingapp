@@ -43,7 +43,7 @@
 
   const fundraiserParams = getFundraiserParams();
   const shopifyParams = Object.entries(fundraiserParams)
-    .map(([key, value]) => `attributes%5b${key}%5D=${encodeURIComponent(value)}`)
+    .map(([key, value]) => `attributes[${key}]=${encodeURIComponent(value)}`)
     .join('&');
 
   var scriptURL = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';

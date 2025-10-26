@@ -3,58 +3,132 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fundraiser Test Product | City Pop</title>
+  <title>City Pop Fundraiser</title>
   <style>
-    body { font-family: sans-serif; padding: 2rem; background-color: #f9f9f9; }
-    h1 { color: #0567e8; }
-    button { 
-      background-color: #0567e8; 
-      color: white; 
-      border: none; 
-      padding: 1rem 2rem; 
-      border-radius: 25px; 
-      cursor: pointer; 
-      font-size: 1rem;
-      margin-top: 1rem;
-    }
+    body { font-family: sans-serif; background-color: #f9f9f9; color: #333333; padding: 1rem; margin: 0; }
+    h1 { color: #0567e8; text-align: center; margin-bottom: 2rem; }
+    .product-grid { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+    .product-item { background: #ffffff; border-radius: 10px; padding: 1rem; flex: 1 1 250px; max-width: 250px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; }
+    .product-item img { width: 100%; height: auto; border-radius: 10px; }
+    .product-title { font-weight: 600; margin: 0.5rem 0; text-align: center; }
+    .product-price { font-weight: bold; margin-bottom: 0.5rem; color: #0567e8; }
+    .nutrition-link { font-size: 0.9rem; color: #66cbed; text-decoration: underline; margin-bottom: 0.5rem; cursor: pointer; }
+    label { margin-bottom: 0.5rem; display: block; text-align: center; }
+    input[type=number] { width: 60px; padding: 0.3rem; margin-left: 0.3rem; }
+    button { background-color: #0567e8; color: #ffffff; border: none; padding: 0.6rem 1.2rem; border-radius: 25px; cursor: pointer; font-size: 1rem; width: 100%; }
     button:hover { background-color: #055dd1; }
-    label { display: block; margin-top: 1rem; }
-    input[type=number] { width: 60px; padding: 0.3rem; margin-left: 0.5rem; }
+    @media (max-width: 600px) {
+      .product-grid { flex-direction: column; align-items: center; }
+      .product-item { max-width: 100%; }
+    }
   </style>
 </head>
 <body>
 
 <h1>Support Our Fundraiser!</h1>
-<p>Get our delicious popcorn and help raise funds for our cause.</p>
 
-<!-- Quantity selector -->
-<label>
-  Quantity:
-  <input type="number" id="quantity" value="1" min="1">
-</label>
-
-<button id="buy-button">Buy Now</button>
+<div class="product-grid" id="product-grid"></div>
 
 <script>
-  const shopifyStore = "city-pop-fundraising.myshopify.com";
-  const variantId = "47906816524577"; // Your test product variant ID
+const shopifyStore = "city-pop-fundraising.myshopify.com";
 
-  function getFundraiserParams() {
-    const params = {};
-    const urlParams = new URLSearchParams(window.location.search);
-    ['fundraiser_id', 'organization_id', 'user_id'].forEach(key => {
-      const value = urlParams.get(key);
-      if (value) params[key] = value;
+// List of products with variant IDs, titles, and prices
+const products = [
+  { title: "Cheese & Caramel Mix Popcorn", variantId: "47907478077729", price: "$16" },
+  { title: "White Cheddar Popcorn", variantId: "47949265207585", price: "$12" },
+  { title: "Extra Buttery Popcorn", variantId: "47946797482273", price: "$12" },
+  { title: "Caramel Popcorn", variantId: "47907462676769", price: "$16" },
+  { title: "Kettle Popcorn", variantId: "47971562193185", price: "$12" },
+  { title: "Jalapeno Cheddar Popcorn", variantId: "47972348264737", price: "$12" },
+  { title: "Cheese Popcorn", variantId: "47907469295905", price: "$12" },
+  { title: "Sea Salt & Cracked Pepper Popcorn", variantId: "47941483856161", price: "$12" },
+  { title: "Chocolate Drizzle Popcorn", variantId: "47930741424417", price: "$20" },
+  { title: "Low Salt Popcorn", variantId: "47971748217121", price: "$12" }
+];
+
+// Extract fundraiser URL params
+function getFundraiserParams() {
+  const params = {};
+  const urlParams = new URLSearchParams(window.location.search);
+  ['fundraiser_id', 'organization_id', 'user_id'].forEach(key => {
+    const value = urlParams.get(key);
+    if (value) params[key] = value;
+  });
+  return params;
+}
+
+const fundraiserParams = getFundraiserParams();
+
+// Build product grid
+const grid = document.getElementById("product-grid");
+
+products.forEach(product => {
+  const div = document.createElement("div");
+  div.className = "product-item";
+
+  // Placeholder image
+  const img = document.createElement("img");
+  img.src = "https://via.placeholder.com/250x200?text=Popcorn"; // Replace with real image later
+  div.appendChild(img);
+
+  // Title
+  const title = document.createElement("div");
+  title.className = "product-title";
+  title.textContent = product.title;
+  div.appendChild(title);
+
+  // Price
+  const price = document.createElement("div");
+  price.className = "product-price";
+  price.textContent = product.price;
+  div.appendChild(price);
+
+  // Nutrition info link
+  const nutrition = document.createElement("div");
+  nutrition.className = "nutrition-link";
+  nutrition.textContent = "Nutrition Info";
+  nutrition.addEventListener("click", () => alert("Nutritional info popup placeholder")); // Edit later
+  div.appendChild(nutrition);
+
+  // Quantity input
+  const label = document.createElement("label");
+  label.textContent = "Quantity:";
+  const input = document.createElement("input");
+  input.type = "number";
+  input.value = 0;
+  input.min = 0;
+  label.appendChild(input);
+  div.appendChild(label);
+
+  // Add to Cart button
+  const button = document.createElement("button");
+  button.textContent = "Add to Cart";
+  button.addEventListener("click", () => {
+    const quantity = parseInt(input.value);
+    if (!quantity || quantity <= 0) {
+      alert("Please select a quantity greater than 0.");
+      return;
+    }
+
+    // Build Shopify cart URL for multiple items
+    // Collect all products with quantity > 0
+    const items = [];
+    products.forEach(p => {
+      const qty = parseInt(div.querySelector('input').value);
+      if (qty > 0) {
+        items.push({ variantId: p.variantId, quantity: qty });
+      }
     });
-    return params;
-  }
 
-  document.getElementById("buy-button").addEventListener("click", () => {
-    const quantity = document.getElementById("quantity").value || 1;
-    const fundraiserParams = getFundraiserParams();
+    if (items.length === 0) {
+      alert("Please select at least one product.");
+      return;
+    }
 
-    // Build Shopify checkout URL
-    const checkoutUrl = new URL(`https://${shopifyStore}/cart/${variantId}:${quantity}`);
+    const checkoutUrl = new URL(`https://${shopifyStore}/cart`);
+    items.forEach(item => {
+      checkoutUrl.pathname += `/${item.variantId}:${item.quantity}`;
+    });
 
     // Add fundraiser attributes
     Object.entries(fundraiserParams).forEach(([key, value]) => {
@@ -64,6 +138,10 @@
     // Redirect to Shopify checkout
     window.location.href = checkoutUrl.toString();
   });
+  div.appendChild(button);
+
+  grid.appendChild(div);
+});
 </script>
 
 </body>

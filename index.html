@@ -103,7 +103,7 @@
 /* --- Supabase Initialization --- */
 const SUPABASE_URL = 'https://krjdhmpxojascmkimfru.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtyamRobXB4b2phc2Nta2ltZnJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMzU0MTEsImV4cCI6MjA3MzYxMTQxMX0.DoT40NSvuNZ2_HjwNfhA2qaxmWNXA57Isf1jK43TQP8';
-const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 /* --- Fundraiser Params from URL --- */
 function getFundraiserParams() {
@@ -148,11 +148,11 @@ async function fetchFundraiserCause() {
   if(!fundraiserData.fundraiser_id) return;
 
   try {
-    const { data, error } = await supabase
-      .from('fundraisers')
-      .select('name')
-      .eq('id', fundraiserData.fundraiser_id)
-      .single();
+    const { data, error } = await supabaseClient
+  .from('fundraisers')
+  .select('name')
+  .eq('id', fundraiserData.fundraiser_id)
+  .single();
 
     if(error) throw error;
 

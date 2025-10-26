@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>City Pop Fundraiser</title>
 <style>
   body { font-family: sans-serif; background-color: #f9f9f9; color: #333; margin:0; padding:1rem; }
-  h1 { color: #0567e8; text-align:center; margin-bottom:2rem; }
+  h1 { color: #0567e8; text-align:center; margin-bottom:1rem; }
+  h3 { text-align:center; color:#555; margin-top:0; }
+  .fundraiser-info { text-align:center; margin-bottom:1rem; }
+  .countdown { font-weight:bold; color:#ff5a5f; margin-top:0.5rem; }
+
   .product-grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; }
   .product-item { background:#fff; border-radius:10px; padding:1rem; flex:1 1 250px; max-width:250px; box-shadow:0 2px 6px rgba(0,0,0,0.1); display:flex; flex-direction:column; align-items:center; }
   .product-item img { width:100%; height:auto; border-radius:10px; }
@@ -40,7 +44,7 @@
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background-color: #66cbed;  /* Updated color */
+    background-color: #66cbed;
     color: #fff;
     border: none;
     border-radius: 50%;
@@ -78,7 +82,19 @@
 </head>
 <body>
 
-<h1>Support Our Fundraiser!</h1>
+<!-- Dynamic header elements (were missing in your broken page) -->
+<h1 id="fundraiser-header">Support Our Fundraiser!</h1>
+<h3 id="fundraiser-subheader"></h3>
+
+<div class="fundraiser-info">
+  <div id="fundraiser-cause"></div>
+  <div id="fundraiser-progress"></div>
+  <div id="fundraiser-countdown" class="countdown"></div>
+</div>
+
+<div id="fundraiser-closed" style="display:none; text-align:center; color:red; font-weight:bold; margin-bottom:1rem;">
+  This fundraiser has ended and is no longer accepting orders.
+</div>
 
 <div class="product-grid" id="product-grid"></div>
 
@@ -98,72 +114,99 @@
   <span class="cart-count" id="cart-count">0</span>
 </button>
 
-<script>
-  
+<!-- Supabase SDK and App script -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// 1️⃣ SUPABASE CONFIGURATION
-const SUPABASE_URL = "https://krjdhmpxojascmkimfru.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtyamRobXB4b2phc2Nta2ltZnJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMzU0MTEsImV4cCI6MjA3MzYxMTQxMX0.DoT40NSvuNZ2_HjwNfhA2qaxmWNXA57Isf1jK43TQP8";
+/* -------------------------------
+   1. SUPABASE CONFIGURATION
+   Replace URL and KEY with your project values
+--------------------------------*/
+const SUPABASE_URL = "https://krjdhmpxojascmkimfru.supabase.co"; // <-- replace if needed
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtyamRobXB4b2phc2Nta2ltZnJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMzU0MTEsImV4cCI6MjA3MzYxMTQxMX0.DoT40NSvuNZ2_HjwNfhA2qaxmWNXA57Isf1jK43TQP8; // <-- replace with your anon key
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// 2️⃣ GET URL PARAMETERS
+/* -------------------------------
+   2. GET URL PARAMETERS
+--------------------------------*/
 function getParams() {
   const params = {};
   const urlParams = new URLSearchParams(window.location.search);
   ['fundraiser_id','organization_id','user_id'].forEach(k=>{
     const v = urlParams.get(k);
-    if(v) params[k]=v;
+    if (v) params[k] = v;
   });
   return params;
 }
-const params = getParams();
+const fundraiserParams = getParams();
 
-// 3️⃣ FETCH FUNDRAISER DATA
+/* -------------------------------
+   3. FETCH FUNDRAISER DATA
+--------------------------------*/
 async function loadFundraiser() {
-  if(!params.fundraiser_id) {
+  if (!fundraiserParams.fundraiser_id) {
     document.getElementById('fundraiser-header').textContent = "Missing fundraiser ID.";
     return;
   }
 
-  const { data: fundraiser, error } = await supabase
+  // Fetch fundraiser
+  const { data: fundraiser, error: fError } = await supabase
     .from('fundraisers')
     .select('*')
-    .eq('id', params.fundraiser_id)
+    .eq('id', fundraiserParams.fundraiser_id)
     .single();
 
-  if (error || !fundraiser) {
+  if (fError || !fundraiser) {
+    console.error("Fundraiser fetch error:", fError);
     document.getElementById('fundraiser-header').textContent = "Fundraiser not found.";
     return;
   }
 
-  const { data: org } = await supabase
-    .from('organizations')
-    .select('name')
-    .eq('id', fundraiser.organization_id)
-    .single();
+  // Fetch organization name (if organization_id exists)
+  let org = null;
+  if (fundraiser.organization_id) {
+    const { data: orgData, error: orgError } = await supabase
+      .from('organizations')
+      .select('name')
+      .eq('id', fundraiser.organization_id)
+      .single();
+    if (orgError) console.warn("Org fetch error:", orgError);
+    org = orgData;
+  }
 
-  const { data: user } = await supabase
-    .from('user_profiles')
-    .select('first_name, last_name')
-    .eq('id', fundraiser.user_id)
-    .single();
+  // Fetch user profile (if user_id exists)
+  let user = null;
+  if (fundraiser.user_id) {
+    const { data: userData, error: userError } = await supabase
+      .from('user_profiles')
+      .select('first_name, last_name')
+      .eq('id', fundraiser.user_id)
+      .single();
+    if (userError) console.warn("User fetch error:", userError);
+    user = userData;
+  }
 
-  const { data: orders } = await supabase
+  // Calculate progress (sum commission_amount from fundraiser_orders)
+  const { data: ordersData, error: ordersError } = await supabase
     .from('fundraiser_orders')
     .select('commission_amount')
     .eq('fundraiser_id', fundraiser.id);
 
-  const raised = orders?.reduce((sum, o) => sum + (o.commission_amount || 0), 0);
-  const goal = fundraiser.goal_amount || 0;
-  const progressPercent = goal > 0 ? ((raised / goal) * 100).toFixed(1) : 0;
+  if (ordersError) console.warn("Orders fetch error:", ordersError);
 
+  const raised = (ordersData && ordersData.length)
+    ? ordersData.reduce((sum, o) => sum + (Number(o.commission_amount) || 0), 0)
+    : 0;
+  const goal = Number(fundraiser.goal_amount) || 0;
+  const progressPercent = goal > 0 ? ((raised / goal) * 100).toFixed(1) : '0';
+
+  // End date and expired check
   const now = new Date();
-  const endDate = new Date(fundraiser.end_date);
-  const expired = endDate < now;
+  const endDate = fundraiser.end_date ? new Date(fundraiser.end_date) : null;
+  const expired = endDate ? (endDate < now) : false;
 
+  // Update UI
   document.getElementById('fundraiser-header').textContent =
-    `${user?.first_name || "Support"} ${user?.last_name || ""}'s Fundraiser`;
+    `${user?.first_name || "Support"} ${user?.last_name || ""}'s Fundraiser`.trim();
 
   document.getElementById('fundraiser-subheader').textContent =
     `${fundraiser.name} — Benefiting ${org?.name || "our organization"}`;
@@ -171,16 +214,19 @@ async function loadFundraiser() {
   document.getElementById('fundraiser-cause').textContent =
     `Goal: $${goal.toLocaleString()} | Raised: $${raised.toLocaleString()} (${progressPercent}%)`;
 
-  if(expired) {
+  if (expired) {
     document.getElementById('fundraiser-closed').style.display = "block";
     document.getElementById('product-grid').style.display = "none";
+    document.getElementById('floating-cart-btn').style.display = "none";
   } else {
-    startCountdown(endDate);
+    if (endDate) startCountdown(endDate);
     renderProducts();
   }
 }
 
-// 4️⃣ COUNTDOWN TIMER
+/* -------------------------------
+   4. COUNTDOWN TIMER
+--------------------------------*/
 function startCountdown(endDate) {
   const countdownEl = document.getElementById('fundraiser-countdown');
   function updateCountdown() {
@@ -188,17 +234,24 @@ function startCountdown(endDate) {
     const diff = endDate - now;
     if (diff <= 0) {
       countdownEl.textContent = "This fundraiser has ended.";
+      // hide shop elements immediately when ends
+      document.getElementById('product-grid').style.display = "none";
+      document.getElementById('floating-cart-btn').style.display = "none";
       return;
     }
     const days = Math.floor(diff / (1000*60*60*24));
     const hours = Math.floor((diff / (1000*60*60)) % 24);
     const mins = Math.floor((diff / (1000*60)) % 60);
-    countdownEl.textContent = `Ends in ${days}d ${hours}h ${mins}m`;
+    const secs = Math.floor((diff / 1000) % 60);
+    countdownEl.textContent = `Ends in ${days}d ${hours}h ${mins}m ${secs}s`;
   }
   updateCountdown();
-  setInterval(updateCountdown, 60000);
+  setInterval(updateCountdown, 1000);
 }
-  
+
+/* -------------------------------
+   5. PRODUCTS & CART (static)
+--------------------------------*/
 const shopifyStore = "city-pop-fundraising.myshopify.com";
 
 const products = [
@@ -214,57 +267,48 @@ const products = [
   { title: "Low Salt Popcorn", variantId: "47971748217121", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/LowSalt.png?v=1750196643" }
 ];
 
-function getFundraiserParams() {
-  const params = {};
-  const urlParams = new URLSearchParams(window.location.search);
-  ['fundraiser_id', 'organization_id', 'user_id'].forEach(key => {
-    const value = urlParams.get(key);
-    if (value) params[key] = value;
+function renderProducts() {
+  const grid = document.getElementById("product-grid");
+  grid.innerHTML = ""; // clear before render
+  products.forEach((product) => {
+    const div = document.createElement("div");
+    div.className = "product-item";
+
+    const img = document.createElement("img"); img.src = product.img;
+    div.appendChild(img);
+
+    const title = document.createElement("div"); title.className="product-title"; title.textContent=product.title;
+    div.appendChild(title);
+
+    const price = document.createElement("div"); price.className="product-price"; price.textContent=`$${product.price}`;
+    div.appendChild(price);
+
+    const nutrition = document.createElement("div"); nutrition.className="nutrition-link"; nutrition.textContent="Nutrition Info";
+    nutrition.addEventListener("click",()=>alert("Nutritional info placeholder"));
+    div.appendChild(nutrition);
+
+    const qtyDiv = document.createElement("div"); qtyDiv.className="quantity-selector";
+    const minusBtn = document.createElement("button"); minusBtn.textContent="-";
+    const qtySpan = document.createElement("span"); qtySpan.textContent="1";
+    const plusBtn = document.createElement("button"); plusBtn.textContent="+";
+    minusBtn.addEventListener("click",()=>{ let q=parseInt(qtySpan.textContent); if(q>1) qtySpan.textContent=q-1; });
+    plusBtn.addEventListener("click",()=>{ let q=parseInt(qtySpan.textContent); qtySpan.textContent=q+1; });
+    qtyDiv.appendChild(minusBtn); qtyDiv.appendChild(qtySpan); qtyDiv.appendChild(plusBtn);
+    div.appendChild(qtyDiv);
+
+    const addBtn = document.createElement("button"); addBtn.className="add-to-cart-btn"; addBtn.textContent="Add to Cart";
+    addBtn.addEventListener("click",()=>{
+      const qty = parseInt(qtySpan.textContent);
+      cart[product.variantId] = (cart[product.variantId]||0)+qty;
+      openCart(); renderCart(); updateCartCount();
+    });
+    div.appendChild(addBtn);
+
+    grid.appendChild(div);
   });
-  return params;
 }
-const fundraiserParams = getFundraiserParams();
 
 const cart = {};
-
-const grid = document.getElementById("product-grid");
-products.forEach((product) => {
-  const div = document.createElement("div");
-  div.className = "product-item";
-
-  const img = document.createElement("img"); img.src=product.img;
-  div.appendChild(img);
-
-  const title = document.createElement("div"); title.className="product-title"; title.textContent=product.title;
-  div.appendChild(title);
-
-  const price = document.createElement("div"); price.className="product-price"; price.textContent=`$${product.price}`;
-  div.appendChild(price);
-
-  const nutrition = document.createElement("div"); nutrition.className="nutrition-link"; nutrition.textContent="Nutrition Info";
-  nutrition.addEventListener("click",()=>alert("Nutritional info placeholder"));
-  div.appendChild(nutrition);
-
-  const qtyDiv = document.createElement("div"); qtyDiv.className="quantity-selector";
-  const minusBtn = document.createElement("button"); minusBtn.textContent="-";
-  const qtySpan = document.createElement("span"); qtySpan.textContent="1";
-  const plusBtn = document.createElement("button"); plusBtn.textContent="+";
-  minusBtn.addEventListener("click",()=>{ let q=parseInt(qtySpan.textContent); if(q>1) qtySpan.textContent=q-1; });
-  plusBtn.addEventListener("click",()=>{ let q=parseInt(qtySpan.textContent); qtySpan.textContent=q+1; });
-  qtyDiv.appendChild(minusBtn); qtyDiv.appendChild(qtySpan); qtyDiv.appendChild(plusBtn);
-  div.appendChild(qtyDiv);
-
-  const addBtn = document.createElement("button"); addBtn.className="add-to-cart-btn"; addBtn.textContent="Add to Cart";
-  addBtn.addEventListener("click",()=>{
-    const qty = parseInt(qtySpan.textContent);
-    cart[product.variantId] = (cart[product.variantId]||0)+qty;
-    openCart(); renderCart(); updateCartCount();
-  });
-  div.appendChild(addBtn);
-
-  grid.appendChild(div);
-});
-
 const cartSlideout = document.getElementById("cart-slideout");
 const cartOverlay = document.getElementById("cart-overlay");
 const cartItemsDiv = document.getElementById("cart-items");
@@ -276,12 +320,12 @@ const floatingCartBtn = document.getElementById("floating-cart-btn");
 function openCart(){
   cartSlideout.style.right="0";
   cartOverlay.style.display="block";
-  floatingCartBtn.style.display="none"; // hide floater
+  floatingCartBtn.style.display="none";
 }
 function closeCart(){
   cartSlideout.style.right="-100%";
   cartOverlay.style.display="none";
-  floatingCartBtn.style.display="flex"; // show floater
+  floatingCartBtn.style.display="flex";
 }
 cartOverlay.addEventListener("click", closeCart);
 
@@ -333,9 +377,10 @@ checkoutBtn.addEventListener("click", ()=>{
   window.location.href = checkoutUrl.toString();
 });
 
-// 6️⃣ INITIALIZE PAGE
+/* -------------------------------
+   6. INITIALIZE PAGE
+--------------------------------*/
 loadFundraiser();
-
 </script>
 
 </body>

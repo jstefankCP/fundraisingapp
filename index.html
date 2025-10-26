@@ -40,7 +40,7 @@
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background-color: #66cbed;  
+    background-color: #66cbed;
     color: #fff;
     border: none;
     border-radius: 50%;
@@ -99,8 +99,9 @@
 </button>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>  
+
 <script>
-  // 1️⃣ Get URL params function
+  // 1️⃣ Get fundraiser params
   function getFundraiserParams() {
     const params = {};
     const urlParams = new URLSearchParams(window.location.search);
@@ -110,17 +111,15 @@
     });
     return params;
   }
-
-  // 2️⃣ Declare once
   const fundraiserParams = getFundraiserParams();
   console.log("Fundraiser URL params:", fundraiserParams);
 
-  // 3️⃣ Initialize Supabase AFTER function is defined
+  // 2️⃣ Initialize Supabase BEFORE any calls
   const SUPABASE_URL = "https://krjdhmpxojascmkimfru.supabase.co"; 
-  const SUPABASE_ANON_KEY = "YOUR_ANON_KEY_HERE"; // replace with your anon key
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtyamRobXB4b2phc2Nta2ltZnJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMzU0MTEsImV4cCI6MjA3MzYxMTQxMX0.DoT40NSvuNZ2_HjwNfhA2qaxmWNXA57Isf1jK43TQP8"; 
   const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // 4️⃣ Load fundraiser from Supabase with debug
+  // 3️⃣ Load fundraiser data
   async function loadFundraiser() {
     if (!fundraiserParams.fundraiser_id) {
       console.error("No fundraiser_id in URL");
@@ -141,14 +140,13 @@
     }
 
     console.log("Fundraiser data loaded:", data);
-    // Here you could populate page elements with fundraiser info
+    // TODO: populate the page with fundraiser data
   }
 
   loadFundraiser();
 
-  // 5️⃣ Shopify & cart code
+  // 4️⃣ Products
   const shopifyStore = "city-pop-fundraising.myshopify.com";
-
   const products = [
     { title: "Cheese & Caramel Mix Popcorn", variantId: "47907478077729", price: 16, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/CheeseCaramel.png?v=1750196665" },
     { title: "White Cheddar Popcorn", variantId: "47949265207585", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/WhiteCheddar.png?v=1750196654" },
@@ -162,25 +160,20 @@
     { title: "Low Salt Popcorn", variantId: "47971748217121", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/LowSalt.png?v=1750196643" }
   ];
 
+  // 5️⃣ Cart logic
   const cart = {};
   const grid = document.getElementById("product-grid");
 
-  products.forEach((product) => {
+  products.forEach(product => {
     const div = document.createElement("div");
     div.className = "product-item";
 
-    const img = document.createElement("img"); img.src = product.img;
-    div.appendChild(img);
-
-    const title = document.createElement("div"); title.className="product-title"; title.textContent = product.title;
-    div.appendChild(title);
-
-    const price = document.createElement("div"); price.className="product-price"; price.textContent = `$${product.price}`;
-    div.appendChild(price);
+    const img = document.createElement("img"); img.src = product.img; div.appendChild(img);
+    const title = document.createElement("div"); title.className = "product-title"; title.textContent = product.title; div.appendChild(title);
+    const price = document.createElement("div"); price.className = "product-price"; price.textContent = `$${product.price}`; div.appendChild(price);
 
     const nutrition = document.createElement("div"); nutrition.className="nutrition-link"; nutrition.textContent="Nutrition Info";
-    nutrition.addEventListener("click",()=>alert("Nutritional info placeholder"));
-    div.appendChild(nutrition);
+    nutrition.addEventListener("click",()=>alert("Nutritional info placeholder")); div.appendChild(nutrition);
 
     const qtyDiv = document.createElement("div"); qtyDiv.className="quantity-selector";
     const minusBtn = document.createElement("button"); minusBtn.textContent="-";
@@ -188,8 +181,7 @@
     const plusBtn = document.createElement("button"); plusBtn.textContent="+";
     minusBtn.addEventListener("click",()=>{ let q=parseInt(qtySpan.textContent); if(q>1) qtySpan.textContent=q-1; });
     plusBtn.addEventListener("click",()=>{ let q=parseInt(qtySpan.textContent); qtySpan.textContent=q+1; });
-    qtyDiv.appendChild(minusBtn); qtyDiv.appendChild(qtySpan); qtyDiv.appendChild(plusBtn);
-    div.appendChild(qtyDiv);
+    qtyDiv.appendChild(minusBtn); qtyDiv.appendChild(qtySpan); qtyDiv.appendChild(plusBtn); div.appendChild(qtyDiv);
 
     const addBtn = document.createElement("button"); addBtn.className="add-to-cart-btn"; addBtn.textContent="Add to Cart";
     addBtn.addEventListener("click",()=>{
@@ -202,7 +194,6 @@
     grid.appendChild(div);
   });
 
-  // Cart slideout code
   const cartSlideout = document.getElementById("cart-slideout");
   const cartOverlay = document.getElementById("cart-overlay");
   const cartItemsDiv = document.getElementById("cart-items");
@@ -270,7 +261,6 @@
     });
     window.location.href = checkoutUrl.toString();
   });
-
 </script>
 
 </body>

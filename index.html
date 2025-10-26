@@ -108,7 +108,7 @@ async function loadFundraiser() {
     const { data: fundraiser, error: fErr } = await supabase
       .from('fundraisers')
       .select('*')
-      .eq('id', params.fundraiser_id)
+      .eq('id', params.id)
       .single();
 
     if (fErr || !fundraiser) {

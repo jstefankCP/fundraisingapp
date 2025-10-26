@@ -332,6 +332,42 @@ function closeModal(){
   color:#cce6ff;
 }
 </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.2.0/dist/supabase.min.js"></script>
+<script>
+  // 1. Initialize Supabase
+  const supabaseUrl = 'https://krjdhmpxojascmkimfru.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtyamRobXB4b2phc2Nta2ltZnJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMzU0MTEsImV4cCI6MjA3MzYxMTQxMX0.DoT40NSvuNZ2_HjwNfhA2qaxmWNXA57Isf1jK43TQP8'; // or service key if server-side
+  const supabase = Supabase.createClient(supabaseUrl, supabaseKey);
+
+  // 2. Grab fundraiser_id from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const fundraiserId = urlParams.get('fundraiser_id');
+
+  // 3. Get the element to display the name
+  const fundraiserNameEl = document.getElementById('fundraiser-name'); // add id to your HTML
+
+  // 4. Query Supabase
+  async function fetchFundraiserName() {
+    if(!fundraiserId) return;
+
+    const { data, error } = await supabase
+      .from('fundraisers')
+      .select('name')
+      .eq('id', fundraiserId)
+      .single();
+
+    if(error) {
+      console.error('Error fetching fundraiser name:', error);
+      fundraiserNameEl.textContent = '[Fundraiser Name]';
+      return;
+    }
+
+    fundraiserNameEl.textContent = data.name || '[Fundraiser Name]';
+  }
+
+  fetchFundraiserName();
+</script>
   
 </body>
 </html>

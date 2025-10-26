@@ -118,6 +118,36 @@
   }
 
   const fundraiserParams = getFundraiserParams();
+
+  async function loadFundraiser() {
+  if (!fundraiserParams.fundraiser_id) {
+    console.error("No fundraiser_id in URL");
+    return;
+  }
+
+  console.log("Fetching fundraiser with ID:", fundraiserParams.fundraiser_id);
+
+  const { data, error } = await supabase
+    .from("fundraisers")
+    .select("*")
+    .eq("id", fundraiserParams.fundraiser_id)
+    .single();
+
+  if (error) {
+    console.error("Error loading fundraiser:", error);
+    return;
+  }
+
+  console.log("Fundraiser data:", data);
+
+  // At this stage we can decide what to do next:
+  // - populate the page
+  // - display products
+  // - attach fundraiser info to cart attributes, etc.
+}
+
+loadFundraiser();
+
   
 const shopifyStore = "city-pop-fundraising.myshopify.com";
 

@@ -7,6 +7,17 @@
 <style>
   body { font-family: sans-serif; background-color: #f9f9f9; color: #333; margin:0; padding:1rem; }
   h1 { color: #0567e8; text-align:center; margin-bottom:2rem; }
+
+  /* Fundraiser Header */
+  #fundraiser-header { background:#0567e8; color:#fff; padding:1.5rem 2rem; border-radius:10px; margin-bottom:2rem; text-align:center; }
+  #fundraiser-header div { margin-bottom:0.3rem; }
+  #fundraiser-cause { font-size:1.2rem; font-weight:600; }
+  #org-id-display, #user-id-display { font-size:1rem; font-weight:500; }
+  #countdown-timer { font-size:0.95rem; }
+  #progress-bar-container { background:#fff; border-radius:20px; overflow:hidden; height:20px; max-width:400px; margin:0.5rem auto; }
+  #progress-bar { height:100%; width:0%; background:#66cbed; text-align:right; color:#fff; line-height:20px; font-size:0.8rem; padding-right:5px; border-radius:20px; }
+
+  /* Product grid */
   .product-grid { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; }
   .product-item { background:#fff; border-radius:10px; padding:1rem; flex:1 1 250px; max-width:250px; box-shadow:0 2px 6px rgba(0,0,0,0.1); display:flex; flex-direction:column; align-items:center; }
   .product-item img { width:100%; height:auto; border-radius:10px; }
@@ -36,39 +47,8 @@
   #cart-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.3); z-index:999; }
 
   /* Floating Cart Button (mobile only) */
-  #floating-cart-btn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #66cbed;  /* Updated color */
-    color: #fff;
-    border: none;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    font-size: 1.5rem;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 1100;
-  }
-  #floating-cart-btn .cart-count {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    background: #ff5a5f;
-    color: #fff;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    font-size: 0.8rem;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+  #floating-cart-btn { position: fixed; bottom: 20px; right: 20px; background-color: #66cbed; color: #fff; border: none; border-radius: 50%; width: 60px; height: 60px; font-size: 1.5rem; box-shadow: 0 4px 10px rgba(0,0,0,0.2); display: none; align-items: center; justify-content: center; cursor: pointer; z-index: 1100; }
+  #floating-cart-btn .cart-count { position: absolute; top: 8px; right: 8px; background: #ff5a5f; color: #fff; border-radius: 50%; width: 20px; height: 20px; font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; justify-content: center; }
   @media (max-width: 768px) {
     #floating-cart-btn { display: flex; }
     .product-grid { flex-direction: column; align-items: center; }
@@ -78,7 +58,17 @@
 </head>
 <body>
 
-<h1>Support Our Fundraiser!</h1>
+<!-- Fundraiser Header -->
+<div id="fundraiser-header">
+  <div id="fundraiser-cause">[Fundraiser Cause]</div>
+  <div id="org-id-display">[organization_id]</div>
+  <div id="user-id-display">[user_id]</div>
+  <div>Ends in <span id="countdown-timer">1 day</span></div>
+  <div id="progress-bar-container">
+    <div id="progress-bar">$0</div>
+  </div>
+  <div style="font-size:0.85rem;">Raised <span id="raised-amount">$0</span> of <span id="goal-amount">$1000</span></div>
+</div>
 
 <div class="product-grid" id="product-grid"></div>
 
@@ -125,8 +115,44 @@ function getFundraiserParams() {
 }
 const fundraiserParams = getFundraiserParams();
 
-const cart = {};
+// Fundraiser Header Setup
+const fundraiserCauseEl = document.getElementById("fundraiser-cause");
+const orgIdDisplay = document.getElementById("org-id-display");
+const userIdDisplay = document.getElementById("user-id-display");
+const countdownEl = document.getElementById("countdown-timer");
+const progressBar = document.getElementById("progress-bar");
+const raisedEl = document.getElementById("raised-amount");
+const goalEl = document.getElementById("goal-amount");
 
+const fundraiserData = {
+  cause: "Support Our Local School!", 
+  organization_id: fundraiserParams.organization_id || "[organization_id]",
+  user_id: fundraiserParams.user_id || "[user_id]",
+  fundraiser_id: fundraiserParams.fundraiser_id || "[fundraiser_id]",
+  endDate: new Date(Date.now() + 24*60*60*1000),
+  raised: 0,
+  goal: 1000
+};
+
+fundraiserCauseEl.textContent = fundraiserData.cause;
+orgIdDisplay.textContent = fundraiserData.organization_id;
+userIdDisplay.textContent = fundraiserData.user_id;
+raisedEl.textContent = `$${fundraiserData.raised}`;
+goalEl.textContent = `$${fundraiserData.goal}`;
+progressBar.style.width = "0%";
+progressBar.textContent = `$${fundraiserData.raised}`;
+
+function updateCountdown() {
+  const now = new Date();
+  const diff = fundraiserData.endDate - now;
+  const days = diff > 0 ? Math.ceil(diff / (1000*60*60*24)) : 0;
+  countdownEl.textContent = `${days} day${days!==1?"s":""}`;
+}
+updateCountdown();
+setInterval(updateCountdown, 1000*60*60); // every hour
+
+// --- Existing Product & Cart Code ---
+const cart = {};
 const grid = document.getElementById("product-grid");
 products.forEach((product) => {
   const div = document.createElement("div");
@@ -176,12 +202,12 @@ const floatingCartBtn = document.getElementById("floating-cart-btn");
 function openCart(){
   cartSlideout.style.right="0";
   cartOverlay.style.display="block";
-  floatingCartBtn.style.display="none"; // hide floater
+  floatingCartBtn.style.display="none";
 }
 function closeCart(){
   cartSlideout.style.right="-100%";
   cartOverlay.style.display="none";
-  floatingCartBtn.style.display="flex"; // show floater
+  floatingCartBtn.style.display="flex";
 }
 cartOverlay.addEventListener("click", closeCart);
 

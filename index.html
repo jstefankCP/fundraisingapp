@@ -3,32 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Test Fundraiser Product</title>
+  <title>Fundraiser Test Product | City Pop</title>
   <style>
-    body { font-family: sans-serif; padding: 2rem; }
-    button { background-color: #0567e8; color: white; border: none; padding: 1rem 2rem; border-radius: 25px; cursor: pointer; }
+    body { font-family: sans-serif; padding: 2rem; background-color: #f9f9f9; }
+    h1 { color: #0567e8; }
+    button { 
+      background-color: #0567e8; 
+      color: white; 
+      border: none; 
+      padding: 1rem 2rem; 
+      border-radius: 25px; 
+      cursor: pointer; 
+      font-size: 1rem;
+      margin-top: 1rem;
+    }
     button:hover { background-color: #055dd1; }
+    label { display: block; margin-top: 1rem; }
+    input[type=number] { width: 60px; padding: 0.3rem; margin-left: 0.5rem; }
   </style>
 </head>
 <body>
 
-<h1>Fundraiser Test Product</h1>
-<p>Support our fundraiser by purchasing this popcorn!</p>
+<h1>Support Our Fundraiser!</h1>
+<p>Get our delicious popcorn and help raise funds for our cause.</p>
 
 <!-- Quantity selector -->
 <label>
   Quantity:
-  <input type="number" id="quantity" value="1" min="1" />
+  <input type="number" id="quantity" value="1" min="1">
 </label>
-
-<br><br>
 
 <button id="buy-button">Buy Now</button>
 
 <script>
-  // Replace with your Shopify store and variant ID
   const shopifyStore = "city-pop-fundraising.myshopify.com";
-  const variantId = "INSERT_YOUR_VARIANT_ID_HERE"; // e.g. 12345678901234
+  const variantId = "47906816524577"; // Your test product variant ID
 
   function getFundraiserParams() {
     const params = {};
@@ -47,7 +56,7 @@
     // Build Shopify checkout URL
     const checkoutUrl = new URL(`https://${shopifyStore}/cart/${variantId}:${quantity}`);
 
-    // Add attributes
+    // Add fundraiser attributes
     Object.entries(fundraiserParams).forEach(([key, value]) => {
       if (value) checkoutUrl.searchParams.append(`attributes[${key}]`, value);
     });

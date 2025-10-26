@@ -40,7 +40,7 @@
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background-color: #66cbed;  /* Updated color */
+    background-color: #66cbed;
     color: #fff;
     border: none;
     border-radius: 50%;
@@ -98,15 +98,14 @@
   <span class="cart-count" id="cart-count">0</span>
 </button>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-  
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>  
 <script>
-  // 1️⃣ Initialize Supabase first
+  // ✅ 1. Initialize Supabase first
   const SUPABASE_URL = "https://krjdhmpxojascmkimfru.supabase.co";
-  const SUPABASE_ANON_KEY = "YOUR_ANON_KEY";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtyamRobXB4b2phc2Nta2ltZnJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMzU0MTEsImV4cCI6MjA3MzYxMTQxMX0.DoT40NSvuNZ2_HjwNfhA2qaxmWNXA57Isf1jK43TQP8";
   const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // 2️⃣ Extract URL params
+  // ✅ 2. Get fundraiser URL params
   function getFundraiserParams() {
     const params = {};
     const urlParams = new URLSearchParams(window.location.search);
@@ -119,25 +118,30 @@
   const fundraiserParams = getFundraiserParams();
   console.log("Fundraiser URL params:", fundraiserParams);
 
-  // 3️⃣ Now it’s safe to use supabase
+  // ✅ 3. Load fundraiser data from Supabase
   async function loadFundraiser() {
     if (!fundraiserParams.fundraiser_id) {
       console.error("No fundraiser_id in URL");
       return;
     }
     console.log("Fetching fundraiser with ID:", fundraiserParams.fundraiser_id);
+
     const { data, error } = await supabase
       .from("fundraisers")
       .select("*")
       .eq("id", fundraiserParams.fundraiser_id)
       .single();
-    if (error) return console.error("Error loading fundraiser:", error);
+
+    if (error) {
+      console.error("Error loading fundraiser:", error);
+      return;
+    }
     console.log("Fundraiser data:", data);
   }
 
   loadFundraiser();
-  
-  // 4️⃣ Shopify products
+
+  // ✅ 4. Shopify products
   const shopifyStore = "city-pop-fundraising.myshopify.com";
   const products = [
     { title: "Cheese & Caramel Mix Popcorn", variantId: "47907478077729", price: 16, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/CheeseCaramel.png?v=1750196665" },
@@ -152,20 +156,26 @@
     { title: "Low Salt Popcorn", variantId: "47971748217121", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/LowSalt.png?v=1750196643" }
   ];
 
-  // 5️⃣ Build product grid
+  // ✅ 5. Cart setup
   const cart = {};
   const grid = document.getElementById("product-grid");
 
-  products.forEach((product)=>{
+  products.forEach((product) => {
     const div = document.createElement("div");
     div.className = "product-item";
 
-    const img = document.createElement("img"); img.src=product.img; div.appendChild(img);
-    const title = document.createElement("div"); title.className="product-title"; title.textContent=product.title; div.appendChild(title);
-    const price = document.createElement("div"); price.className="product-price"; price.textContent=`$${product.price}`; div.appendChild(price);
+    const img = document.createElement("img"); img.src=product.img;
+    div.appendChild(img);
+
+    const title = document.createElement("div"); title.className="product-title"; title.textContent=product.title;
+    div.appendChild(title);
+
+    const price = document.createElement("div"); price.className="product-price"; price.textContent=`$${product.price}`;
+    div.appendChild(price);
 
     const nutrition = document.createElement("div"); nutrition.className="nutrition-link"; nutrition.textContent="Nutrition Info";
-    nutrition.addEventListener("click",()=>alert("Nutritional info placeholder")); div.appendChild(nutrition);
+    nutrition.addEventListener("click",()=>alert("Nutritional info placeholder"));
+    div.appendChild(nutrition);
 
     const qtyDiv = document.createElement("div"); qtyDiv.className="quantity-selector";
     const minusBtn = document.createElement("button"); minusBtn.textContent="-";
@@ -187,7 +197,7 @@
     grid.appendChild(div);
   });
 
-  // 6️⃣ Cart functions
+  // ✅ 6. Cart slideout and functions
   const cartSlideout = document.getElementById("cart-slideout");
   const cartOverlay = document.getElementById("cart-overlay");
   const cartItemsDiv = document.getElementById("cart-items");
@@ -196,13 +206,21 @@
   const cartCountEl = document.getElementById("cart-count");
   const floatingCartBtn = document.getElementById("floating-cart-btn");
 
-  function openCart(){ cartSlideout.style.right="0"; cartOverlay.style.display="block"; floatingCartBtn.style.display="none"; }
-  function closeCart(){ cartSlideout.style.right="-100%"; cartOverlay.style.display="none"; floatingCartBtn.style.display="flex"; }
+  function openCart(){
+    cartSlideout.style.right="0";
+    cartOverlay.style.display="block";
+    floatingCartBtn.style.display="none";
+  }
+  function closeCart(){
+    cartSlideout.style.right="-100%";
+    cartOverlay.style.display="none";
+    floatingCartBtn.style.display="flex";
+  }
   cartOverlay.addEventListener("click", closeCart);
 
   function renderCart(){
     cartItemsDiv.innerHTML="";
-    let subtotal=0;
+    let subtotal = 0;
     for(const [variantId, qty] of Object.entries(cart)){
       if(qty>0){
         const product = products.find(p=>p.variantId===variantId);
@@ -231,10 +249,10 @@
     updateCartCount();
   }
 
-  function updateCartCount(){
+  function updateCartCount() {
     const totalItems = Object.values(cart).reduce((a,b)=>a+b,0);
-    cartCountEl.textContent=totalItems;
-    cartCountEl.style.display = totalItems>0 ? "flex" : "none";
+    cartCountEl.textContent = totalItems;
+    cartCountEl.style.display = totalItems > 0 ? "flex" : "none";
   }
 
   checkoutBtn.addEventListener("click", ()=>{

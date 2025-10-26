@@ -117,54 +117,78 @@ function getFundraiserParams() {
 }
 const fundraiserParams = getFundraiserParams();
 
-/* --- Fundraiser Header Setup --- */
+// Elements to update
 const fundraiserCauseEl = document.getElementById("fundraiser-cause");
 const orgIdDisplay = document.getElementById("org-id-display");
 const userIdDisplay = document.getElementById("user-id-display");
-const countdownEl = document.getElementById("countdown-timer");
 const progressBar = document.getElementById("progress-bar");
 const raisedEl = document.getElementById("raised-amount");
 const goalEl = document.getElementById("goal-amount");
 
-const fundraiserData = {
-  cause: "[Loading fundraiser...]", 
-  organization_id: fundraiserParams.organization_id || "[organization_id]",
-  user_id: fundraiserParams.user_id || "[user_id]",
-  fundraiser_id: fundraiserParams.fundraiser_id || "[fundraiser_id]",
-  endDate: new Date(Date.now() + 24*60*60*1000),
-  raised: 0,
-  goal: 1000
-};
+// Fetch fundraiser info (name & goal_amount)
+async function fetchFundraiserInfo() {
+  if (!fundraiserParams.fundraiser_id) return;
 
-orgIdDisplay.textContent = fundraiserData.organization_id;
-userIdDisplay.textContent = fundraiserData.user_id;
-raisedEl.textContent = `$${fundraiserData.raised}`;
-goalEl.textContent = `$${fundraiserData.goal}`;
-progressBar.style.width = "0%";
-progressBar.textContent = `$${fundraiserData.raised}`;
+  const { data: fundraiser, error: fundraiserError } = await supabaseClient
+    .from('fundraisers')
+    .select('name, goal_amount, organization_id, user_id')
+    .eq('id', fundraiserParams.fundraiser_id)
+    .single();
 
-/* --- Fetch Fundraiser Cause from Supabase --- */
-async function fetchFundraiserCause() {
-  if(!fundraiserData.fundraiser_id) return;
-
-  try {
-    const { data, error } = await supabaseClient
-  .from('fundraisers')
-  .select('name')
-  .eq('id', fundraiserData.fundraiser_id)
-  .single();
-
-    if(error) throw error;
-
-    fundraiserData.cause = data.name;
-    fundraiserCauseEl.textContent = fundraiserData.cause;
-
-  } catch(err) {
-    console.error("Error fetching fundraiser cause:", err.message);
-    fundraiserCauseEl.textContent = "[Fundraiser Cause]";
+  if (fundraiserError) {
+    console.error('Error fetching fundraiser:', fundraiserError.message);
+    return;
   }
+
+  // Update fundraiser name and goal
+  fundraiserCauseEl.textContent = fundraiser.name;
+  goalEl.textContent = `$${fundraiser.goal_amount}`;
+  progressBar.style.width = "0%";
+  progressBar.textContent = "$0";
+
+  // Now fetch organization and user names
+  fetchOrganizationName(fundraiser.organization_id);
+  fetchUserName(fundraiser.user_id);
 }
-fetchFundraiserCause();
+
+// Fetch organization name
+async function fetchOrganizationName(orgId) {
+  if (!orgId) return;
+
+  const { data: organization, error: orgError } = await supabaseClient
+    .from('organizations')
+    .select('name')
+    .eq('id', orgId)
+    .single();
+
+  if (orgError) {
+    console.error('Error fetching organization:', orgError.message);
+    return;
+  }
+
+  orgIdDisplay.textContent = organization.name;
+}
+
+// Fetch user name
+async function fetchUserName(userId) {
+  if (!userId) return;
+
+  const { data: user, error: userError } = await supabaseClient
+    .from('user_profiles')
+    .select('first_name, last_name')
+    .eq('id', userId)
+    .single();
+
+  if (userError) {
+    console.error('Error fetching user:', userError.message);
+    return;
+  }
+
+  userIdDisplay.textContent = `${user.first_name} ${user.last_name}`;
+}
+
+// Trigger the fetch
+fetchFundraiserInfo();
 
 /* --- Countdown Timer --- */
 function updateCountdown() {

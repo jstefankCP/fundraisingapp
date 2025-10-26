@@ -40,7 +40,7 @@
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background-color: #0567e8;
+    background-color: #66cbed;  /* Updated color */
     color: #fff;
     border: none;
     border-radius: 50%;
@@ -171,9 +171,18 @@ const cartItemsDiv = document.getElementById("cart-items");
 const subtotalDiv = document.getElementById("subtotal");
 const checkoutBtn = document.getElementById("checkout-btn");
 const cartCountEl = document.getElementById("cart-count");
+const floatingCartBtn = document.getElementById("floating-cart-btn");
 
-function openCart(){ cartSlideout.style.right="0"; cartOverlay.style.display="block"; }
-function closeCart(){ cartSlideout.style.right="-100%"; cartOverlay.style.display="none"; }
+function openCart(){
+  cartSlideout.style.right="0";
+  cartOverlay.style.display="block";
+  floatingCartBtn.style.display="none"; // hide floater
+}
+function closeCart(){
+  cartSlideout.style.right="-100%";
+  cartOverlay.style.display="none";
+  floatingCartBtn.style.display="flex"; // show floater
+}
 cartOverlay.addEventListener("click", closeCart);
 
 function renderCart(){

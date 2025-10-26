@@ -128,6 +128,9 @@
               "Organization ID": fundraiserParams.organization_id || "",
               "User ID": fundraiserParams.user_id || ""
             },
+            
+            <input type="hidden" name="attributes[Fundraiser ID]" value=fundraiserParams.fundraiser_id>
+            
             events: {
               afterInit: (cart) => {
                 cart.onCheckout = () => {

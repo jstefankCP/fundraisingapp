@@ -78,25 +78,20 @@
 </head>
 <body>
 
-<!-- Unique Fundraiser Header with User Name -->
+<!-- Corrected Fundraiser Header -->
 <div id="fundraiser-header" style="background:#0567e8; color:#fff; padding:1.5rem 2rem; border-radius:10px; margin-bottom:2rem; text-align:center;">
   <!-- Fundraiser Cause -->
   <div id="fundraiser-cause" style="font-size:1.2rem; font-weight:600; margin-bottom:0.3rem;">[Fundraiser Cause]</div>
 
-  <!-- Organization Name -->
-  <div id="org-name-display" style="font-size:2rem; font-weight:700; margin-bottom:0.2rem;">[Organization Name]</div>
+  <!-- Organization ID -->
+  <div id="org-id-display" style="font-size:1rem; font-weight:500; margin-bottom:0.2rem;">[organization_id]</div>
 
-  <!-- User Name -->
-  <div id="user-name-display" style="font-size:1rem; font-weight:500; margin-bottom:0.5rem;">[User Name]</div>
-
-  <!-- Fundraiser ID -->
-  <div style="font-size:0.85rem; margin-bottom:0.5rem;">
-    Fundraiser ID: <span id="fundraiser-id">[Fundraiser ID]</span> | Organization ID: <span id="organization-id">[Organization ID]</span> | User ID: <span id="user-id">[User ID]</span>
-  </div>
+  <!-- User ID -->
+  <div id="user-id-display" style="font-size:1rem; font-weight:500; margin-bottom:0.5rem;">[user_id]</div>
 
   <!-- Countdown Timer -->
   <div style="font-size:0.95rem; margin-bottom:1rem;">
-    Ends in <span id="countdown-timer">XX days</span>
+    Ends in <span id="countdown-timer">1 day</span>
   </div>
 
   <!-- Progress Bar -->
@@ -110,61 +105,52 @@
 
 <script>
   // Dynamic header elements
-  const orgDisplay = document.getElementById("org-name-display");
-  const userDisplay = document.getElementById("user-name-display");
-  const fundraiserCause = document.getElementById("fundraiser-cause");
+  const fundraiserCauseEl = document.getElementById("fundraiser-cause");
+  const orgIdDisplay = document.getElementById("org-id-display");
+  const userIdDisplay = document.getElementById("user-id-display");
   const countdownEl = document.getElementById("countdown-timer");
   const progressBar = document.getElementById("progress-bar");
   const raisedEl = document.getElementById("raised-amount");
   const goalEl = document.getElementById("goal-amount");
 
-  const fundraiserIdEl = document.getElementById("fundraiser-id");
-  const orgIdEl = document.getElementById("organization-id");
-  const userIdEl = document.getElementById("user-id");
+  // Grab params from URL
+  const fundraiserParams = new URLSearchParams(window.location.search);
+  const organization_id = fundraiserParams.get("organization_id") || "[organization_id]";
+  const user_id = fundraiserParams.get("user_id") || "[user_id]";
+  const fundraiser_id = fundraiserParams.get("fundraiser_id") || "[fundraiser_id]";
 
-  // Example dynamic data (replace with real API or URL params)
+  // Default fundraiser data
   const fundraiserData = {
-    cause: "Support Our Local School!",
-    organization: fundraiserParams.organization_id || "[Organization Name]",
-    user: fundraiserParams.user_id || "[User Name]",
-    fundraiserId: fundraiserParams.fundraiser_id || "[Fundraiser ID]",
-    endDate: "2025-11-10", // YYYY-MM-DD
-    raised: 450,
+    cause: "Support Our Local School!",  // optional dynamic cause
+    organization_id: organization_id,
+    user_id: user_id,
+    fundraiser_id: fundraiser_id,
+    endDate: new Date(Date.now() + 24*60*60*1000), // default 1 day from now
+    raised: 0,
     goal: 1000
   };
 
-  // Populate static text
-  fundraiserCause.textContent = fundraiserData.cause;
-  orgDisplay.textContent = fundraiserData.organization;
-  userDisplay.textContent = fundraiserData.user;
-
-  fundraiserIdEl.textContent = fundraiserData.fundraiserId;
-  orgIdEl.textContent = fundraiserData.organization;
-  userIdEl.textContent = fundraiserData.user;
+  // Populate header
+  fundraiserCauseEl.textContent = fundraiserData.cause;
+  orgIdDisplay.textContent = fundraiserData.organization_id;
+  userIdDisplay.textContent = fundraiserData.user_id;
 
   raisedEl.textContent = `$${fundraiserData.raised}`;
   goalEl.textContent = `$${fundraiserData.goal}`;
-
-  // Progress bar calculation
-  const progressPercent = Math.min((fundraiserData.raised / fundraiserData.goal) * 100, 100);
-  progressBar.style.width = progressPercent + "%";
+  progressBar.style.width = "0%";
   progressBar.textContent = `$${fundraiserData.raised}`;
 
   // Countdown timer
   function updateCountdown() {
     const now = new Date();
-    const end = new Date(fundraiserData.endDate);
-    const diff = end - now;
-    if(diff <= 0){
-      countdownEl.textContent = "0 days";
-    } else {
-      const days = Math.floor(diff / (1000*60*60*24));
-      countdownEl.textContent = `${days} day${days!==1?"s":""}`;
-    }
+    const diff = fundraiserData.endDate - now;
+    const days = diff > 0 ? Math.ceil(diff / (1000*60*60*24)) : 0;
+    countdownEl.textContent = `${days} day${days!==1?"s":""}`;
   }
   updateCountdown();
-  setInterval(updateCountdown, 1000*60*60); // Update every hour
+  setInterval(updateCountdown, 1000*60*60); // update every hour
 </script>
+
 
 <div class="product-grid" id="product-grid"></div>
 

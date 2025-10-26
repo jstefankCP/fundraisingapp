@@ -80,6 +80,38 @@
 
 <h1>Support Our Fundraiser!</h1>
 
+<!-- Dynamic Header -->
+<div id="fundraiser-header" style="background:#0567e8; color:#fff; padding:1rem 2rem; border-radius:10px; margin-bottom:2rem;">
+  <h1 style="margin:0 0 0.5rem 0; text-align:center;">Support Our Fundraiser!</h1>
+  <div style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:1rem; font-size:0.95rem;">
+    <div style="flex:1; min-width:150px;">
+      <strong>Organization:</strong> <span id="org-name">[Organization Name]</span>
+    </div>
+    <div style="flex:1; min-width:150px;">
+      <strong>Fundraiser ID:</strong> <span id="fundraiser-id">[Fundraiser ID]</span>
+    </div>
+    <div style="flex:1; min-width:150px;">
+      <strong>User:</strong> <span id="user-name">[User Name]</span>
+    </div>
+  </div>
+  <div style="margin-top:0.5rem; text-align:center; font-size:0.85rem;">
+    <em>Use the products below to support this fundraiser!</em>
+  </div>
+</div>
+
+<script>
+  // Populate header placeholders dynamically
+  const orgEl = document.getElementById("org-name");
+  const fundEl = document.getElementById("fundraiser-id");
+  const userEl = document.getElementById("user-name");
+
+  // Replace with actual dynamic values from URL or API
+  orgEl.textContent = fundraiserParams.organization_id || "[Organization Name]";
+  fundEl.textContent = fundraiserParams.fundraiser_id || "[Fundraiser ID]";
+  userEl.textContent = fundraiserParams.user_id || "[User Name]";
+</script>
+
+
 <div class="product-grid" id="product-grid"></div>
 
 <!-- Slide-out cart -->

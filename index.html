@@ -115,46 +115,6 @@ function getFundraiserParams() {
 }
 const fundraiserParams = getFundraiserParams();
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>  
-const SUPABASE_URL = 'https://krjdhmpxojascmkimfru.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtyamRobXB4b2phc2Nta2ltZnJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMzU0MTEsImV4cCI6MjA3MzYxMTQxMX0.DoT40NSvuNZ2_HjwNfhA2qaxmWNXA57Isf1jK43TQP8';
-const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); 
-
-// Fetch fundraiser name from Supabase
-  async function fetchFundraiserName(fundraiserId) {
-    try {
-      const { data, error } = await supabase
-        .from('fundraisers')      // table name
-        .select('name')           // name column
-        .eq('id', fundraiserId)   // match fundraiser_id
-        .single();                // expect a single row
-
-      if (error) throw error;
-      return data.name;
-    } catch (err) {
-      console.error('Error fetching fundraiser name:', err.message);
-      return '[Fundraiser Cause]'; // fallback
-    }
-  }
-
-  // Update the page header dynamically
-  async function updateFundraiserHeader() {
-    const fundraiserId = getFundraiserIdFromUrl();
-    const fundraiserName = await fetchFundraiserName(fundraiserId);
-
-    // Replace the text in your header
-    const causeEl = document.getElementById('fundraiser-cause');
-    if (causeEl) {
-      causeEl.textContent = fundraiserName;
-    }
-  }
-
-  // Trigger the update after DOM loads
-  document.addEventListener('DOMContentLoaded', updateFundraiserHeader);
-</script>  
-
 // Fundraiser Header Setup
 const fundraiserCauseEl = document.getElementById("fundraiser-cause");
 const orgIdDisplay = document.getElementById("org-id-display");

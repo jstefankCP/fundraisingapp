@@ -261,76 +261,55 @@ checkoutBtn.addEventListener("click", ()=>{
 </script>
 
   <!-- Footer -->
-<footer style="margin-top:2rem; padding:1rem; background:#f1f1f1; text-align:center; border-top:1px solid #ddd;">
-  <button class="footer-link" data-url="https://citypopdenver.com/pages/website-accessibility">Accessibility</button>
-  <a class="footer-link" href="https://citypop.gorgias.help/en-US" target="_blank">Contact Us</a>
-  <a class="footer-link" href="https://citypop.gorgias.help/en-US" target="_blank">Help Center</a>
-  <button class="footer-link" data-url="https://citypopdenver.com/pages/return-and-refund-policy">Returns & Refund Policy</button>
-  <button class="footer-link" data-url="https://citypopdenver.com/pages/privacy-policy">Privacy Policy</button>
-  <button class="footer-link" data-url="https://citypopdenver.com/pages/terms-of-service">Terms of Service</button>
-  <button class="footer-link" data-url="https://citypopdenver.com/pages/shipping-policy">Shipping Policy</button>
-</footer>
+<div id="site-footer" style="background:#0567e8; color:#fff; padding:1rem; text-align:center; border-radius:10px; margin-top:2rem;">
+  <!-- Internal pages (open in modal) -->
+  <button class="footer-link" data-url="https://citypopdenver.com/pages/website-accessibility" style="color:#fff; background:none; border:none; cursor:pointer; margin:0 0.5rem;">Accessibility</button>
+  <button class="footer-link" data-url="https://citypopdenver.com/pages/return-and-refund-policy" style="color:#fff; background:none; border:none; cursor:pointer; margin:0 0.5rem;">Returns & Refunds</button>
+  <button class="footer-link" data-url="https://citypopdenver.com/pages/privacy-policy" style="color:#fff; background:none; border:none; cursor:pointer; margin:0 0.5rem;">Privacy Policy</button>
+  <button class="footer-link" data-url="https://citypopdenver.com/pages/terms-of-service" style="color:#fff; background:none; border:none; cursor:pointer; margin:0 0.5rem;">Terms of Service</button>
+  <button class="footer-link" data-url="https://citypopdenver.com/pages/shipping-policy" style="color:#fff; background:none; border:none; cursor:pointer; margin:0 0.5rem;">Shipping Policy</button>
 
-<!-- Modal -->
-<div id="footer-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); z-index:2000; align-items:center; justify-content:center;">
-  <div style="background:#fff; padding:2rem; max-width:600px; max-height:80%; overflow-y:auto; border-radius:10px; position:relative; font-family:sans-serif; color:#333;">
-    <button id="modal-close" style="position:absolute; top:10px; right:10px; font-size:1.2rem; background:none; border:none; cursor:pointer;">✕</button>
-    <div id="modal-content"></div>
+  <!-- External links -->
+  <a href="https://citypop.gorgias.help/en-US" target="_blank" style="color:#fff; margin:0 0.5rem;">Contact Us</a>
+  <a href="https://citypop.gorgias.help/en-US" target="_blank" style="color:#fff; margin:0 0.5rem;">Help Center</a>
+</div>
+
+<!-- Modal for internal pages -->
+<div id="footer-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2000; align-items:center; justify-content:center;">
+  <div style="background:#fff; color:#333; padding:2rem; max-width:600px; width:90%; border-radius:10px; max-height:80%; overflow-y:auto; position:relative;">
+    <button id="close-modal" style="position:absolute; top:10px; right:10px; background:none; border:none; font-size:1.5rem; cursor:pointer;">×</button>
+    <div id="modal-content" style="line-height:1.5;"></div>
   </div>
 </div>
 
 <script>
-const modal = document.getElementById("footer-modal");
-const modalContent = document.getElementById("modal-content");
-const modalClose = document.getElementById("modal-close");
+  const footerLinks = document.querySelectorAll(".footer-link");
+  const modal = document.getElementById("footer-modal");
+  const modalContent = document.getElementById("modal-content");
+  const closeModal = document.getElementById("close-modal");
 
-document.querySelectorAll('button.footer-link[data-url]').forEach(btn=>{
-  btn.addEventListener("click", async ()=>{
-    const url = btn.getAttribute("data-url");
-    modalContent.innerHTML = "<em>Loading...</em>";
-    modal.style.display = "flex";
-
-    try {
-      const res = await fetch(url);
-      if(!res.ok) throw new Error("Failed to fetch content");
-      const text = await res.text();
-
-      // Parse HTML and extract main text content only
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(text, "text/html");
-
-      // Remove all scripts and styles
-      doc.querySelectorAll("script, style, link").forEach(el => el.remove());
-
-      // Extract main or body content
-      let content = doc.querySelector("main") || doc.querySelector("body");
-      if(content){
-        // Keep basic text formatting: paragraphs, headings, lists
-        const allowedTags = ['P','H1','H2','H3','H4','H5','H6','UL','OL','LI','BR','B','STRONG','I','EM'];
-        const walker = document.createTreeWalker(content, NodeFilter.SHOW_ELEMENT, null, false);
-        walker.currentNode = content;
-
-        // Remove disallowed tags
-        let node = walker.nextNode();
-        while(node){
-          if(!allowedTags.includes(node.tagName)) node.replaceWith(document.createTextNode(node.textContent));
-          node = walker.nextNode();
-        }
-
-        modalContent.innerHTML = content.innerHTML;
-      } else {
-        modalContent.innerHTML = "<p>No content found.</p>";
+  footerLinks.forEach(link => {
+    link.addEventListener("click", async () => {
+      const url = link.dataset.url;
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Unable to fetch page.");
+        const htmlText = await response.text();
+        // Extract main content inside <body> or .page-content (adjust if needed)
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlText, "text/html");
+        const content = doc.querySelector("body")?.innerHTML || "[No content found]";
+        modalContent.innerHTML = content;
+        modal.style.display = "flex";
+      } catch (err) {
+        modalContent.innerHTML = `<p>Unable to load content from this page.</p>`;
+        modal.style.display = "flex";
       }
-
-    } catch(err) {
-      modalContent.innerHTML = "<p>Failed to load content.</p>";
-      console.error(err);
-    }
+    });
   });
-});
 
-modalClose.addEventListener("click", ()=>{ modal.style.display = "none"; });
-modal.addEventListener("click", e=>{ if(e.target === modal) modal.style.display = "none"; });
+  closeModal.addEventListener("click", () => { modal.style.display = "none"; });
+  modal.addEventListener("click", (e) => { if(e.target===modal) modal.style.display="none"; });
 </script>
   
 </body>

@@ -27,7 +27,16 @@
   .cart-item-title { flex:1; font-size:0.9rem; margin-right:0.5rem; }
   .cart-item-controls { display:flex; align-items:center; gap:0.3rem; }
   .cart-item-controls button { background:#0567e8; color:#fff; border:none; padding:0.2rem 0.6rem; cursor:pointer; border-radius:5px; }
-  .trash-btn { background:transparent; border:none; color:#f44336; font-size:1.2rem; cursor:pointer; margin-left:5px; }
+  .trash-btn {
+    background: transparent;   /* no box */
+    border: none;               /* remove border */
+    color: #aaa;                /* light gray x */
+    font-size: 1rem;            /* smaller size if desired */
+    cursor: pointer;
+    margin-left: 5px;
+    padding: 0;                 /* remove padding */
+    line-height: 1;             /* tighten vertical spacing */
+}
   #subtotal { font-weight:bold; margin:1rem 0; text-align:right; color:#0567e8; }
   .checkout-btn { background:#0567e8; color:#fff; border:none; padding:0.6rem 1.2rem; border-radius:25px; width:100%; cursor:pointer; font-size:1rem; }
   .checkout-btn:hover { background:#055dd1; }

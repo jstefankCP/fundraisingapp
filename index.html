@@ -26,10 +26,10 @@
     © 2025 City Pop Fundraising. All rights reserved.
   </footer>
 
-  <!-- Shopify Buy Button with custom attributes -->
+  <!-- Shopify Buy Button with proper checkout attributes -->
   <script type="text/javascript">
   (function () {
-    // Extract URL parameters
+    // Extract fundraiser URL parameters
     function getFundraiserParams() {
       const params = {};
       const urlParams = new URLSearchParams(window.location.search);
@@ -118,19 +118,18 @@
                 total: "Subtotal",
                 button: "Checkout"
               },
-              // ✅ Automatically attach fundraiser data to checkout via URL attributes
+              // ✅ Properly attach fundraiser attributes via checkout URL
               events: {
                 afterInit: (cart) => {
                   cart.onCheckout = () => {
-                    let checkoutUrl = cart.model.webUrl;
-                    const url = new URL(checkoutUrl);
+                    const url = new URL(cart.model.webUrl);
 
                     if (fundraiserParams.fundraiser_id)
-                      url.searchParams.append("attributes[fundraiser_id]", fundraiserParams.fundraiser_id);
+                      url.searchParams.set("attributes[fundraiser_id]", fundraiserParams.fundraiser_id);
                     if (fundraiserParams.organization_id)
-                      url.searchParams.append("attributes[organization_id]", fundraiserParams.organization_id);
+                      url.searchParams.set("attributes[organization_id]", fundraiserParams.organization_id);
                     if (fundraiserParams.user_id)
-                      url.searchParams.append("attributes[user_id]", fundraiserParams.user_id);
+                      url.searchParams.set("attributes[user_id]", fundraiserParams.user_id);
 
                     cart.checkout.open(url.toString());
                   };

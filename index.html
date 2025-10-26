@@ -99,6 +99,106 @@
 </button>
 
 <script>
+  
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// 1️⃣ SUPABASE CONFIGURATION
+const SUPABASE_URL = "https://krjdhmpxojascmkimfru.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtyamRobXB4b2phc2Nta2ltZnJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMzU0MTEsImV4cCI6MjA3MzYxMTQxMX0.DoT40NSvuNZ2_HjwNfhA2qaxmWNXA57Isf1jK43TQP8";
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// 2️⃣ GET URL PARAMETERS
+function getParams() {
+  const params = {};
+  const urlParams = new URLSearchParams(window.location.search);
+  ['fundraiser_id','organization_id','user_id'].forEach(k=>{
+    const v = urlParams.get(k);
+    if(v) params[k]=v;
+  });
+  return params;
+}
+const params = getParams();
+
+// 3️⃣ FETCH FUNDRAISER DATA
+async function loadFundraiser() {
+  if(!params.fundraiser_id) {
+    document.getElementById('fundraiser-header').textContent = "Missing fundraiser ID.";
+    return;
+  }
+
+  const { data: fundraiser, error } = await supabase
+    .from('fundraisers')
+    .select('*')
+    .eq('id', params.fundraiser_id)
+    .single();
+
+  if (error || !fundraiser) {
+    document.getElementById('fundraiser-header').textContent = "Fundraiser not found.";
+    return;
+  }
+
+  const { data: org } = await supabase
+    .from('organizations')
+    .select('name')
+    .eq('id', fundraiser.organization_id)
+    .single();
+
+  const { data: user } = await supabase
+    .from('user_profiles')
+    .select('first_name, last_name')
+    .eq('id', fundraiser.user_id)
+    .single();
+
+  const { data: orders } = await supabase
+    .from('fundraiser_orders')
+    .select('commission_amount')
+    .eq('fundraiser_id', fundraiser.id);
+
+  const raised = orders?.reduce((sum, o) => sum + (o.commission_amount || 0), 0);
+  const goal = fundraiser.goal_amount || 0;
+  const progressPercent = goal > 0 ? ((raised / goal) * 100).toFixed(1) : 0;
+
+  const now = new Date();
+  const endDate = new Date(fundraiser.end_date);
+  const expired = endDate < now;
+
+  document.getElementById('fundraiser-header').textContent =
+    `${user?.first_name || "Support"} ${user?.last_name || ""}'s Fundraiser`;
+
+  document.getElementById('fundraiser-subheader').textContent =
+    `${fundraiser.name} — Benefiting ${org?.name || "our organization"}`;
+
+  document.getElementById('fundraiser-cause').textContent =
+    `Goal: $${goal.toLocaleString()} | Raised: $${raised.toLocaleString()} (${progressPercent}%)`;
+
+  if(expired) {
+    document.getElementById('fundraiser-closed').style.display = "block";
+    document.getElementById('product-grid').style.display = "none";
+  } else {
+    startCountdown(endDate);
+    renderProducts();
+  }
+}
+
+// 4️⃣ COUNTDOWN TIMER
+function startCountdown(endDate) {
+  const countdownEl = document.getElementById('fundraiser-countdown');
+  function updateCountdown() {
+    const now = new Date();
+    const diff = endDate - now;
+    if (diff <= 0) {
+      countdownEl.textContent = "This fundraiser has ended.";
+      return;
+    }
+    const days = Math.floor(diff / (1000*60*60*24));
+    const hours = Math.floor((diff / (1000*60*60)) % 24);
+    const mins = Math.floor((diff / (1000*60)) % 60);
+    countdownEl.textContent = `Ends in ${days}d ${hours}h ${mins}m`;
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 60000);
+}
+  
 const shopifyStore = "city-pop-fundraising.myshopify.com";
 
 const products = [
@@ -232,6 +332,10 @@ checkoutBtn.addEventListener("click", ()=>{
   });
   window.location.href = checkoutUrl.toString();
 });
+
+// 6️⃣ INITIALIZE PAGE
+loadFundraiser();
+
 </script>
 
 </body>

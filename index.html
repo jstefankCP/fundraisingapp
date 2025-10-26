@@ -78,39 +78,72 @@
 </head>
 <body>
 
-<h1>Support Our Fundraiser!</h1>
+<!-- Unique Fundraiser Header -->
+<div id="fundraiser-header" style="background:#0567e8; color:#fff; padding:1.5rem 2rem; border-radius:10px; margin-bottom:2rem; text-align:center;">
+  <!-- Fundraiser Cause -->
+  <div id="fundraiser-cause" style="font-size:1.2rem; font-weight:600; margin-bottom:0.3rem;">[Fundraiser Cause]</div>
 
-<!-- Dynamic Header -->
-<div id="fundraiser-header" style="background:#0567e8; color:#fff; padding:1rem 2rem; border-radius:10px; margin-bottom:2rem;">
-  <h1 style="margin:0 0 0.5rem 0; text-align:center;">Support Our Fundraiser!</h1>
-  <div style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:1rem; font-size:0.95rem;">
-    <div style="flex:1; min-width:150px;">
-      <strong>Organization:</strong> <span id="org-name">[Organization Name]</span>
-    </div>
-    <div style="flex:1; min-width:150px;">
-      <strong>Fundraiser ID:</strong> <span id="fundraiser-id">[Fundraiser ID]</span>
-    </div>
-    <div style="flex:1; min-width:150px;">
-      <strong>User:</strong> <span id="user-name">[User Name]</span>
-    </div>
+  <!-- Organization Name -->
+  <div id="org-name-display" style="font-size:2rem; font-weight:700; margin-bottom:0.5rem;">[Organization Name]</div>
+
+  <!-- Countdown Timer -->
+  <div style="font-size:0.95rem; margin-bottom:1rem;">
+    Ends in <span id="countdown-timer">XX days</span>
   </div>
-  <div style="margin-top:0.5rem; text-align:center; font-size:0.85rem;">
-    <em>Use the products below to support this fundraiser!</em>
+
+  <!-- Progress Bar -->
+  <div style="background:#fff; border-radius:20px; overflow:hidden; height:20px; max-width:400px; margin:0 auto;">
+    <div id="progress-bar" style="height:100%; width:0%; background:#66cbed; text-align:right; color:#fff; line-height:20px; font-size:0.8rem; padding-right:5px; border-radius:20px;">$0</div>
+  </div>
+  <div style="margin-top:0.5rem; font-size:0.85rem;">
+    Raised <span id="raised-amount">$0</span> of <span id="goal-amount">$1000</span>
   </div>
 </div>
 
 <script>
-  // Populate header placeholders dynamically
-  const orgEl = document.getElementById("org-name");
-  const fundEl = document.getElementById("fundraiser-id");
-  const userEl = document.getElementById("user-name");
+  // Dynamic header elements
+  const orgDisplay = document.getElementById("org-name-display");
+  const fundraiserCause = document.getElementById("fundraiser-cause");
+  const countdownEl = document.getElementById("countdown-timer");
+  const progressBar = document.getElementById("progress-bar");
+  const raisedEl = document.getElementById("raised-amount");
+  const goalEl = document.getElementById("goal-amount");
 
-  // Replace with actual dynamic values from URL or API
-  orgEl.textContent = fundraiserParams.organization_id || "[Organization Name]";
-  fundEl.textContent = fundraiserParams.fundraiser_id || "[Fundraiser ID]";
-  userEl.textContent = fundraiserParams.user_id || "[User Name]";
+  // Example dynamic data (replace with real API or URL params)
+  const fundraiserData = {
+    cause: "Support Our Local School!",
+    organization: fundraiserParams.organization_id || "[Organization Name]",
+    endDate: "2025-11-10", // YYYY-MM-DD
+    raised: 450,
+    goal: 1000
+  };
+
+  // Populate static text
+  fundraiserCause.textContent = fundraiserData.cause;
+  orgDisplay.textContent = fundraiserData.organization;
+  raisedEl.textContent = `$${fundraiserData.raised}`;
+  goalEl.textContent = `$${fundraiserData.goal}`;
+
+  // Progress bar calculation
+  const progressPercent = Math.min((fundraiserData.raised / fundraiserData.goal) * 100, 100);
+  progressBar.style.width = progressPercent + "%";
+  progressBar.textContent = `$${fundraiserData.raised}`;
+
+  // Countdown timer
+  function updateCountdown() {
+    const now = new Date();
+    const end = new Date(fundraiserData.endDate);
+    const diff = end - now;
+    if(diff <= 0){
+      countdownEl.textContent = "0 days";
+    } else {
+      const days = Math.floor(diff / (1000*60*60*24));
+      countdownEl.textContent = `${days} day${days!==1?"s":""}`;
+    }
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000*60*60); // Update every hour
 </script>
-
 
 <div class="product-grid" id="product-grid"></div>
 

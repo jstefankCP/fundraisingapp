@@ -119,7 +119,7 @@
 
   const fundraiserParams = getFundraiserParams();
 
-  async function loadFundraiser() {
+async function loadFundraiser() {
   if (!fundraiserParams.fundraiser_id) {
     console.error("No fundraiser_id in URL");
     return;
@@ -140,10 +140,7 @@
 
   console.log("Fundraiser data:", data);
 
-  // At this stage we can decide what to do next:
-  // - populate the page
-  // - display products
-  // - attach fundraiser info to cart attributes, etc.
+  // You can later use this data to populate the page
 }
 
 loadFundraiser();

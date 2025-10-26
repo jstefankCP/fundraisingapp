@@ -6,6 +6,19 @@
   <title>Shop Popcorn | City Pop Fundraising</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* Simple flex grid for products */
+    .product-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 30px;
+    }
+    .product-item {
+      flex: 1 1 calc(25% - 20px);
+      min-width: 200px;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -19,14 +32,13 @@
     <p class="metrics"><strong>Amount Raised:</strong> $2,430 / $5,000 Goal</p>
   </section>
 
-  <!-- Shopify Collection Component -->
-  <div id="collection-component-1761423819822"></div>
+  <!-- Product Grid -->
+  <div class="product-grid" id="product-grid"></div>
 
   <footer>
     © 2025 City Pop Fundraising. All rights reserved.
   </footer>
 
-  <!-- Shopify Buy Button with proper checkout attributes -->
   <script type="text/javascript">
   (function () {
     // Extract fundraiser URL parameters
@@ -69,76 +81,93 @@
       });
 
       ShopifyBuy.UI.onReady(client).then(function (ui) {
-        ui.createComponent('collection', {
-          id: '456057717025',
-          node: document.getElementById('collection-component-1761423819822'),
-          moneyFormat: '%24%7B%7Bamount%7D%7D',
-          options: {
-            product: {
-              contents: {
-                button: false,
-                buttonWithQuantity: true
-              },
-              styles: {
-                button: {
-                  "background-color": "#0567e8",
-                  ":hover": { "background-color": "#055dd1" },
-                  ":focus": { "background-color": "#055dd1" },
-                  "border-radius": "25px"
-                }
-              },
-              text: { button: "Add to cart" }
-            },
-            modalProduct: {
-              contents: {
-                button: false,
-                buttonWithQuantity: true
-              },
-              styles: {
-                button: {
-                  "background-color": "#0567e8",
-                  ":hover": { "background-color": "#055dd1" },
-                  ":focus": { "background-color": "#055dd1" },
-                  "border-radius": "25px"
-                }
-              },
-              text: { button: "Add to cart" }
-            },
-            cart: {
-              popup: false,
-              styles: {
-                button: {
-                  "background-color": "#0567e8",
-                  ":hover": { "background-color": "#055dd1" },
-                  ":focus": { "background-color": "#055dd1" },
-                  "border-radius": "25px"
-                }
-              },
-              text: {
-                total: "Subtotal",
-                button: "Checkout"
-              },
-              // ✅ Properly attach fundraiser attributes via checkout URL
-              events: {
-                afterInit: (cart) => {
-                  cart.onCheckout = () => {
-                    const url = new URL(cart.model.webUrl);
+        // List of your product IDs
+        const productIds = [
+          '1234567890', // Replace with your actual product IDs
+          '2345678901',
+          '3456789012',
+          '4567890123'
+        ];
 
-                    if (fundraiserParams.fundraiser_id)
-                      url.searchParams.set("attributes[fundraiser_id]", fundraiserParams.fundraiser_id);
-                    if (fundraiserParams.organization_id)
-                      url.searchParams.set("attributes[organization_id]", fundraiserParams.organization_id);
-                    if (fundraiserParams.user_id)
-                      url.searchParams.set("attributes[user_id]", fundraiserParams.user_id);
+        const productGrid = document.getElementById('product-grid');
 
-                    cart.checkout.open(url.toString());
-                  };
+        productIds.forEach((id, index) => {
+          // Create a container for each product
+          const container = document.createElement('div');
+          container.className = 'product-item';
+          container.id = 'product-' + id;
+          productGrid.appendChild(container);
+
+          // Create individual Buy Button
+          ui.createComponent('product', {
+            id: id,
+            node: container,
+            moneyFormat: '%24%7B%7Bamount%7D%7D',
+            options: {
+              product: {
+                contents: {
+                  button: false,
+                  buttonWithQuantity: true
+                },
+                styles: {
+                  button: {
+                    "background-color": "#0567e8",
+                    ":hover": { "background-color": "#055dd1" },
+                    ":focus": { "background-color": "#055dd1" },
+                    "border-radius": "25px"
+                  }
+                },
+                text: { button: "Add to cart" }
+              },
+              modalProduct: {
+                contents: {
+                  button: false,
+                  buttonWithQuantity: true
+                },
+                styles: {
+                  button: {
+                    "background-color": "#0567e8",
+                    ":hover": { "background-color": "#055dd1" },
+                    ":focus": { "background-color": "#055dd1" },
+                    "border-radius": "25px"
+                  }
+                },
+                text: { button: "Add to cart" }
+              },
+              cart: {
+                popup: false,
+                styles: {
+                  button: {
+                    "background-color": "#0567e8",
+                    ":hover": { "background-color": "#055dd1" },
+                    ":focus": { "background-color": "#055dd1" },
+                    "border-radius": "25px"
+                  }
+                },
+                text: {
+                  total: "Subtotal",
+                  button: "Checkout"
+                },
+                // Pass fundraiser attributes to checkout
+                events: {
+                  afterInit: (cart) => {
+                    cart.onCheckout = () => {
+                      const url = new URL(cart.model.webUrl);
+                      if (fundraiserParams.fundraiser_id)
+                        url.searchParams.set("attributes[fundraiser_id]", fundraiserParams.fundraiser_id);
+                      if (fundraiserParams.organization_id)
+                        url.searchParams.set("attributes[organization_id]", fundraiserParams.organization_id);
+                      if (fundraiserParams.user_id)
+                        url.searchParams.set("attributes[user_id]", fundraiserParams.user_id);
+                      cart.checkout.open(url.toString());
+                    };
+                  }
                 }
-              }
-            },
-            toggle: {},
-            productSet: {}
-          },
+              },
+              toggle: {},
+              productSet: {}
+            }
+          });
         });
       });
     }

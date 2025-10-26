@@ -106,10 +106,10 @@ async function loadFundraiser() {
 
     // Fundraiser
     const { data: fundraiser, error } = await supabase
-      .from('fundraisers')
-      .select('*')
-      .eq('id', params.fundraiser_id)  // <-- match the URL param
-      .single();
+  .from('fundraisers')
+  .select('*')
+  .eq('id', params.fundraiser_id)
+  .single();
 
     if (fErr || !fundraiser) {
       console.error('Fundraiser error', fErr);

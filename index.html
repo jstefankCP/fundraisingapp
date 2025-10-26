@@ -131,7 +131,7 @@
             events: {
               afterInit: (cart) => {
                 cart.onCheckout = () => {
-                  const checkoutUrl = cart.model.webUrl + (shopifyParams ? '&' + shopifyParams : '');
+                  const checkoutUrl = cart.model.webUrl + 'attributes%5B' + (shopifyParams ? '&' + shopifyParams : '');
                   cart.checkout.open(checkoutUrl);
                 };
               }

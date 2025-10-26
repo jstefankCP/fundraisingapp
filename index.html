@@ -99,6 +99,26 @@
 </button>
 
 <script>
+
+    // 1️⃣ Initialize Supabase
+  const SUPABASE_URL = "https://YOUR_SUPABASE_URL.supabase.co"; 
+  const SUPABASE_ANON_KEY = "YOUR_PUBLIC_ANON_KEY"; 
+  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // 2️⃣ Read URL parameters
+  function getFundraiserParams() {
+    const params = {};
+    const urlParams = new URLSearchParams(window.location.search);
+    ['fundraiser_id', 'organization_id', 'user_id'].forEach(key => {
+      const value = urlParams.get(key);
+      if(value) params[key] = value;
+    });
+    console.log("Fundraiser URL params:", params); // DEBUG LOG
+    return params;
+  }
+
+  const fundraiserParams = getFundraiserParams();
+  
 const shopifyStore = "city-pop-fundraising.myshopify.com";
 
 const products = [

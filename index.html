@@ -81,24 +81,24 @@
       });
 
       ShopifyBuy.UI.onReady(client).then(function (ui) {
-        // List of your product IDs
+        // Use your actual product IDs from Shopify
         const productIds = [
-          '1234567890', // Replace with your actual product IDs
-          '2345678901',
-          '3456789012',
-          '4567890123'
+          '456057717025', // Product 1
+          '456057717026', // Product 2
+          '456057717027', // Product 3
+          '456057717028'  // Product 4
         ];
 
         const productGrid = document.getElementById('product-grid');
 
-        productIds.forEach((id, index) => {
-          // Create a container for each product
+        productIds.forEach((id) => {
+          // Create container div for each product
           const container = document.createElement('div');
           container.className = 'product-item';
           container.id = 'product-' + id;
           productGrid.appendChild(container);
 
-          // Create individual Buy Button
+          // Create individual Buy Button for each product
           ui.createComponent('product', {
             id: id,
             node: container,
@@ -148,17 +148,18 @@
                   total: "Subtotal",
                   button: "Checkout"
                 },
-                // Pass fundraiser attributes to checkout
                 events: {
                   afterInit: (cart) => {
                     cart.onCheckout = () => {
                       const url = new URL(cart.model.webUrl);
+
                       if (fundraiserParams.fundraiser_id)
                         url.searchParams.set("attributes[fundraiser_id]", fundraiserParams.fundraiser_id);
                       if (fundraiserParams.organization_id)
                         url.searchParams.set("attributes[organization_id]", fundraiserParams.organization_id);
                       if (fundraiserParams.user_id)
                         url.searchParams.set("attributes[user_id]", fundraiserParams.user_id);
+
                       cart.checkout.open(url.toString());
                     };
                   }

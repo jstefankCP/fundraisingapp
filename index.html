@@ -172,21 +172,13 @@ async function fetchOrganizationName(orgId) {
 // Fetch user name
 async function fetchUserName(userId) {
   if (!userId) return;
-
-  const { data: user, error: userError } = await supabaseClient
+  const { data: user, error } = await supabaseClient
     .from('user_profiles')
-    .select('first_name, last_name')
-    .select('first_name')
+    .select('first_name,last_name')
     .eq('id', userId)
     .single();
-
-  if (userError) {
-    console.error('Error fetching user:', userError.message);
-    return;
-  }
-
+  if (error) return console.error(error.message);
   userIdDisplay.textContent = `${user.first_name} ${user.last_name}`;
-  userIdDisplay.textContent = `${user.first_name}`;
 }
 
 // Trigger the fetch

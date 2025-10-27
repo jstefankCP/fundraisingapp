@@ -70,7 +70,7 @@
   <div id="fundraiser-cause">[Loading fundraiser...]</div>
   <div id="org-id-display">[organization_id]</div>
   <div id="user-id-display">[user_id]</div>
-  <div>Ends in <span id="countdown-timer">1 day</span></div>
+  <div>Ends in <span id="countdown-timer">[countdownEl]</span></div>
   <div id="progress-bar-container">
     <div id="progress-bar">$0</div>
   </div>
@@ -141,7 +141,7 @@ async function fetchFundraiserInfo() {
   progressBar.style.width = "0%";
   progressBar.textContent = "$0";
 
-  fundraiserEndDate = new Date(fundraiser.end_date);
+  fundraiserEndDate = new Date(fundraiser.end_date+"T23:59:59);
 }
 
 /* --- Fetch Organization --- */
@@ -177,11 +177,12 @@ fetchUserName(fundraiserParams.user_id);
 function updateCountdown() {
   if (!fundraiserEndDate) return;
   const now = new Date();
-  const diff = fundraiserEndDate - now;
-  const days = diff > 0 ? Math.ceil(diff / (1000*60*60*24)) : 0;
-  countdownEl.textContent = `${days} day${days !== 1 ? "s" : ""}`;
+  const days = Math.floor((fundraiserEndDate-now)/(24*3600*1000));
+  //> 0 ? Math.ceil(diff / (1000*60*60*24)) : 0;
+  countdownEl.textContent = days;
+  //countdownEl.textContent = `${days} day${days !== 1 ? "s" : ""}`;
 }
-setInterval(updateCountdown, 1000*60*60);
+//setInterval(updateCountdown, 1000*60*60);
 updateCountdown();
 
 /* --- Products & Cart --- */

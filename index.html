@@ -177,12 +177,12 @@ fetchUserName(fundraiserParams.user_id);
 function updateCountdown() {
   if (!fundraiserEndDate) return;
   const now = new Date();
-  const days = Math.floor((fundraiserEndDate-now)/(24*3600*1000));
-  //> 0 ? Math.ceil(diff / (1000*60*60*24)) : 0;
+  const days = Math.floor((fundraiserEndDate-now)/(24*3600*1000)); 
+  /* > 0 ? Math.ceil(diff / (1000*60*60*24)) : 0; */
   countdownEl.textContent = days;
-  //countdownEl.textContent = `${days} day${days !== 1 ? "s" : ""}`;
+  /* countdownEl.textContent = `${days} day${days !== 1 ? "s" : ""}`; */
 }
-//setInterval(updateCountdown, 1000*60*60);
+/* setInterval(updateCountdown, 1000*60*60); */
 updateCountdown();
 
 /* --- Products & Cart --- */

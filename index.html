@@ -142,7 +142,7 @@ progressBar.style.width = "0%";
 progressBar.textContent = "$0";
 
 fundraiserEndDate = fundraiser.end_date;
-endDateEl.textContent = "Ends on " + fundraiser.end_date;
+endDateEl.textContent = "ends on " + fundraiser.end_date;
 
   //fetchOrganizationName(fundraiser.organization_id);
   //fetchUserName(fundraiser.user_id);
@@ -169,8 +169,8 @@ const { data: user, error } = await supabaseClient
 .eq('id', userId)
 .single();
 if (error) { console.error(error); return; }
-  userIdDisplay.textContent = `${user.first_name} ${user.last_name}`;
-  userIdDisplay.textContent = user.first_name + " " + user.last_name;
+  //userIdDisplay.textContent = `${user.first_name} ${user.last_name}`;
+  userIdDisplay.textContent = "supporting " + user.first_name + " " + user.last_name;
 }
 
 /* --- Trigger Fetch --- */

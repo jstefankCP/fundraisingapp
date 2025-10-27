@@ -70,7 +70,7 @@ h1 { color: #0567e8; text-align:center; margin-bottom:2rem; }
 <div id="fundraiser-cause">[Loading fundraiser...]</div>
 <div id="org-id-display">[organization_id]</div>
 <div id="user-id-display">[user_id]</div>
-<div>Ends on <span id="countdown-timer">[end_date]</span></div>
+<div id="fundraiserEndDate">[end_date]</div>
 <div id="progress-bar-container">
 <div id="progress-bar">$0</div>
 </div>
@@ -142,7 +142,7 @@ goalEl.textContent = `$${fundraiser.goal_amount}`;
 progressBar.style.width = "0%";
 progressBar.textContent = "$0";
 
-fundraiserEndDate = new Date(fundraiser.end_date);
+fundraiserEndDate = fundraiser.end_date;
 
   fetchOrganizationName(fundraiser.organization_id);
   fetchUserName(fundraiser.user_id);

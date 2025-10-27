@@ -327,7 +327,26 @@ window.open(`https://${shopifyStore}/cart?${params.toString()}`, "_blank");
 
 <script>
   const modalContent = {
-    accessibility: "Sample text for Accessibility section. Replace with your content here.",
+    accessibility: <div style="max-width: 900px; margin: 0px auto; padding-top: 40px; padding-right: 20px; padding-bottom: 40px; text-align: center;">
+<!-- Title -->
+<h1 style="color: #e63946; font-size: 36px; margin-bottom: 20px;"><span style="color: rgb(5, 103, 232);">Our Commitment to Accessibility</span></h1>
+<!-- Content -->
+<p style="font-size: 18px; line-height: 1.6; margin-bottom: 25px;">City Pop is committed to making our website and all of our products accessible and user-friendly for everyone. We want all of our customers to enjoy the fun, flavor, and joy that popcorn brings — without barriers.</p>
+<p style="font-size: 18px; line-height: 1.6; margin-bottom: 25px;">If you are having difficulty viewing or navigating the content on our website, or notice any content, feature, or functionality that you believe is not fully accessible to people with disabilities, please reach out to us. Your feedback helps us continually improve and ensure accessibility for all.</p>
+<!-- Contact Info -->
+<div style="background-color: #fff3e0; padding: 25px; border-radius: 15px; display: inline-block; margin-bottom: 30px;">
+<p style="font-size: 20px; font-weight: bold; color: #333; margin: 0 0 10px 0;">Contact Us:</p>
+<p style="margin: 5px 0; font-size: 18px;">📞 Call us: <a href="tel:3033359582" style="color: #e63946; text-decoration: none;">303-335-9582</a></p>
+<p style="margin: 5px 0; font-size: 18px;">✉️ Email us: <a href="mailto:info@citypopdenver.com" style="color: #e63946; text-decoration: none;">info@citypopdenver.com</a></p>
+</div>
+<!-- Closing -->
+<p style="font-size: 16px; line-height: 1.5; color: #555;">Please include “Disabled Access” in the subject line of your email and provide a description of the specific feature you feel is not fully accessible or a suggestion for improvement. We take your feedback seriously and will carefully consider it as we continue to enhance accessibility for all City Pop fans. Thank you for helping us make our site better!</p>
+<!-- Footer --><footer style="margin-top: 40px; font-size: 14px; color: #777;">
+<p>© <span id="year"></span> City Pop • All Rights Reserved</p>
+</footer>
+</div>
+<!-- Script for Dynamic Year -->
+<p> </p>,
     returns: "Sample text for Return & Refund Policy. Replace with your content here.",
     privacy: "Sample text for Privacy Policy. Replace with your content here.",
     terms: "Sample text for Terms of Service. Replace with your content here.",

@@ -120,7 +120,7 @@ const userIdDisplay = document.getElementById("user-id-display");
 const progressBar = document.getElementById("progress-bar");
 const raisedEl = document.getElementById("raised-amount");
 const goalEl = document.getElementById("goal-amount");
-const countdownEl = document.getElementById("fundraiserEndDate");
+const countdownEl = document.getElementById("countdown-timer");
 
 let fundraiserEndDate = null;
 
@@ -143,6 +143,7 @@ progressBar.style.width = "0%";
 progressBar.textContent = "$0";
 
 fundraiserEndDate = fundraiser.end_date;
+countdownEl.textContent = fundraiserEndDate;
 
   //fetchOrganizationName(fundraiser.organization_id);
   //fetchUserName(fundraiser.user_id);
@@ -184,7 +185,7 @@ if (!fundraiserEndDate) return;
 const now = new Date();
 const diff = fundraiserEndDate - now;
 const days = diff > 0 ? Math.ceil(diff / (1000*60*60*24)) : 0;
-countdownEl.textContent = `${days} day${days !== 1 ? "s" : ""}`;
+//countdownEl.textContent = `${days} day${days !== 1 ? "s" : ""}`;
 }
 setInterval(updateCountdown, 1000*60*60);
 updateCountdown();

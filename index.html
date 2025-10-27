@@ -12,7 +12,7 @@ h1 { color: #0567e8; text-align:center; margin-bottom:2rem; }
 #fundraiser-header { background:#0567e8; color:#fff; padding:1.5rem 2rem; border-radius:10px; margin-bottom:2rem; text-align:center; }
 #fundraiser-header div { margin-bottom:0.3rem; }
 #fundraiser-cause { font-size:1.2rem; font-weight:600; }
-#org-id-display, #user-id-display, #countdown-timer { font-size:1rem; font-weight:500; }
+#org-id-display, #user-id-display, #end-date-display { font-size:1rem; font-weight:500; }
 #progress-bar-container { background:#fff; border-radius:20px; overflow:hidden; height:20px; max-width:400px; margin:0.5rem auto; }
 #progress-bar { height:100%; width:0%; background:#66cbed; text-align:right; color:#fff; line-height:20px; font-size:0.8rem; padding-right:5px; border-radius:20px; }
 
@@ -69,7 +69,7 @@ h1 { color: #0567e8; text-align:center; margin-bottom:2rem; }
 <div id="fundraiser-cause">[Loading fundraiser...]</div>
 <div id="org-id-display">[organization_id]</div>
 <div id="user-id-display">[user_id]</div>
-<div id="fundraiserEndDate">[end_date_]</div>
+<div id="end-date-display">[end_date]</div>
 <div id="progress-bar-container">
 <div id="progress-bar">$0</div>
 </div>
@@ -119,7 +119,7 @@ const userIdDisplay = document.getElementById("user-id-display");
 const progressBar = document.getElementById("progress-bar");
 const raisedEl = document.getElementById("raised-amount");
 const goalEl = document.getElementById("goal-amount");
-const countdownEl = document.getElementById("countdown-timer");
+const endDateEl = document.getElementById("end-date-display");
 
 let fundraiserEndDate = null;
 
@@ -142,7 +142,7 @@ progressBar.style.width = "0%";
 progressBar.textContent = "$0";
 
 fundraiserEndDate = fundraiser.end_date;
-countdownEl.textContent = fundraiser.end_date;
+endDateEl.textContent = fundraiser.end_date;
 
   //fetchOrganizationName(fundraiser.organization_id);
   //fetchUserName(fundraiser.user_id);

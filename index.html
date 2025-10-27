@@ -131,7 +131,7 @@ async function fetchFundraiserInfo() {
 
   const { data: fundraiser, error: fundraiserError } = await supabaseClient
     .from('fundraisers')
-    .select('name, goal_amount')
+    .select('name, goal_amount, organization_id, user_id')
     .eq('id', fundraiserParams.fundraiser_id)
     .single();
 
@@ -175,7 +175,8 @@ async function fetchUserName(userId) {
 
   const { data: user, error: userError } = await supabaseClient
     .from('user_profiles')
-    .select('first_name', last_name')
+    .select('first_name, last_name')
+    .select('first_name')
     .eq('id', userId)
     .single();
 
@@ -185,6 +186,7 @@ async function fetchUserName(userId) {
   }
 
   userIdDisplay.textContent = `${user.first_name} ${user.last_name}`;
+  userIdDisplay.textContent = `${user.first_name}`;
 }
 
 // Trigger the fetch

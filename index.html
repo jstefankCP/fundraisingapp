@@ -130,7 +130,7 @@ async function fetchFundraiserInfo() {
 
   const { data: fundraiser, error } = await supabaseClient
     .from('fundraisers')
-    .select('name, goal_amount, organization_id, user_id, end_date')
+    .select('name, goal_amount, organization_id, end_date')
     .eq('id', fundraiserParams.fundraiser_id)
     .single();
 
@@ -168,7 +168,7 @@ async function fetchUserName(userId) {
     .eq('id', userId)
     .single();
   if (error) { console.error(error); return; }
-  userIdDisplay.textContent = `${user.first_name} + ${user.last_name}`;
+  userIdDisplay.textContent = `${user.first_name} ${user.last_name}`;
 }
 
 /* --- Trigger Fetch --- */

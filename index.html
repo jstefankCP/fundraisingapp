@@ -171,31 +171,24 @@ async function fetchOrganizationName(orgId) {
 
 // Fetch user name
 async function fetchUserName(userId) {
-  if (!userId) return; // safeguard
+  if (!userId) return;
 
-  try {
-    const { data, error } = await supabaseClient
-      .from('user_profiles')
-      .select('first_name,last_name')
-      .eq('id', userId)
-      .single();
+  const { data: user, error: userError } = await supabaseClient
+    .from('user_profiles')
+    .select('first_name, last_name')
+    .select('first_name')
+    .eq('id', userId)
+    .single();
 
-    if (error) {
-      console.error("Error fetching user:", error.message);
-      return;
-    }
-
-    if (data && data.first_name && data.last_name) {
-      userIdDisplay.textContent = `${data.first_name} ${data.last_name}`;
-    } else {
-      console.warn("User data missing:", data);
-      userIdDisplay.textContent = "[Name not found]";
-    }
-  } catch (err) {
-    console.error("Unexpected error:", err);
+  if (userError) {
+    console.error('Error fetching user:', userError.message);
+    return;
   }
+
+  userIdDisplay.textContent = `${user.first_name} ${user.last_name}`;
+  userIdDisplay.textContent = `${user.first_name}`;
 }
-  
+
 // Trigger the fetch
 fetchFundraiserInfo();
 

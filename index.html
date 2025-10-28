@@ -44,6 +44,7 @@ h1 { color: #0567e8; text-align:center; margin-bottom:2rem; }
 .checkout-btn { background:#0567e8; color:#fff; border:none; padding:0.6rem 1.2rem; border-radius:25px; width:100%; cursor:pointer; font-size:1rem; }
 .checkout-btn:hover { background:#055dd1; }
 #cart-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.3); z-index:999; }
+  
 
 /* Floating Cart Button (mobile only) */
 #floating-cart-btn { position: fixed; bottom: 20px; right: 20px; background-color: #66cbed; color: #fff; border: none; border-radius: 50%; width: 60px; height: 60px; font-size: 1.5rem; box-shadow: 0 4px 10px rgba(0,0,0,0.2); display: none; align-items: center; justify-content: center; cursor: pointer; z-index: 1100; }
@@ -162,11 +163,37 @@ h1 { color: #0567e8; text-align:center; margin-bottom:2rem; }
 
 <!-- Slide-out cart -->
 <div id="cart-overlay"></div>
-<div id="cart-slideout">
-<button class="continue-shopping" onclick="closeCart()">← Continue Shopping</button>
-<h2>Your Cart</h2>
 <div id="cart-items"></div>
+
+<!-- What If Fundraiser Contribution -->
+<div id="what-if-container" style="
+  display:none;
+  margin:1rem 0;
+  padding:0.8rem 1rem;
+  background: rgba(102,203,237,0.1);
+  border-radius: 10px;
+  font-weight: 600;
+  text-align:center;
+">
+  <div id="what-if-text"></div>
+  <div id="what-if-bar-container" style="
+    background: rgba(0,0,0,0.1);
+    border-radius: 25px;
+    height: 20px;
+    margin-top:0.5rem;
+    overflow:hidden;
+  ">
+    <div id="what-if-bar" style="
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, #ffdd00, #ff7a00);
+      transition: width 0.8s ease-in-out;
+    "></div>
+  </div>
+</div>
+
 <div id="subtotal">Subtotal: $0</div>
+
 <button id="checkout-btn" class="checkout-btn">Secure Checkout</button>
 </div>
 
@@ -439,36 +466,111 @@ function openCart(){ cartSlideout.style.right="0"; cartOverlay.style.display="bl
 function closeCart(){ cartSlideout.style.right="-100%"; cartOverlay.style.display="none"; }
 cartOverlay.addEventListener("click", closeCart);
 
-function renderCart(){
-  cartItemsDiv.innerHTML="";
+function renderCart() {
+  cartItemsDiv.innerHTML = "";
   let subtotal = 0;
-  for(const [variantId, qty] of Object.entries(cart)){
-    if(qty>0){
-      const product = products.find(p=>p.variantId===variantId);
-      subtotal += product.price*qty;
-      const itemDiv = document.createElement("div"); itemDiv.className="cart-item";
 
-      const img = document.createElement("img"); img.src=product.img;
-      const title = document.createElement("div"); title.className="cart-item-title"; title.textContent=product.title;
+  // Loop through cart items
+  for (const [variantId, qty] of Object.entries(cart)) {
+    if (qty > 0) {
+      const product = products.find(p => p.variantId === variantId);
+      subtotal += product.price * qty;
 
-      const controls = document.createElement("div"); controls.className="cart-item-controls";
-      const minus = document.createElement("button"); minus.textContent="-";
-      const qtySpan = document.createElement("span"); qtySpan.textContent=qty;
-      const plus = document.createElement("button"); plus.textContent="+";
-      const trash = document.createElement("button"); trash.className="trash-btn"; trash.textContent="x";
+      const itemDiv = document.createElement("div");
+      itemDiv.className = "cart-item";
 
-      minus.addEventListener("click",()=>{ if(cart[variantId]>1){ cart[variantId]--; renderCart(); } });
-      plus.addEventListener("click",()=>{ cart[variantId]++; renderCart(); });
-      trash.addEventListener("click",()=>{ delete cart[variantId]; renderCart(); });
+      const img = document.createElement("img");
+      img.src = product.img;
 
-      controls.appendChild(minus); controls.appendChild(qtySpan); controls.appendChild(plus); controls.appendChild(trash);
-      itemDiv.appendChild(img); itemDiv.appendChild(title); itemDiv.appendChild(controls);
+      const title = document.createElement("div");
+      title.className = "cart-item-title";
+      title.textContent = product.title;
+
+      const controls = document.createElement("div");
+      controls.className = "cart-item-controls";
+
+      const minus = document.createElement("button");
+      minus.textContent = "-";
+
+      const qtySpan = document.createElement("span");
+      qtySpan.textContent = qty;
+
+      const plus = document.createElement("button");
+      plus.textContent = "+";
+
+      const trash = document.createElement("button");
+      trash.className = "trash-btn";
+      trash.textContent = "x";
+
+      minus.addEventListener("click", () => {
+        if (cart[variantId] > 1) {
+          cart[variantId]--;
+          renderCart();
+        }
+      });
+
+      plus.addEventListener("click", () => {
+        cart[variantId]++;
+        renderCart();
+      });
+
+      trash.addEventListener("click", () => {
+        delete cart[variantId];
+        renderCart();
+      });
+
+      controls.appendChild(minus);
+      controls.appendChild(qtySpan);
+      controls.appendChild(plus);
+      controls.appendChild(trash);
+
+      itemDiv.appendChild(img);
+      itemDiv.appendChild(title);
+      itemDiv.appendChild(controls);
+
       cartItemsDiv.appendChild(itemDiv);
     }
   }
-  subtotalDiv.textContent=`Subtotal: $${subtotal}`;
+
+  // Update subtotal
+  subtotalDiv.textContent = `Subtotal: $${subtotal.toFixed(2)}`;
+
+  // Update cart count
   updateCartCount();
+
+  /* --- WHAT IF FUNDRAISER CALCULATION --- */
+  const whatIfContainer = document.getElementById("what-if-container");
+  const whatIfText = document.getElementById("what-if-text");
+  const whatIfBar = document.getElementById("what-if-bar");
+
+  if (subtotal > 0 && raisedEl && goalEl) {
+    // 50% of subtotal contributes to fundraiser
+    const contribution = subtotal * 0.5;
+
+    // Current total raised
+    const currentRaised = parseFloat(raisedEl.textContent.replace(/\$|,/g, "")) || 0;
+
+    // Fundraiser goal
+    const goal = parseFloat(goalEl.textContent.replace(/\$|,/g, "")) || 1;
+
+    // New "what if" total and percentage
+    const whatIfTotal = currentRaised + contribution;
+    const whatIfPercent = Math.min((whatIfTotal / goal) * 100, 100);
+
+    // Update text
+    whatIfText.textContent = `This order would contribute an additional $${contribution.toLocaleString("en-US", { style:"currency", currency:"USD" }).replace("$","$")} and help push the fundraising goal to ${whatIfPercent.toFixed(0)}%`;
+
+    // Show container
+    whatIfContainer.style.display = "block";
+
+    // Animate progress bar
+    whatIfBar.style.width = `${whatIfPercent}%`;
+  } else {
+    // Hide if cart empty
+    whatIfContainer.style.display = "none";
+  }
 }
+
 
 function updateCartCount() {
   const totalItems = Object.values(cart).reduce((a,b)=>a+b,0);

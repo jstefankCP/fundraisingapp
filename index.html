@@ -239,6 +239,7 @@ div.querySelector(".add-to-cart-btn").onclick = () => { addToCart(product, qty);
 grid.appendChild(div);
 });
 
+<script>
 /* --- Cart Functions --- */
 const cartSlide = document.getElementById("cart-slideout");
 const overlay = document.getElementById("cart-overlay");
@@ -246,64 +247,106 @@ const cartCountEl = document.getElementById("cart-count");
 const cartItemsEl = document.getElementById("cart-items");
 const subtotalEl = document.getElementById("subtotal");
 
+const cart = {};
+
 function addToCart(product, qty){
-if(cart[product.variantId]) cart[product.variantId].qty+=qty;
-else cart[product.variantId]={product, qty};
-updateCartDisplay();
+  if(cart[product.variantId]){
+    cart[product.variantId].qty += qty;
+  } else {
+    cart[product.variantId] = { product, qty };
+  }
+  updateCartDisplay();
 }
 
 function updateCartDisplay(){
-cartItemsEl.innerHTML="";
-let subtotal=0;
-let count=0;
-for(const key in cart){
-const item = cart[key];
-subtotal += item.product.price*item.qty;
-count += item.qty;
-const div=document.createElement("div"); div.className="cart-item";
-div.innerHTML=`
-     <img src="${item.product.img}" />
-     <div class="cart-item-title">${item.product.title}</div>
-     <div class="cart-item-controls">
-       <button onclick="changeQty('${key}', -1)">-</button>
-       <span>${item.qty}</span>
-       <button onclick="changeQty('${key}',1)">+</button>
-       <button class="trash-btn" onclick="removeItem('${key}')">🗑️</button>
-     </div>
-   `;
-cartItemsEl.appendChild(div);
-}
-subtotalEl.textContent=`Subtotal: $${subtotal}`;
-cartCountEl.textContent=count;
+  cartItemsEl.innerHTML = "";
+  let subtotal = 0;
+  let count = 0;
+  for(const key in cart){
+    const item = cart[key];
+    subtotal += item.product.price * item.qty;
+    count += item.qty;
+
+    const div = document.createElement("div");
+    div.className = "cart-item";
+    div.innerHTML = `
+      <img src="${item.product.img}" />
+      <div class="cart-item-title">${item.product.title}</div>
+      <div class="cart-item-controls">
+        <button onclick="changeQty('${key}', -1)">-</button>
+        <span>${item.qty}</span>
+        <button onclick="changeQty('${key}', 1)">+</button>
+        <button class="trash-btn" onclick="removeItem('${key}')">🗑️</button>
+      </div>
+    `;
+    cartItemsEl.appendChild(div);
+  }
+  subtotalEl.textContent = `Subtotal: $${subtotal}`;
+  cartCountEl.textContent = count;
 }
 
 function changeQty(key, delta){
-cart[key].qty+=delta;
-if(cart[key].qty<=0) delete cart[key];
-updateCartDisplay();
+  if(cart[key]){
+    cart[key].qty += delta;
+    if(cart[key].qty <= 0) delete cart[key];
+    updateCartDisplay();
+  }
 }
 
-function removeItem(key){ delete cart[key]; updateCartDisplay(); }
+function removeItem(key){
+  if(cart[key]){
+    delete cart[key];
+    updateCartDisplay();
+  }
+}
 
 function openCart(){ cartSlide.style.right="0"; overlay.style.display="block"; }
 function closeCart(){ cartSlide.style.right="-100%"; overlay.style.display="none"; }
-overlay.onclick=closeCart;
+overlay.onclick = closeCart;
 
 /* --- Checkout --- */
 document.getElementById("checkout-btn").onclick = () => {
-  const items = Object.values(cart).map(item=>(`${item.product.variantId}:${item.qty}`)).join(',');
-  if (!items) return alert("Your cart is empty!");
+  const items = Object.values(cart).map(item => `${item.product.variantId}:${item.qty}`).join(',');
+  if(!items) return alert("Your cart is empty!");
 
-  // Build Shopify attributes so they become order attributes in admin
   const attr = new URLSearchParams();
   attr.set("CityPopApp", "true");
-  if (fundraiserParams.fundraiser_id) attr.set("attributes[fundraiser_id]", fundraiserParams.fundraiser_id);
-  if (fundraiserParams.organization_id) attr.set("attributes[organization_id]", fundraiserParams.organization_id);
-  if (fundraiserParams.user_id) attr.set("attributes[user_id]", fundraiserParams.user_id);
+  if(fundraiserParams.fundraiser_id) attr.set("attributes[fundraiser_id]", fundraiserParams.fundraiser_id);
+  if(fundraiserParams.organization_id) attr.set("attributes[organization_id]", fundraiserParams.organization_id);
+  if(fundraiserParams.user_id) attr.set("attributes[user_id]", fundraiserParams.user_id);
 
   window.open(`https://${shopifyStore}/cart/${items}?${attr.toString()}`, "_blank");
 };
+
+/* --- Render Products --- */
+products.forEach(product => {
+  const div = document.createElement("div");
+  div.className = "product-item";
+
+  div.innerHTML = `
+    <img src="${product.img}" />
+    <div class="product-title">${product.title}</div>
+    <div class="product-price">$${product.price}</div>
+    <div class="nutrition-link">Nutrition Info</div>
+    <div class="quantity-selector">
+      <button class="minus">-</button>
+      <span class="qty">1</span>
+      <button class="plus">+</button>
+    </div>
+    <button class="add-to-cart-btn">Add to Cart</button>
+  `;
+
+  let qty = 1;
+  const qtyDisplay = div.querySelector(".qty");
+
+  div.querySelector(".plus").onclick = () => { qty++; qtyDisplay.textContent = qty; };
+  div.querySelector(".minus").onclick = () => { if(qty>1){qty--; qtyDisplay.textContent=qty;} };
+  div.querySelector(".add-to-cart-btn").onclick = () => { addToCart(product, qty); qty = 1; qtyDisplay.textContent="1"; };
+
+  grid.appendChild(div);
+});
 </script>
+
 
 <!-- Footer -->
 <footer style="background:#66cbed; padding:2rem; text-align:center; font-family:sans-serif; color:white; margin-top:2rem;">

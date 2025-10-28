@@ -117,6 +117,26 @@ h1 { color: #0567e8; text-align:center; margin-bottom:2rem; }
 .fundraiser-stats span {
   font-weight: 700;
 }
+
+  /* Profile Photo Styling */
+#user-profile-photo-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: -60px; /* makes it overlap the header */
+}
+
+#user-profile-photo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  background: #e0e0e0 url('https://cdn-icons-png.flaticon.com/512/847/847969.png') center/50% no-repeat;
+}
+
   
 </style>
 
@@ -132,6 +152,11 @@ h1 { color: #0567e8; text-align:center; margin-bottom:2rem; }
   <div id="user-id-display"> </div>
   <div id="end-date-display"> </div>
 
+  <!-- Profile Photo -->
+<div id="user-profile-photo-container">
+  <img id="user-profile-photo" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User Profile Photo">
+</div>
+  
   <div id="progress-bar-container">
     <div id="progress-bar"></div>
   </div>
@@ -269,15 +294,23 @@ orgIdDisplay.textContent = org.name;
 
 /* --- Fetch User --- */
 async function fetchUserName(userId) {
-if (!userId) return;
-const { data: user, error } = await supabaseClient
-.from('user_profiles')
-.select('first_name, last_name')
-.eq('id', userId)
-.single();
-if (error) { console.error(error); return; }
-  //userIdDisplay.textContent = `${user.first_name} ${user.last_name}`;
-  userIdDisplay.textContent = "supporting " + user.first_name + " " + user.last_name;
+  if (!userId) return;
+  const { data: user, error } = await supabaseClient
+    .from('user_profiles')
+    .select('first_name, last_name, profile_photo_url')
+    .eq('id', userId)
+    .single();
+
+  if (error) { console.error(error); return; }
+
+  document.getElementById("user-id-display").textContent =
+    "supporting " + user.first_name + " " + user.last_name;
+
+  // Profile photo
+  const photoEl = document.getElementById("user-profile-photo");
+  if (user && user.profile_photo_url) {
+    photoEl.src = user.profile_photo_url;
+  }
 }
 
 /* --- Fetch Total Raised --- */

@@ -291,12 +291,20 @@ overlay.onclick=closeCart;
 
 /* --- Checkout --- */
 document.getElementById("checkout-btn").onclick = () => {
-  const items = Object.values(cart).map(item => `${item.product.variantId}:${item.qty}`).join(',');
-  if (!items) return alert("Your cart is empty!");
+  const cartItems = Object.values(cart);
+  if (!cartItems.length) return alert("Your cart is empty!");
+
+  // Build Shopify cart URL
+  const shopifyItems = cartItems.map(item => `${item.product.variantId}:${item.qty}`).join(',');
+
   // Preserve fundraiser params
-  const extra = new URLSearchParams(fundraiserParams).toString();
-  window.open(`https://${shopifyStore}/cart/${items}?CityPopApp=true${extra ? "&" + extra : ""}`, "_blank");
+  const extraParams = new URLSearchParams(fundraiserParams).toString();
+
+  // Open cart URL in a new tab
+  const url = `https://${shopifyStore}/cart/${shopifyItems}?CityPopApp=true${extraParams ? "&" + extraParams : ""}`;
+  window.open(url, "_blank");
 };
+
 </script>
 
 <!-- Footer -->

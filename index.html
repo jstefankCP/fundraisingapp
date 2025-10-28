@@ -38,14 +38,14 @@ h1 { color: #0567e8; text-align:center; margin-bottom:2rem; }
 .cart-item-title { flex:1; font-size:0.9rem; margin-right:0.5rem; }
 .cart-item-controls { display:flex; align-items:center; gap:0.3rem; }
 .cart-item-controls button { background:#0567e8; color:#fff; border:none; padding:0.2rem 0.6rem; cursor:pointer; border-radius:5px; }
-.trash-btn { background:none; border:none; color:#aaa; font-size:1rem; cursor:pointer; padding:0; line-height:1; }
-.trash-btn:hover { color:#555; }
+.trash-btn { background: none; border: none; color: #aaa; font-size: 1rem; cursor: pointer; padding: 0; line-height: 1; }
+.trash-btn:hover { color: #555; }
 #subtotal { font-weight:bold; margin:1rem 0; text-align:right; color:#0567e8; }
 .checkout-btn { background:#0567e8; color:#fff; border:none; padding:0.6rem 1.2rem; border-radius:25px; width:100%; cursor:pointer; font-size:1rem; }
 .checkout-btn:hover { background:#055dd1; }
 #cart-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.3); z-index:999; }
 
-/* Floating Cart Button */
+/* Floating Cart Button (mobile only) */
 #floating-cart-btn { position: fixed; bottom: 20px; right: 20px; background-color: #66cbed; color: #fff; border: none; border-radius: 50%; width: 60px; height: 60px; font-size: 1.5rem; box-shadow: 0 4px 10px rgba(0,0,0,0.2); display: none; align-items: center; justify-content: center; cursor: pointer; z-index: 1100; }
 #floating-cart-btn .cart-count { position: absolute; top: 8px; right: 8px; background: #ff5a5f; color: #fff; border-radius: 50%; width: 20px; height: 20px; font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; justify-content: center; }
 @media (max-width: 768px) {
@@ -53,49 +53,66 @@ h1 { color: #0567e8; text-align:center; margin-bottom:2rem; }
 .product-grid { flex-direction: column; align-items: center; }
 .product-item { max-width: 100%; }
 }
+
+/* Footer link styling */
 .footer-link { background:none; border:none; color:#fff; text-decoration:underline; cursor:pointer; font-size:0.9rem; }
 .footer-link:hover { color:#cce6ff; }
 </style>
 
+<!-- Supabase CDN -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
 <!-- Fundraiser Header -->
 <div id="fundraiser-header">
-  <div id="fundraiser-cause">[Loading fundraiser...]</div>
-  <div id="org-id-display">[organization_id]</div>
-  <div id="user-id-display">[user_id]</div>
-  <div id="end-date-display">[end_date]</div>
-  <div id="progress-bar-container"><div id="progress-bar">$0</div></div>
-  <div style="font-size:0.85rem;">Raised <span id="raised-amount">$0</span> of <span id="goal-amount">$1000</span></div>
+<div id="fundraiser-cause">[Loading fundraiser...]</div>
+<div id="org-id-display">[organization_id]</div>
+<div id="user-id-display">[user_id]</div>
+<div id="end-date-display">[end_date]</div>
+<div id="progress-bar-container">
+<div id="progress-bar">$0</div>
+</div>
+<div style="font-size:0.85rem;">Raised <span id="raised-amount">$0</span> of <span id="goal-amount">$1000</span></div>
 </div>
 
 <div class="product-grid" id="product-grid"></div>
 
-<!-- Cart -->
+<!-- Slide-out cart -->
 <div id="cart-overlay"></div>
 <div id="cart-slideout">
-  <button class="continue-shopping" onclick="closeCart()">← Continue Shopping</button>
-  <h2>Your Cart</h2>
-  <div id="cart-items"></div>
-  <div id="subtotal">Subtotal: $0</div>
-  <button id="checkout-btn" class="checkout-btn">Secure Checkout</button>
+<button class="continue-shopping" onclick="closeCart()">← Continue Shopping</button>
+<h2>Your Cart</h2>
+<div id="cart-items"></div>
+<div id="subtotal">Subtotal: $0</div>
+<button id="checkout-btn" class="checkout-btn">Secure Checkout</button>
 </div>
 
-<!-- Floating Cart -->
-<button id="floating-cart-btn" onclick="openCart()">🛒<span class="cart-count" id="cart-count">0</span></button>
+<!-- Floating Cart Button -->
+<button id="floating-cart-btn" onclick="openCart()">
+🛒
+<span class="cart-count" id="cart-count">0</span>
+</button>
 
 <script>
-/* --- Supabase Init --- */
+/* --- Supabase Initialization --- */
 const SUPABASE_URL = 'https://krjdhmpxojascmkimfru.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtyamRobXB4b2phc2Nta2ltZnJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwMzU0MTEsImV4cCI6MjA3MzYxMTQxMX0.DoT40NSvuNZ2_HjwNfhA2qaxmWNXA57Isf1jK43TQP8';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-/* --- Params --- */
-const fundraiserParams = Object.fromEntries(new URLSearchParams(window.location.search));
+/* --- Fundraiser Params --- */
+function getFundraiserParams() {
+const params = {};
+const urlParams = new URLSearchParams(window.location.search);
+['fundraiser_id', 'organization_id', 'user_id'].forEach(key => {
+const value = urlParams.get(key);
+if (value) params[key] = value;
+});
+return params;
+}
+const fundraiserParams = getFundraiserParams();
 
-/* --- Elements --- */
+/* --- DOM Elements --- */
 const fundraiserCauseEl = document.getElementById("fundraiser-cause");
 const orgIdDisplay = document.getElementById("org-id-display");
 const userIdDisplay = document.getElementById("user-id-display");
@@ -104,100 +121,81 @@ const raisedEl = document.getElementById("raised-amount");
 const goalEl = document.getElementById("goal-amount");
 const endDateEl = document.getElementById("end-date-display");
 
+let fundraiserEndDate = null;
+
 /* --- Fetch Fundraiser Info --- */
 async function fetchFundraiserInfo() {
-  if (!fundraiserParams.fundraiser_id) return;
-  const { data: fundraiser, error } = await supabaseClient
-    .from('fundraisers')
-    .select('name, goal_amount, end_date')
-    .eq('id', fundraiserParams.fundraiser_id)
-    .single();
-  if (error) return console.error(error);
-  fundraiserCauseEl.textContent = fundraiser.name;
-  goalEl.textContent = `$${fundraiser.goal_amount}`;
-  endDateEl.textContent = "ends on " + fundraiser.end_date;
-}
-fetchFundraiserInfo();
+if (!fundraiserParams.fundraiser_id) return;
 
-/* --- Org & User --- */
+const { data: fundraiser, error } = await supabaseClient
+.from('fundraisers')
+    .select('name, goal_amount, organization_id, user_id, end_date')
+    .select('name, goal_amount, end_date')
+.eq('id', fundraiserParams.fundraiser_id)
+.single();
+
+if (error) { console.error(error); return; }
+
+fundraiserCauseEl.textContent = fundraiser.name;
+goalEl.textContent = `$${fundraiser.goal_amount}`;
+progressBar.style.width = "0%";
+progressBar.textContent = "$0";
+
+fundraiserEndDate = fundraiser.end_date;
+endDateEl.textContent = "ends on " + fundraiser.end_date;
+
+  //fetchOrganizationName(fundraiser.organization_id);
+  //fetchUserName(fundraiser.user_id);
+}
+
+/* --- Fetch Organization --- */
 async function fetchOrganizationName(orgId) {
-  if (!orgId) return;
-  const { data: org } = await supabaseClient.from('organizations').select('name').eq('id', orgId).single();
-  if (org) orgIdDisplay.textContent = org.name;
+if (!orgId) return;
+const { data: org, error } = await supabaseClient
+.from('organizations')
+.select('name')
+.eq('id', orgId)
+.single();
+if (error) { console.error(error); return; }
+orgIdDisplay.textContent = org.name;
 }
+
+/* --- Fetch User --- */
 async function fetchUserName(userId) {
-  if (!userId) return;
-  const { data: user } = await supabaseClient.from('user_profiles').select('first_name, last_name').eq('id', userId).single();
-  if (user) userIdDisplay.textContent = "supporting " + user.first_name + " " + user.last_name;
+if (!userId) return;
+const { data: user, error } = await supabaseClient
+.from('user_profiles')
+.select('first_name, last_name')
+.eq('id', userId)
+.single();
+if (error) { console.error(error); return; }
+  //userIdDisplay.textContent = `${user.first_name} ${user.last_name}`;
+  userIdDisplay.textContent = "supporting " + user.first_name + " " + user.last_name;
 }
+
+/* --- Trigger Fetch --- */
+fetchFundraiserInfo();
 fetchOrganizationName(fundraiserParams.organization_id);
 fetchUserName(fundraiserParams.user_id);
 
-/* --- Cart Logic --- */
+/* --- Countdown Timer --- */
+function updateCountdown() {
+  if (!fundraiserEndDate) return;
+
+  const now = new Date();
+  const diff = fundraiserEndDate - now;
+  const days = diff > 0 ? Math.ceil(diff / (1000 * 60 * 60 * 24)) : 0;
+  // countdownEl.textContent = `Ends on ${formattedDate} (${days} day${days !== 1 ? "s" : ""} left)`;
+  console.log(`Ends on ${formattedDate} (${days} day${days !== 1 ? "s" : ""} left)`);
+    
+}
+
+setInterval(updateCountdown, 1000 * 60 * 60);
+updateCountdown();
+
+/* --- Products & Cart --- */
 const shopifyStore = "city-pop-fundraising.myshopify.com";
-const cart = {};
-const cartItemsEl = document.getElementById("cart-items");
-const cartCountEl = document.getElementById("cart-count");
-const subtotalEl = document.getElementById("subtotal");
-const overlay = document.getElementById("cart-overlay");
-const cartSlide = document.getElementById("cart-slideout");
 
-function addToCart(product, qty) {
-  if (cart[product.variantId]) cart[product.variantId].qty += qty;
-  else cart[product.variantId] = { product, qty };
-  updateCartDisplay();
-  openCart();
-}
-
-function updateCartDisplay() {
-  cartItemsEl.innerHTML = "";
-  let subtotal = 0, count = 0;
-  for (const key in cart) {
-    const item = cart[key];
-    subtotal += item.product.price * item.qty;
-    count += item.qty;
-    const div = document.createElement("div");
-    div.className = "cart-item";
-    div.innerHTML = `
-      <img src="${item.product.img}" />
-      <div class="cart-item-title">${item.product.title}</div>
-      <div class="cart-item-controls">
-        <button onclick="changeQty('${key}', -1)">-</button>
-        <span>${item.qty}</span>
-        <button onclick="changeQty('${key}',1)">+</button>
-        <button class="trash-btn" onclick="removeItem('${key}')">🗑️</button>
-      </div>`;
-    cartItemsEl.appendChild(div);
-  }
-  subtotalEl.textContent = `Subtotal: $${subtotal}`;
-  cartCountEl.textContent = count;
-}
-
-function changeQty(key, delta) {
-  cart[key].qty += delta;
-  if (cart[key].qty <= 0) delete cart[key];
-  updateCartDisplay();
-}
-function removeItem(key) { delete cart[key]; updateCartDisplay(); }
-function openCart() { cartSlide.style.right = "0"; overlay.style.display = "block"; }
-function closeCart() { cartSlide.style.right = "-100%"; overlay.style.display = "none"; }
-overlay.onclick = closeCart;
-
-/* --- ✅ Checkout with Fundraiser Attributes --- */
-document.getElementById("checkout-btn").onclick = () => {
-  const items = Object.values(cart).map(i => `${i.product.variantId}:${i.qty}`).join(',');
-  if (!items) return alert("Your cart is empty!");
-
-  const attr = new URLSearchParams();
-  attr.set("CityPopApp", "true");
-  if (fundraiserParams.fundraiser_id) attr.set("attributes[fundraiser_id]", fundraiserParams.fundraiser_id);
-  if (fundraiserParams.organization_id) attr.set("attributes[organization_id]", fundraiserParams.organization_id);
-  if (fundraiserParams.user_id) attr.set("attributes[user_id]", fundraiserParams.user_id);
-
-  window.open(`https://${shopifyStore}/cart/${items}?${attr.toString()}`, "_blank");
-};
-
-/* --- Products --- */
 const products = [
 { title: "Cheese & Caramel Mix Popcorn", variantId: "47907478077729", price: 16, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/CheeseCaramel.png?v=1750196665" },
 { title: "White Cheddar Popcorn", variantId: "47949265207585", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/WhiteCheddar.png?v=1750196654" },
@@ -210,40 +208,156 @@ const products = [
 { title: "Chocolate Drizzle Popcorn", variantId: "47930741424417", price: 20, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/ChocolateDrizzle.png?v=1750196667" },
 { title: "Low Salt Popcorn", variantId: "47971748217121", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/LowSalt.png?v=1750196643" }
 ];
+
+const cart = {};
 const grid = document.getElementById("product-grid");
-products.forEach(product => {
-  const div = document.createElement("div");
-  div.className = "product-item";
-  div.innerHTML = `
-    <img src="${product.img}" />
-    <div class="product-title">${product.title}</div>
-    <div class="product-price">$${product.price}</div>
-    <div class="nutrition-link">Nutrition Info</div>
-    <div class="quantity-selector">
-      <button class="minus">-</button>
-      <span class="qty">1</span>
-      <button class="plus">+</button>
-    </div>
-    <button class="add-to-cart-btn">Add to Cart</button>
-  `;
-  const qtyDisplay = div.querySelector(".qty");
-  let qty = 1;
-  div.querySelector(".plus").onclick = () => { qty++; qtyDisplay.textContent = qty; };
-  div.querySelector(".minus").onclick = () => { if (qty > 1) qty--; qtyDisplay.textContent = qty; };
-  div.querySelector(".add-to-cart-btn").onclick = () => { addToCart(product, qty); qty = 1; qtyDisplay.textContent = "1"; };
-  grid.appendChild(div);
+
+products.forEach((product) => {
+const div = document.createElement("div");
+div.className = "product-item";
+
+div.innerHTML = `
+   <img src="${product.img}" />
+   <div class="product-title">${product.title}</div>
+   <div class="product-price">$${product.price}</div>
+   <div class="nutrition-link">Nutrition Info</div>
+   <div class="quantity-selector">
+     <button class="minus">-</button>
+     <span class="qty">1</span>
+     <button class="plus">+</button>
+   </div>
+   <button class="add-to-cart-btn">Add to Cart</button>
+ `;
+
+const qtyDisplay = div.querySelector(".qty");
+let qty = 1;
+
+div.querySelector(".plus").onclick = () => { qty++; qtyDisplay.textContent=qty; };
+div.querySelector(".minus").onclick = () => { if(qty>1){qty--; qtyDisplay.textContent=qty;} };
+div.querySelector(".add-to-cart-btn").onclick = () => { addToCart(product, qty); qty=1; qtyDisplay.textContent="1"; };
+
+grid.appendChild(div);
 });
+
+/* --- Cart Functions --- */
+const cartSlide = document.getElementById("cart-slideout");
+const overlay = document.getElementById("cart-overlay");
+const cartCountEl = document.getElementById("cart-count");
+const cartItemsEl = document.getElementById("cart-items");
+const subtotalEl = document.getElementById("subtotal");
+
+function addToCart(product, qty){
+if(cart[product.variantId]) cart[product.variantId].qty+=qty;
+else cart[product.variantId]={product, qty};
+updateCartDisplay();
+}
+
+function updateCartDisplay(){
+cartItemsEl.innerHTML="";
+let subtotal=0;
+let count=0;
+for(const key in cart){
+const item = cart[key];
+subtotal += item.product.price*item.qty;
+count += item.qty;
+const div=document.createElement("div"); div.className="cart-item";
+div.innerHTML=`
+     <img src="${item.product.img}" />
+     <div class="cart-item-title">${item.product.title}</div>
+     <div class="cart-item-controls">
+       <button onclick="changeQty('${key}', -1)">-</button>
+       <span>${item.qty}</span>
+       <button onclick="changeQty('${key}',1)">+</button>
+       <button class="trash-btn" onclick="removeItem('${key}')">🗑️</button>
+     </div>
+   `;
+cartItemsEl.appendChild(div);
+}
+subtotalEl.textContent=`Subtotal: $${subtotal}`;
+cartCountEl.textContent=count;
+}
+
+function changeQty(key, delta){
+cart[key].qty+=delta;
+if(cart[key].qty<=0) delete cart[key];
+updateCartDisplay();
+}
+
+function removeItem(key){ delete cart[key]; updateCartDisplay(); }
+
+function openCart(){ cartSlide.style.right="0"; overlay.style.display="block"; }
+function closeCart(){ cartSlide.style.right="-100%"; overlay.style.display="none"; }
+overlay.onclick=closeCart;
+
+/* --- Checkout --- */
+document.getElementById("checkout-btn").onclick = () => {
+  const items = Object.values(cart).map(item=>(`${item.product.variantId}:${item.qty}`)).join(',');
+  if (!items) return alert("Your cart is empty!");
+
+  // Build Shopify attributes so they become order attributes in admin
+  const attr = new URLSearchParams();
+  attr.set("CityPopApp", "true");
+  if (fundraiserParams.fundraiser_id) attr.set("attributes[fundraiser_id]", fundraiserParams.fundraiser_id);
+  if (fundraiserParams.organization_id) attr.set("attributes[organization_id]", fundraiserParams.organization_id);
+  if (fundraiserParams.user_id) attr.set("attributes[user_id]", fundraiserParams.user_id);
+
+  window.open(`https://${shopifyStore}/cart/${items}?${attr.toString()}`, "_blank");
+};
 </script>
 
 <!-- Footer -->
-<footer style="background:#66cbed; padding:2rem; text-align:center; color:white; margin-top:2rem;">
+<footer style="background:#66cbed; padding:2rem; text-align:center; font-family:sans-serif; color:white; margin-top:2rem;">
   <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:1rem;">
-    <a href="#" style="color:white;">Accessibility</a>
-    <a href="https://citypop-fundraising.godaddysites.com/contact-us" target="_blank" style="color:white;">Contact</a>
-    <a href="#" style="color:white;">Privacy Policy</a>
-    <a href="#" style="color:white;">Terms of Service</a>
+    <a href="#" onclick="openModal('accessibility')" style="color:white; text-decoration:none;">Accessibility</a>
+    <a href="https://citypop-fundraising.gorgias.help/en-US" target="_blank" style="color:white; text-decoration:none;">Contact Us</a>
+    <a href="https://citypop-fundraising.gorgias.help/en-US" target="_blank" style="color:white; text-decoration:none;">Help Center</a>
+    <a href="#" onclick="openModal('returns')" style="color:white; text-decoration:none;">Return & Refund Policy</a>
+    <a href="#" onclick="openModal('privacy')" style="color:white; text-decoration:none;">Privacy Policy</a>
+    <a href="#" onclick="openModal('terms')" style="color:white; text-decoration:none;">Terms of Service</a>
+    <a href="#" onclick="openModal('shipping')" style="color:white; text-decoration:none;">Shipping Policy</a>
   </div>
-  <p style="margin-top:1rem;">© 2025 City Pop Fundraising</p>
 </footer>
+
+<!-- Modals -->
+<div id="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999;">
+  <div id="modal-content" style="background:#fff; max-width:500px; margin:5% auto; padding:2rem; border-radius:8px; position:relative; font-size:1rem;">
+    <span onclick="closeModal()" style="position:absolute; top:10px; right:15px; cursor:pointer; font-weight:bold;">&times;</span>
+    <div id="modal-text">
+      <!-- Content gets injected here -->
+    </div>
+  </div>
+</div>
+
+<script>
+  const modalContent = {
+    accessibility: "City Pop is dedicated to making our website and all of our products accessible and user-friendly for everyone. We want all of our customers to enjoy the fun, flavor, and joy that popcorn brings—without barriers. If you experience difficulty viewing or navigating any content on our website, or notice a feature or functionality that you believe is not fully accessible to people with disabilities, we encourage you to reach out to us. Your feedback helps us continually improve and ensure accessibility for all. You can contact us by calling 303-335-9582 or emailing info@citypopdenver.com. Please include “Disabled Access” in the subject line of your email and provide a description of the specific feature you feel is not fully accessible or a suggestion for improvement. We take your feedback seriously and will carefully consider it as we continue to enhance accessibility for all City Pop fans. Thank you for helping us make our site better!",
+    returns: "Sample text for Return & Refund Policy. Replace with your content here.",
+    privacy: "Sample text for Privacy Policy. Replace with your content here.",
+    terms: "Sample text for Terms of Service. Replace with your content here.",
+    shipping: "Sample text for Shipping Policy. Replace with your content here."
+  };
+
+  function openModal(section) {
+    document.getElementById('modal-text').innerText = modalContent[section] || '';
+    document.getElementById('modal-overlay').style.display = 'block';
+  }
+
+  function closeModal() {
+    document.getElementById('modal-overlay').style.display = 'none';
+  }
+
+  // Close modal if clicking outside content
+  document.getElementById('modal-overlay').addEventListener('click', function(e) {
+    if (e.target.id === 'modal-overlay') closeModal();
+  });
+</script>
+
+<style>
+  /* Hover effect for footer links */
+  footer a:hover {
+    text-decoration: underline;
+  }
+</style>
+
 </body>
 </html>

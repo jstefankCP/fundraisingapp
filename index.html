@@ -163,23 +163,12 @@ h1 { color: #0567e8; text-align:center; margin-bottom:2rem; }
 <!-- Slide-out cart -->
 <div id="cart-overlay"></div>
 <div id="cart-slideout">
-  <button class="continue-shopping" onclick="closeCart()">← Continue Shopping</button>
-  <h2>Your Cart</h2>
-  <div id="cart-items"></div>
-  
-  <div id="subtotal">Subtotal: $0</div>
-
-<!-- Cart Contribution & Progress -->
-<div style="margin: 1rem 0;">
-  <div style="font-weight: bold; margin-bottom: 0.3rem;">
-    Your Contribution (50% of cart): <span id="contribution-amount">$0.00</span>
-  </div>
-  <div id="contribution-progress-container" style="background: #eee; border-radius: 50px; height: 15px; width: 100%; overflow: hidden;">
-    <div id="contribution-progress" style="height: 100%; width: 0%; background: linear-gradient(90deg, #ffdd00, #ff7a00); transition: width 0.5s ease;"></div>
-  </div>
-</div>
-
+<button class="continue-shopping" onclick="closeCart()">← Continue Shopping</button>
+<h2>Your Cart</h2>
+<div id="cart-items"></div>
+<div id="subtotal">Subtotal: $0</div>
 <button id="checkout-btn" class="checkout-btn">Secure Checkout</button>
+</div>
 
 <!-- Floating Cart Button -->
 <button id="floating-cart-btn" onclick="openCart()">
@@ -450,123 +439,36 @@ function openCart(){ cartSlideout.style.right="0"; cartOverlay.style.display="bl
 function closeCart(){ cartSlideout.style.right="-100%"; cartOverlay.style.display="none"; }
 cartOverlay.addEventListener("click", closeCart);
 
-function renderCart() {
-  cartItemsDiv.innerHTML = "";
+function renderCart(){
+  cartItemsDiv.innerHTML="";
   let subtotal = 0;
+  for(const [variantId, qty] of Object.entries(cart)){
+    if(qty>0){
+      const product = products.find(p=>p.variantId===variantId);
+      subtotal += product.price*qty;
+      const itemDiv = document.createElement("div"); itemDiv.className="cart-item";
 
-  for (const [variantId, qty] of Object.entries(cart)) {
-    if (qty > 0) {
-      const product = products.find(p => p.variantId === variantId);
-      subtotal += product.price * qty;
+      const img = document.createElement("img"); img.src=product.img;
+      const title = document.createElement("div"); title.className="cart-item-title"; title.textContent=product.title;
 
-      const itemDiv = document.createElement("div");
-      itemDiv.className = "cart-item";
+      const controls = document.createElement("div"); controls.className="cart-item-controls";
+      const minus = document.createElement("button"); minus.textContent="-";
+      const qtySpan = document.createElement("span"); qtySpan.textContent=qty;
+      const plus = document.createElement("button"); plus.textContent="+";
+      const trash = document.createElement("button"); trash.className="trash-btn"; trash.textContent="x";
 
-      const img = document.createElement("img");
-      img.src = product.img;
+      minus.addEventListener("click",()=>{ if(cart[variantId]>1){ cart[variantId]--; renderCart(); } });
+      plus.addEventListener("click",()=>{ cart[variantId]++; renderCart(); });
+      trash.addEventListener("click",()=>{ delete cart[variantId]; renderCart(); });
 
-      const title = document.createElement("div");
-      title.className = "cart-item-title";
-      title.textContent = product.title;
-
-      const controls = document.createElement("div");
-      controls.className = "cart-item-controls";
-
-      const minus = document.createElement("button");
-      minus.textContent = "-";
-
-      const qtySpan = document.createElement("span");
-      qtySpan.textContent = qty;
-
-      const plus = document.createElement("button");
-      plus.textContent = "+";
-
-      const trash = document.createElement("button");
-      trash.className = "trash-btn";
-      trash.textContent = "x";
-
-      minus.addEventListener("click", () => {
-        if (cart[variantId] > 1) {
-          cart[variantId]--;
-          renderCart();
-        }
-      });
-
-      plus.addEventListener("click", () => {
-        cart[variantId]++;
-        renderCart();
-      });
-
-      trash.addEventListener("click", () => {
-        delete cart[variantId];
-        renderCart();
-      });
-
-      controls.appendChild(minus);
-      controls.appendChild(qtySpan);
-      controls.appendChild(plus);
-      controls.appendChild(trash);
-
-      itemDiv.appendChild(img);
-      itemDiv.appendChild(title);
-      itemDiv.appendChild(controls);
+      controls.appendChild(minus); controls.appendChild(qtySpan); controls.appendChild(plus); controls.appendChild(trash);
+      itemDiv.appendChild(img); itemDiv.appendChild(title); itemDiv.appendChild(controls);
       cartItemsDiv.appendChild(itemDiv);
     }
   }
-
-  // Update subtotal
-  subtotalDiv.textContent = `Subtotal: $${subtotal.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
-
-  // Contribution calculation (50% of subtotal)
-  const contribution = subtotal * 0.5;
-
-  // Current fundraiser total
-  const totalRaisedNum = parseFloat(raisedEl.textContent.replace(/\$|,/g, "")) || 0;
-  const goalAmountNum = parseFloat(goalEl.textContent.replace(/\$|,/g, "")) || 0;
-
-  const newTotal = totalRaisedNum + contribution;
-  const percentOfGoal = goalAmountNum > 0 ? Math.min((newTotal / goalAmountNum) * 100, 100) : 0;
-
-  // Create or update contribution info in cart
-  let contributionContainer = document.getElementById("cart-contribution");
-  if (!contributionContainer) {
-    contributionContainer = document.createElement("div");
-    contributionContainer.id = "cart-contribution";
-    contributionContainer.style.margin = "1rem 0";
-    contributionContainer.style.fontWeight = "500";
-    contributionContainer.style.fontSize = "0.95rem";
-    cartSlideout.insertBefore(contributionContainer, checkoutBtn);
-
-    // Add inner progress bar container
-    const contributionBarContainer = document.createElement("div");
-    contributionBarContainer.id = "cart-contribution-bar-container";
-    contributionBarContainer.style.background = "rgba(0,0,0,0.1)";
-    contributionBarContainer.style.height = "20px";
-    contributionBarContainer.style.borderRadius = "10px";
-    contributionBarContainer.style.overflow = "hidden";
-    contributionBarContainer.style.marginTop = "0.3rem";
-
-    const contributionBar = document.createElement("div");
-    contributionBar.id = "cart-contribution-bar";
-    contributionBar.style.height = "100%";
-    contributionBar.style.width = "0%";
-    contributionBar.style.background = "linear-gradient(90deg, #ffdd00, #ff7a00)";
-    contributionBar.style.transition = "width 0.6s ease-in-out";
-
-    contributionBarContainer.appendChild(contributionBar);
-    contributionContainer.appendChild(contributionBarContainer);
-  }
-
-  // Update contribution text
-  contributionContainer.firstChild.textContent = `This order would add $${contribution.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})} to the amount raised and help achieve ${percentOfGoal.toFixed(0)}% of goal`;
-
-  // Update contribution bar
-  const contributionBar = document.getElementById("cart-contribution-bar");
-  contributionBar.style.width = `${percentOfGoal}%`;
-
+  subtotalDiv.textContent=`Subtotal: $${subtotal}`;
   updateCartCount();
 }
-
 
 function updateCartCount() {
   const totalItems = Object.values(cart).reduce((a,b)=>a+b,0);

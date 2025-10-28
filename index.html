@@ -329,7 +329,7 @@ function updateCountdown() {
   let display = "";
   if (days > 0) display += `${days} day${days !== 1 ? "s" : ""} `;
   if (hours > 0 || days > 0) display += `${hours} hr${hours !== 1 ? "s" : ""} `;
-  display += `${minutes} min${minutes !== 1 ? "s" : ""} left`;
+  display += `This fundraiser ends in: ${minutes} min${minutes !== 1 ? "s" : ""}`;
 
   endDateEl.textContent = display;
 }

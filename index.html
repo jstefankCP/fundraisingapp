@@ -38,8 +38,8 @@ h1 { color: #0567e8; text-align:center; margin-bottom:2rem; }
 .cart-item-title { flex:1; font-size:0.9rem; margin-right:0.5rem; }
 .cart-item-controls { display:flex; align-items:center; gap:0.3rem; }
 .cart-item-controls button { background:#0567e8; color:#fff; border:none; padding:0.2rem 0.6rem; cursor:pointer; border-radius:5px; }
-.trash-btn { background: none; border: none; color: #aaa; font-size: 1rem; cursor: pointer; padding: 0; line-height: 1; }
-.trash-btn:hover { color: #555; }
+.trash-btn { background:none; border:none; color:#aaa; font-size:1rem; cursor:pointer; padding:0; line-height:1; }
+.trash-btn:hover { color:#555; }
 #subtotal { font-weight:bold; margin:1rem 0; text-align:right; color:#0567e8; }
 .checkout-btn { background:#0567e8; color:#fff; border:none; padding:0.6rem 1.2rem; border-radius:25px; width:100%; cursor:pointer; font-size:1rem; }
 .checkout-btn:hover { background:#055dd1; }
@@ -57,7 +57,6 @@ h1 { color: #0567e8; text-align:center; margin-bottom:2rem; }
 .footer-link:hover { color:#cce6ff; }
 </style>
 
-<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
@@ -184,12 +183,18 @@ function openCart() { cartSlide.style.right = "0"; overlay.style.display = "bloc
 function closeCart() { cartSlide.style.right = "-100%"; overlay.style.display = "none"; }
 overlay.onclick = closeCart;
 
-/* --- Checkout --- */
+/* --- ✅ Checkout with Fundraiser Attributes --- */
 document.getElementById("checkout-btn").onclick = () => {
   const items = Object.values(cart).map(i => `${i.product.variantId}:${i.qty}`).join(',');
   if (!items) return alert("Your cart is empty!");
-  const extra = new URLSearchParams(fundraiserParams).toString();
-  window.open(`https://${shopifyStore}/cart/${items}?CityPopApp=true${extra ? "&" + extra : ""}`, "_blank");
+
+  const attr = new URLSearchParams();
+  attr.set("CityPopApp", "true");
+  if (fundraiserParams.fundraiser_id) attr.set("attributes[fundraiser_id]", fundraiserParams.fundraiser_id);
+  if (fundraiserParams.organization_id) attr.set("attributes[organization_id]", fundraiserParams.organization_id);
+  if (fundraiserParams.user_id) attr.set("attributes[user_id]", fundraiserParams.user_id);
+
+  window.open(`https://${shopifyStore}/cart/${items}?${attr.toString()}`, "_blank");
 };
 
 /* --- Products --- */
@@ -233,11 +238,10 @@ products.forEach(product => {
 <!-- Footer -->
 <footer style="background:#66cbed; padding:2rem; text-align:center; color:white; margin-top:2rem;">
   <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:1rem;">
-    <a href="#" onclick="openModal('accessibility')" style="color:white;">Accessibility</a>
-    <a href="https://citypop-fundraising.gorgias.help/en-US" target="_blank" style="color:white;">Contact Us</a>
-    <a href="https://citypop-fundraising.gorgias.help/en-US" target="_blank" style="color:white;">Help Center</a>
-    <a href="#" onclick="openModal('privacy')" style="color:white;">Privacy Policy</a>
-    <a href="#" onclick="openModal('terms')" style="color:white;">Terms of Service</a>
+    <a href="#" style="color:white;">Accessibility</a>
+    <a href="https://citypop-fundraising.godaddysites.com/contact-us" target="_blank" style="color:white;">Contact</a>
+    <a href="#" style="color:white;">Privacy Policy</a>
+    <a href="#" style="color:white;">Terms of Service</a>
   </div>
   <p style="margin-top:1rem;">© 2025 City Pop Fundraising</p>
 </footer>

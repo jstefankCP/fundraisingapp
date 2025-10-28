@@ -138,13 +138,35 @@ h1 { color: #0567e8; text-align:center; margin-bottom:2rem; }
   background: #e0e0e0 url('https://cdn-icons-png.flaticon.com/512/847/847969.png') center/50% no-repeat;
 }
 
-  
+#floating-snack {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 80px; /* Desktop default */
+  height: auto;
+  z-index: 2000;
+  transition: opacity 0.3s ease;
+  pointer-events: none; /* So it doesn't block clicks */
+}
+
+/* Smaller size for mobile */
+@media (max-width: 768px) {
+  #floating-snack {
+    width: 50px;
+    top: 15px;
+    left: 15px;
+  }
+}
+    
 </style>
 
 <!-- Supabase CDN -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
+
+<!-- Floating Snack Image -->
+<img id="floating-snack" src="Assets/Snack_Bigger.png" alt="Snack" />
 
 <!-- Fundraiser Header -->
 <div id="fundraiser-header">

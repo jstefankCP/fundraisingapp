@@ -169,17 +169,17 @@ h1 { color: #0567e8; text-align:center; margin-bottom:2rem; }
   
   <div id="subtotal">Subtotal: $0</div>
 
-  <!-- Fundraiser Contribution -->
-  <div id="fundraiser-contribution" style="margin-top:1rem; text-align:center;">
-    <div style="font-weight:600; margin-bottom:0.5rem;">Your Contribution to the Fundraiser</div>
-    <div id="contribution-amount" style="font-size:1.2rem; color:#0567e8; font-weight:bold;">$0</div>
-    <div id="contribution-progress-container" style="background:#eee; border-radius:20px; height:12px; width:100%; margin-top:0.5rem;">
-      <div id="contribution-progress" style="height:100%; width:0%; background: linear-gradient(90deg,#ffdd00,#ff7a00); border-radius:20px;"></div>
-    </div>
+<!-- Cart Contribution & Progress -->
+<div style="margin: 1rem 0;">
+  <div style="font-weight: bold; margin-bottom: 0.3rem;">
+    Your Contribution (50% of cart): <span id="contribution-amount">$0.00</span>
   </div>
-
-  <button id="checkout-btn" class="checkout-btn" style="margin-top:1rem;">Secure Checkout</button>
+  <div id="contribution-progress-container" style="background: #eee; border-radius: 50px; height: 15px; width: 100%; overflow: hidden;">
+    <div id="contribution-progress" style="height: 100%; width: 0%; background: linear-gradient(90deg, #ffdd00, #ff7a00); transition: width 0.5s ease;"></div>
+  </div>
 </div>
+
+<button id="checkout-btn" class="checkout-btn">Secure Checkout</button>
 
 <!-- Floating Cart Button -->
 <button id="floating-cart-btn" onclick="openCart()">
@@ -454,7 +454,7 @@ function renderCart() {
   cartItemsDiv.innerHTML = "";
   let subtotal = 0;
 
-  // Render each cart item
+  // Render cart items
   for (const [variantId, qty] of Object.entries(cart)) {
     if (qty > 0) {
       const product = products.find(p => p.variantId === variantId);
@@ -473,71 +473,46 @@ function renderCart() {
       const controls = document.createElement("div");
       controls.className = "cart-item-controls";
 
-      const minus = document.createElement("button");
-      minus.textContent = "-";
+      const minus = document.createElement("button"); minus.textContent = "-";
+      const qtySpan = document.createElement("span"); qtySpan.textContent = qty;
+      const plus = document.createElement("button"); plus.textContent = "+";
+      const trash = document.createElement("button"); trash.className = "trash-btn"; trash.textContent = "x";
 
-      const qtySpan = document.createElement("span");
-      qtySpan.textContent = qty;
+      minus.addEventListener("click", () => { if(cart[variantId] > 1){ cart[variantId]--; renderCart(); } });
+      plus.addEventListener("click", () => { cart[variantId]++; renderCart(); });
+      trash.addEventListener("click", () => { delete cart[variantId]; renderCart(); });
 
-      const plus = document.createElement("button");
-      plus.textContent = "+";
-
-      const trash = document.createElement("button");
-      trash.className = "trash-btn";
-      trash.textContent = "x";
-
-      // Event listeners for controls
-      minus.addEventListener("click", () => {
-        if (cart[variantId] > 1) {
-          cart[variantId]--;
-          renderCart();
-        }
-      });
-
-      plus.addEventListener("click", () => {
-        cart[variantId]++;
-        renderCart();
-      });
-
-      trash.addEventListener("click", () => {
-        delete cart[variantId];
-        renderCart();
-      });
-
-      controls.appendChild(minus);
-      controls.appendChild(qtySpan);
-      controls.appendChild(plus);
-      controls.appendChild(trash);
-
-      itemDiv.appendChild(img);
-      itemDiv.appendChild(title);
-      itemDiv.appendChild(controls);
-
+      controls.appendChild(minus); controls.appendChild(qtySpan); controls.appendChild(plus); controls.appendChild(trash);
+      itemDiv.appendChild(img); itemDiv.appendChild(title); itemDiv.appendChild(controls);
       cartItemsDiv.appendChild(itemDiv);
     }
   }
 
-  // Update subtotal display
+  // Update subtotal
   subtotalDiv.textContent = `Subtotal: $${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-  // --- Fundraiser contribution (50% of subtotal) ---
+  // --- Fundraiser Contribution ---
   const contribution = subtotal * 0.5;
   const contributionAmountEl = document.getElementById("contribution-amount");
   if (contributionAmountEl) {
     contributionAmountEl.textContent = `$${contribution.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   }
 
-  // --- Update cart mini progress bar ---
+  // --- “What if” Progress Bar ---
+  const currentRaised = parseFloat(raisedEl.textContent.replace(/\$|,/g, "")) || 0;
   const goal = parseFloat(goalEl.textContent.replace(/\$|,/g, "")) || 0;
-  const contributionPercent = goal > 0 ? Math.min((contribution / goal) * 100, 100) : 0;
+  const totalIfPurchase = currentRaised + contribution;
+  const contributionPercent = goal > 0 ? Math.min((totalIfPurchase / goal) * 100, 100) : 0;
+
   const contributionProgressEl = document.getElementById("contribution-progress");
   if (contributionProgressEl) {
-    contributionProgressEl.style.width = `${contributionPercent}%`;
+    contributionProgressEl.style.width = `${contributionPercent}%`; // smooth fill thanks to CSS transition
   }
 
   // Update floating cart count
   updateCartCount();
 }
+
 
 
 function updateCartCount() {

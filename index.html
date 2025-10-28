@@ -173,10 +173,39 @@ if (error) { console.error(error); return; }
   userIdDisplay.textContent = "supporting " + user.first_name + " " + user.last_name;
 }
 
+/* --- Fetch Total Raised --- */
+async function fetchTotalRaised() {
+  if (!fundraiserParams.fundraiser_id) return;
+
+  const { data, error } = await supabaseClient
+    .from('fundraiser_orders')
+    .select('commission_amount')
+    .eq('fundraiser_id', fundraiserParams.fundraiser_id);
+
+  if (error) {
+    console.error("Error fetching fundraiser total:", error);
+    return;
+  }
+
+  // Sum up all commission_amount values
+  const totalRaised = data.reduce((sum, order) => sum + (order.commission_amount || 0), 0);
+
+  // Format as USD
+  const formattedTotal = `$${totalRaised.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  raisedEl.textContent = formattedTotal;
+
+  // Update progress bar
+  const goal = parseFloat(goalEl.textContent.replace(/\$|,/g, "")) || 0;
+  const percent = goal > 0 ? Math.min((totalRaised / goal) * 100, 100) : 0;
+  progressBar.style.width = `${percent}%`;
+  progressBar.textContent = `${percent.toFixed(0)}%`;
+}
+
 /* --- Trigger Fetch --- */
 fetchFundraiserInfo();
 fetchOrganizationName(fundraiserParams.organization_id);
 fetchUserName(fundraiserParams.user_id);
+fetchTotalRaised();
 
 /* --- Countdown Timer --- */
 function updateCountdown() {

@@ -443,7 +443,7 @@ function renderCart() {
   cartItemsDiv.innerHTML = "";
   let subtotal = 0;
 
-  // Loop through cart items
+  // Build cart items
   for (const [variantId, qty] of Object.entries(cart)) {
     if (qty > 0) {
       const product = products.find(p => p.variantId === variantId);
@@ -462,48 +462,88 @@ function renderCart() {
       const controls = document.createElement("div");
       controls.className = "cart-item-controls";
 
-      const minus = document.createElement("button");
-      minus.textContent = "-";
+      const minus = document.createElement("button"); minus.textContent = "-";
+      const qtySpan = document.createElement("span"); qtySpan.textContent = qty;
+      const plus = document.createElement("button"); plus.textContent = "+";
+      const trash = document.createElement("button"); trash.className = "trash-btn"; trash.textContent = "x";
 
-      const qtySpan = document.createElement("span");
-      qtySpan.textContent = qty;
+      minus.addEventListener("click", () => { if (cart[variantId] > 1) { cart[variantId]--; renderCart(); } });
+      plus.addEventListener("click", () => { cart[variantId]++; renderCart(); });
+      trash.addEventListener("click", () => { delete cart[variantId]; renderCart(); });
 
-      const plus = document.createElement("button");
-      plus.textContent = "+";
-
-      const trash = document.createElement("button");
-      trash.className = "trash-btn";
-      trash.textContent = "x";
-
-      minus.addEventListener("click", () => {
-        if (cart[variantId] > 1) {
-          cart[variantId]--;
-          renderCart();
-        }
-      });
-
-      plus.addEventListener("click", () => {
-        cart[variantId]++;
-        renderCart();
-      });
-
-      trash.addEventListener("click", () => {
-        delete cart[variantId];
-        renderCart();
-      });
-
-      controls.appendChild(minus);
-      controls.appendChild(qtySpan);
-      controls.appendChild(plus);
-      controls.appendChild(trash);
-
-      itemDiv.appendChild(img);
-      itemDiv.appendChild(title);
-      itemDiv.appendChild(controls);
-
+      controls.appendChild(minus); controls.appendChild(qtySpan); controls.appendChild(plus); controls.appendChild(trash);
+      itemDiv.appendChild(img); itemDiv.appendChild(title); itemDiv.appendChild(controls);
       cartItemsDiv.appendChild(itemDiv);
     }
   }
+
+  subtotalDiv.textContent = `Subtotal: $${subtotal.toFixed(2)}`;
+  updateCartCount();
+
+  // --- What If Fundraiser Contribution ---
+  let totalRaised = parseFloat(raisedEl.textContent.replace(/\$|,/g, "")) || 0;
+  const goal = parseFloat(goalEl.textContent.replace(/\$|,/g, "")) || 0;
+  const orderContribution = subtotal * 0.5; // 50% of cart
+  const newTotal = totalRaised + orderContribution;
+  const newPercent = goal > 0 ? Math.min((newTotal / goal) * 100, 100) : 0;
+
+  // Remove previous container if exists
+  const existing = document.getElementById("what-if-container");
+  if (existing) existing.remove();
+
+  // Create container
+  const whatIfContainer = document.createElement("div");
+  whatIfContainer.id = "what-if-container";
+  whatIfContainer.style.marginTop = "1rem";
+
+  // What If Text
+  const whatIfText = document.createElement("div");
+  whatIfText.textContent = `This order would contribute an additional $${orderContribution.toFixed(2)} and help push their fundraising goal to ${newPercent.toFixed(0)}%`;
+  whatIfText.style.fontSize = "0.9rem";
+  whatIfText.style.marginBottom = "0.3rem";
+  whatIfContainer.appendChild(whatIfText);
+
+  // Progress Bar
+  const whatIfBar = document.createElement("div");
+  whatIfBar.style.width = "100%";
+  whatIfBar.style.height = "20px";
+  whatIfBar.style.background = "#eee";
+  whatIfBar.style.borderRadius = "10px";
+  whatIfBar.style.overflow = "hidden";
+
+  const fill = document.createElement("div");
+  fill.style.width = `${newPercent}%`;
+  fill.style.height = "100%";
+  fill.style.background = "#66cbed";
+  fill.style.transition = "width 0.5s ease-in-out";
+  whatIfBar.appendChild(fill);
+  whatIfContainer.appendChild(whatIfBar);
+
+  // New Raised Amount Badge
+  const newAmountDiv = document.createElement("div");
+  newAmountDiv.style.marginTop = "0.5rem";
+  newAmountDiv.style.textAlign = "right";
+  newAmountDiv.style.fontSize = "0.9rem";
+
+  const badge = document.createElement("span");
+  badge.textContent = "NEW";
+  badge.style.backgroundColor = "#e74c3c";
+  badge.style.color = "#fff";
+  badge.style.fontWeight = "700";
+  badge.style.fontSize = "0.8rem";
+  badge.style.padding = "2px 6px";
+  badge.style.borderRadius = "5px";
+  badge.style.marginRight = "5px";
+
+  const newAmountText = document.createElement("span");
+  newAmountText.textContent = `New Amount Raised: $${newTotal.toFixed(2)} of $${goal.toLocaleString()}`;
+
+  newAmountDiv.appendChild(badge);
+  newAmountDiv.appendChild(newAmountText);
+  whatIfContainer.appendChild(newAmountDiv);
+
+  cartSlideout.appendChild(whatIfContainer);
+}
 
   // Update subtotal
   subtotalDiv.textContent = `Subtotal: $${subtotal.toFixed(2)}`;

@@ -197,46 +197,46 @@ updateCountdown();
 const shopifyStore = "city-pop-fundraising.myshopify.com";
 
 const products = [
-{ title: "Cheese & Caramel Mix Popcorn", variantId: "47907478077729", price: 16, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/CheeseCaramel.png?v=1750196665" },
-{ title: "White Cheddar Popcorn", variantId: "47949265207585", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/WhiteCheddar.png?v=1750196654" },
-{ title: "Extra Buttery Popcorn", variantId: "47946797482273", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/ExtraButtery.png?v=1750196660" },
-{ title: "Caramel Popcorn", variantId: "47907462676769", price: 16, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/Caramel_1_d6b563d0-fcd7-4ac4-9917-3da334dc2e55.png?v=1750196695" },
-{ title: "Kettle Popcorn", variantId: "47971562193185", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/Kettle.png?v=1750196658" },
-{ title: "Jalapeno Cheddar Popcorn", variantId: "47972348264737", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/JalapenoCheddar_80ea7902-a107-4113-9dd3-ca2bdb62c1f7.png?v=1750196657" },
-{ title: "Cheese Popcorn", variantId: "47907469295905", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/Cheese.png?v=1750196644" },
-{ title: "Sea Salt & Cracked Pepper Popcorn", variantId: "47941483856161", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/SeaSaltNCrackedPepper.png?v=1750196661" },
-{ title: "Chocolate Drizzle Popcorn", variantId: "47930741424417", price: 20, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/ChocolateDrizzle.png?v=1750196667" },
-{ title: "Low Salt Popcorn", variantId: "47971748217121", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/LowSalt.png?v=1750196643" }
+  { title: "Cheese & Caramel Mix Popcorn", variantId: "47907478077729", price: 16, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/CheeseCaramel.png?v=1750196665" },
+  { title: "White Cheddar Popcorn", variantId: "47949265207585", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/WhiteCheddar.png?v=1750196654" },
+  { title: "Extra Buttery Popcorn", variantId: "47946797482273", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/ExtraButtery.png?v=1750196660" },
+  { title: "Caramel Popcorn", variantId: "47907462676769", price: 16, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/Caramel_1_d6b563d0-fcd7-4ac4-9917-3da334dc2e55.png?v=1750196695" },
+  { title: "Kettle Popcorn", variantId: "47971562193185", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/Kettle.png?v=1750196658" },
+  { title: "Jalapeno Cheddar Popcorn", variantId: "47972348264737", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/JalapenoCheddar_80ea7902-a107-4113-9dd3-ca2bdb62c1f7.png?v=1750196657" },
+  { title: "Cheese Popcorn", variantId: "47907469295905", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/Cheese.png?v=1750196644" },
+  { title: "Sea Salt & Cracked Pepper Popcorn", variantId: "47941483856161", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/SeaSaltNCrackedPepper.png?v=1750196661" },
+  { title: "Chocolate Drizzle Popcorn", variantId: "47930741424417", price: 20, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/ChocolateDrizzle.png?v=1750196667" },
+  { title: "Low Salt Popcorn", variantId: "47971748217121", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/LowSalt.png?v=1750196643" }
 ];
 
 const cart = {};
 const grid = document.getElementById("product-grid");
 
 products.forEach((product) => {
-const div = document.createElement("div");
-div.className = "product-item";
+  const div = document.createElement("div");
+  div.className = "product-item";
 
-div.innerHTML = `
-   <img src="${product.img}" />
-   <div class="product-title">${product.title}</div>
-   <div class="product-price">$${product.price}</div>
-   <div class="nutrition-link">Nutrition Info</div>
-   <div class="quantity-selector">
-     <button class="minus">-</button>
-     <span class="qty">1</span>
-     <button class="plus">+</button>
-   </div>
-   <button class="add-to-cart-btn">Add to Cart</button>
- `;
+  div.innerHTML = `
+    <img src="${product.img}" />
+    <div class="product-title">${product.title}</div>
+    <div class="product-price">$${product.price}</div>
+    <div class="nutrition-link">Nutrition Info</div>
+    <div class="quantity-selector">
+      <button class="minus">-</button>
+      <span class="qty">1</span>
+      <button class="plus">+</button>
+    </div>
+    <button class="add-to-cart-btn">Add to Cart</button>
+  `;
 
-const qtyDisplay = div.querySelector(".qty");
-let qty = 1;
+  const qtyDisplay = div.querySelector(".qty");
+  let qty = 1;
 
-div.querySelector(".plus").onclick = () => { qty++; qtyDisplay.textContent=qty; };
-div.querySelector(".minus").onclick = () => { if(qty>1){qty--; qtyDisplay.textContent=qty;} };
-div.querySelector(".add-to-cart-btn").onclick = () => { addToCart(product, qty); qty=1; qtyDisplay.textContent="1"; };
+  div.querySelector(".plus").onclick = () => { qty++; qtyDisplay.textContent=qty; };
+  div.querySelector(".minus").onclick = () => { if(qty>1){qty--; qtyDisplay.textContent=qty;} };
+  div.querySelector(".add-to-cart-btn").onclick = () => { addToCart(product, qty); qty=1; qtyDisplay.textContent="1"; };
 
-grid.appendChild(div);
+  grid.appendChild(div);
 });
 
 /* --- Cart Functions --- */
@@ -247,40 +247,40 @@ const cartItemsEl = document.getElementById("cart-items");
 const subtotalEl = document.getElementById("subtotal");
 
 function addToCart(product, qty){
-if(cart[product.variantId]) cart[product.variantId].qty+=qty;
-else cart[product.variantId]={product, qty};
-updateCartDisplay();
+  if(cart[product.variantId]) cart[product.variantId].qty+=qty;
+  else cart[product.variantId]={product, qty};
+  updateCartDisplay();
 }
 
 function updateCartDisplay(){
-cartItemsEl.innerHTML="";
-let subtotal=0;
-let count=0;
-for(const key in cart){
-const item = cart[key];
-subtotal += item.product.price*item.qty;
-count += item.qty;
-const div=document.createElement("div"); div.className="cart-item";
-div.innerHTML=`
-     <img src="${item.product.img}" />
-     <div class="cart-item-title">${item.product.title}</div>
-     <div class="cart-item-controls">
-       <button onclick="changeQty('${key}', -1)">-</button>
-       <span>${item.qty}</span>
-       <button onclick="changeQty('${key}',1)">+</button>
-       <button class="trash-btn" onclick="removeItem('${key}')">🗑️</button>
-     </div>
-   `;
-cartItemsEl.appendChild(div);
-}
-subtotalEl.textContent=`Subtotal: $${subtotal}`;
-cartCountEl.textContent=count;
+  cartItemsEl.innerHTML="";
+  let subtotal=0;
+  let count=0;
+  for(const key in cart){
+    const item = cart[key];
+    subtotal += item.product.price*item.qty;
+    count += item.qty;
+    const div=document.createElement("div"); div.className="cart-item";
+    div.innerHTML=`
+      <img src="${item.product.img}" />
+      <div class="cart-item-title">${item.product.title}</div>
+      <div class="cart-item-controls">
+        <button onclick="changeQty('${key}', -1)">-</button>
+        <span>${item.qty}</span>
+        <button onclick="changeQty('${key}',1)">+</button>
+        <button class="trash-btn" onclick="removeItem('${key}')">🗑️</button>
+      </div>
+    `;
+    cartItemsEl.appendChild(div);
+  }
+  subtotalEl.textContent=`Subtotal: $${subtotal}`;
+  cartCountEl.textContent=count;
 }
 
 function changeQty(key, delta){
-cart[key].qty+=delta;
-if(cart[key].qty<=0) delete cart[key];
-updateCartDisplay();
+  cart[key].qty+=delta;
+  if(cart[key].qty<=0) delete cart[key];
+  updateCartDisplay();
 }
 
 function removeItem(key){ delete cart[key]; updateCartDisplay(); }
@@ -291,22 +291,16 @@ overlay.onclick=closeCart;
 
 /* --- Checkout --- */
 document.getElementById("checkout-btn").onclick = () => {
-  const cartItems = Object.values(cart);
-  if (!cartItems.length) return alert("Your cart is empty!");
-
-  // Build Shopify cart URL
-  const shopifyItems = cartItems.map(item => `${item.product.variantId}:${item.qty}`).join(',');
-
-  // Preserve fundraiser params
-  const extraParams = new URLSearchParams(fundraiserParams).toString();
-
-  // Open cart URL in a new tab
-  const url = `https://${shopifyStore}/cart/${shopifyItems}?CityPopApp=true${extraParams ? "&" + extraParams : ""}`;
-  window.open(url, "_blank");
+  const line_items = Object.values(cart).map(item=>({
+    variantId: item.product.variantId,
+    quantity: item.qty
+  }));
+  const params = new URLSearchParams();
+  params.set("CityPopApp","true");
+  params.set("line_items", JSON.stringify(line_items));
+  window.open(`https://${shopifyStore}/cart?${params.toString()}`, "_blank");
 };
-
 </script>
-
 <!-- Footer -->
 <footer style="background:#66cbed; padding:2rem; text-align:center; font-family:sans-serif; color:white; margin-top:2rem;">
   <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:1rem;">

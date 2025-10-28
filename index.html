@@ -125,38 +125,51 @@ let fundraiserEndDate = null;
 
 /* --- Fetch Fundraiser Info --- */
 async function fetchFundraiserInfo() {
-if (!fundraiserParams.fundraiser_id) return;
+  if (!fundraiserParams.fundraiser_id) return;
 
-const { data: fundraiser, error } = await supabaseClient
-.from('fundraisers')
-    .select('name, goal_amount, organization_id, user_id, end_date')
+  const { data: fundraiser, error } = await supabaseClient
+    .from('fundraisers')
     .select('name, goal_amount, end_date')
-.eq('id', fundraiserParams.fundraiser_id)
-.single();
+    .eq('id', fundraiserParams.fundraiser_id)
+    .single();
 
-if (error) { console.error(error); return; }
+  if (error) { console.error(error); return; }
 
-fundraiserCauseEl.textContent = fundraiser.name;
+  fundraiserCauseEl.textContent = fundraiser.name;
 
-// Format goal as USD
-const formattedGoal = Number(fundraiser.goal_amount || 0).toLocaleString('en-US', {
-  style: 'currency',
-  currency: 'USD',
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2
-});
-goalEl.textContent = formattedGoal;
+  const formattedGoal = Number(fundraiser.goal_amount || 0).toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+  goalEl.textContent = formattedGoal;
 
-// Initialize progress bar
-progressBar.style.width = "0%";
-progressBar.textContent = "$0.00";
+  fundraiserEndDate = fundraiser.end_date;
+  endDateEl.textContent = "ends on " + fundraiser.end_date;
 
-fundraiserEndDate = fundraiser.end_date;
-endDateEl.textContent = "ends on " + fundraiser.end_date;
+  // Fetch the total raised from fundraiser_orders
+  const { data: orders, error: ordersError } = await supabaseClient
+    .from('fundraiser_orders')
+    .select('commission_amount')
+    .eq('fundraiser_id', fundraiserParams.fundraiser_id);
 
-  //fetchOrganizationName(fundraiser.organization_id);
-  //fetchUserName(fundraiser.user_id);
+  if (ordersError) { console.error(ordersError); return; }
+
+  const totalRaised = orders.reduce((sum, o) => sum + Number(o.commission_amount || 0), 0);
+
+  // Update progress bar
+  const percent = fundraiser.goal_amount ? Math.min((totalRaised / fundraiser.goal_amount) * 100, 100) : 0;
+  progressBar.style.width = percent + '%';
+  progressBar.textContent = Number(totalRaised).toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+  raisedEl.textContent = progressBar.textContent;
 }
+
 
 /* --- Fetch Organization --- */
 async function fetchOrganizationName(orgId) {

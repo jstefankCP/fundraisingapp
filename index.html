@@ -138,46 +138,7 @@ h1 { color: #0567e8; text-align:center; margin-bottom:2rem; }
   background: #e0e0e0 url('https://cdn-icons-png.flaticon.com/512/847/847969.png') center/50% no-repeat;
 }
 
-/* Product Tabs */
-#product-tabs {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 2rem;
-}
-
-#product-tabs .tab {
-  background: #fff;
-  border: 2px solid #0567e8;
-  color: #0567e8;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-
-#product-tabs .tab:hover {
-  background: #66cbed;
-  color: #fff;
-  border-color: #66cbed;
-}
-
-#product-tabs .tab.active {
-  background: #0567e8;
-  color: #fff;
-}
-
-#product-tabs {
-  position: sticky;    /* Makes it sticky */
-  top: 0;              /* Sticks to the top of viewport */
-  background-color: #fff; /* Ensures tabs have a background */
-  z-index: 1000;       /* Keeps it above content */
-  padding: 0.5rem 0;   /* Optional: spacing inside tabs */
-  border-bottom: 1px solid #ccc; /* Optional: nice separator */
-}
-    
+  
 </style>
 
 <!-- Supabase CDN -->
@@ -206,26 +167,7 @@ h1 { color: #0567e8; text-align:center; margin-bottom:2rem; }
   <img id="user-profile-photo" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User Profile Photo">
 </div>
 
-<!-- Product Line Tabs -->
-<div id="product-tabs">
-  <button class="tab active" data-category="Popcorn">Popcorn</button>
-  <button class="tab" data-category="Seasoned Pretzels">Seasoned Pretzels</button>
-  <button class="tab" data-category="Soft-Baked Pretzels">Soft-Baked Pretzels</button>
-  <button class="tab" data-category="Cotton Candy">Cotton Candy</button>
-  <button class="tab" data-category="Candy">Candy</button>
-</div>
-
 <div class="product-grid" id="product-grid"></div>
-
-  <!-- Candy Box Builder -->
-  <div id="candy-box-builder" style="margin:2rem auto; max-width:600px; text-align:center;">
-    <h2>Build Your Candy Box (4 pieces)</h2>
-    <div id="candy-box" style="display:flex; justify-content:center; gap:10px; margin-bottom:1rem;">
-      <!-- Candy selections will appear here -->
-    </div>
-    <button id="add-candy-box-to-cart" class="add-to-cart-btn">Add Box to Cart</button>
-  </div>
-
 
 <div id="fundraiser-ended-message" style="
   display:none; 
@@ -468,170 +410,58 @@ updateCountdown();
 const shopifyStore = "city-pop-fundraising.myshopify.com";
 
 const products = [
-  // --- Popcorn ---
-  { title: "Cheese & Caramel Mix Popcorn", category: "Popcorn", variantId: "47907478077729", price: 16, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/CheeseCaramel.png?v=1750196665" },
-  { title: "White Cheddar Popcorn", category: "Popcorn", variantId: "47949265207585", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/WhiteCheddar.png?v=1750196654" },
-  { title: "Extra Buttery Popcorn", category: "Popcorn", variantId: "47946797482273", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/ExtraButtery.png?v=1750196660" },
-  { title: "Caramel Popcorn", category: "Popcorn", variantId: "47907462676769", price: 16, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/Caramel_1_d6b563d0-fcd7-4ac4-9917-3da334dc2e55.png?v=1750196695" },
-  { title: "Kettle Popcorn", category: "Popcorn", variantId: "47971562193185", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/Kettle.png?v=1750196658" },
-  { title: "Jalapeno Cheddar Popcorn", category: "Popcorn", variantId: "47972348264737", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/JalapenoCheddar_80ea7902-a107-4113-9dd3-ca2bdb62c1f7.png?v=1750196657" },
-  { title: "Cheese Popcorn", category: "Popcorn", variantId: "47907469295905", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/Cheese.png?v=1750196644" },
-  { title: "Sea Salt & Cracked Pepper Popcorn", category: "Popcorn", variantId: "47941483856161", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/SeaSaltNCrackedPepper.png?v=1750196661" },
-  { title: "Chocolate Drizzle Popcorn", category: "Popcorn", variantId: "47930741424417", price: 20, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/ChocolateDrizzle.png?v=1750196667" },
-  { title: "Low Salt Popcorn", category: "Popcorn", variantId: "47971748217121", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/LowSalt.png?v=1750196643" },
-
-// --- Seasoned Pretzels ---
-  { title: "Garlic Parmesan Pretzels", category: "Seasoned Pretzels", variantId: "pretzel1", price: 8, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/files/garlic-parmesan-pretzels.jpg" },
-  { title: "Buffalo Ranch Pretzels", category: "Seasoned Pretzels", variantId: "pretzel2", price: 8, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/files/buffalo-pretzels.jpg" },
-
-  // --- Soft-Baked Pretzels ---
-  { title: "Salted Soft Pretzel", category: "Soft-Baked Pretzels", variantId: "soft1", price: 6, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/files/soft-salted-pretzel.jpg" },
-  { title: "Cinnamon Sugar Soft Pretzel", category: "Soft-Baked Pretzels", variantId: "soft2", price: 6, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/files/cinnamon-soft-pretzel.jpg" },
-
-  // --- Cotton Candy ---
-  { title: "Classic Blue Cotton Candy", category: "Cotton Candy", variantId: "cotton1", price: 5, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/files/blue-cotton-candy.jpg" },
-  { title: "Pink Vanilla Cotton Candy", category: "Cotton Candy", variantId: "cotton2", price: 5, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/files/pink-cotton-candy.jpg" },
-
-  // --- Candy ---
-  { title: "Gummy Bears", category: "Candy", variantId: "candy1", price: 4, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/files/gummy-bears.jpg" },
-  { title: "Sour Worms", category: "Candy", variantId: "candy2", price: 4, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/files/sour-worms.jpg" }
+  { title: "Cheese & Caramel Mix Popcorn", variantId: "47907478077729", price: 16, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/CheeseCaramel.png?v=1750196665" },
+  { title: "White Cheddar Popcorn", variantId: "47949265207585", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/WhiteCheddar.png?v=1750196654" },
+  { title: "Extra Buttery Popcorn", variantId: "47946797482273", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/ExtraButtery.png?v=1750196660" },
+  { title: "Caramel Popcorn", variantId: "47907462676769", price: 16, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/Caramel_1_d6b563d0-fcd7-4ac4-9917-3da334dc2e55.png?v=1750196695" },
+  { title: "Kettle Popcorn", variantId: "47971562193185", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/Kettle.png?v=1750196658" },
+  { title: "Jalapeno Cheddar Popcorn", variantId: "47972348264737", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/JalapenoCheddar_80ea7902-a107-4113-9dd3-ca2bdb62c1f7.png?v=1750196657" },
+  { title: "Cheese Popcorn", variantId: "47907469295905", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/Cheese.png?v=1750196644" },
+  { title: "Sea Salt & Cracked Pepper Popcorn", variantId: "47941483856161", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/SeaSaltNCrackedPepper.png?v=1750196661" },
+  { title: "Chocolate Drizzle Popcorn", variantId: "47930741424417", price: 20, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/ChocolateDrizzle.png?v=1750196667" },
+  { title: "Low Salt Popcorn", variantId: "47971748217121", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/LowSalt.png?v=1750196643" }
 ];
 
 const cart = {};
+
 const grid = document.getElementById("product-grid");
+products.forEach((product) => {
+  const div = document.createElement("div");
+  div.className = "product-item";
 
-function renderProducts(category = "Popcorn") {
-  grid.innerHTML = "";
-  const filtered = products.filter(p => p.category === category);
-  filtered.forEach(product => {
-    const div = document.createElement("div");
-    div.className = "product-item";
+  const img = document.createElement("img"); img.src=product.img;
+  div.appendChild(img);
 
-    const img = document.createElement("img");
-    img.src = product.img;
-    div.appendChild(img);
+  const title = document.createElement("div"); title.className="product-title"; title.textContent=product.title;
+  div.appendChild(title);
 
-    const title = document.createElement("div");
-    title.className = "product-title";
-    title.textContent = product.title;
-    div.appendChild(title);
+  const price = document.createElement("div"); price.className="product-price"; price.textContent=`$${product.price}`;
+  div.appendChild(price);
 
-    const price = document.createElement("div");
-    price.className = "product-price";
-    price.textContent = `$${product.price}`;
-    div.appendChild(price);
+  const nutrition = document.createElement("div"); nutrition.className="nutrition-link"; nutrition.textContent="Nutrition Info";
+  nutrition.addEventListener("click",()=>alert("Nutritional info placeholder"));
+  div.appendChild(nutrition);
 
-    const nutrition = document.createElement("div");
-    nutrition.className = "nutrition-link";
-    nutrition.textContent = "Nutrition Info";
-    nutrition.addEventListener("click",()=>alert("Nutritional info placeholder"));
-    div.appendChild(nutrition);
+  const qtyDiv = document.createElement("div"); qtyDiv.className="quantity-selector";
+  const minusBtn = document.createElement("button"); minusBtn.textContent="-";
+  const qtySpan = document.createElement("span"); qtySpan.textContent="1";
+  const plusBtn = document.createElement("button"); plusBtn.textContent="+";
+  minusBtn.addEventListener("click",()=>{ let q=parseInt(qtySpan.textContent); if(q>1) qtySpan.textContent=q-1; });
+  plusBtn.addEventListener("click",()=>{ let q=parseInt(qtySpan.textContent); qtySpan.textContent=q+1; });
+  qtyDiv.appendChild(minusBtn); qtyDiv.appendChild(qtySpan); qtyDiv.appendChild(plusBtn);
+  div.appendChild(qtyDiv);
 
-    const qtyDiv = document.createElement("div");
-    qtyDiv.className = "quantity-selector";
-    const minusBtn = document.createElement("button");
-    minusBtn.textContent = "-";
-    const qtySpan = document.createElement("span");
-    qtySpan.textContent = "1";
-    const plusBtn = document.createElement("button");
-    plusBtn.textContent = "+";
-    minusBtn.addEventListener("click",()=>{let q=parseInt(qtySpan.textContent); if(q>1) qtySpan.textContent=q-1;});
-    plusBtn.addEventListener("click",()=>{let q=parseInt(qtySpan.textContent); qtySpan.textContent=q+1;});
-    qtyDiv.appendChild(minusBtn); qtyDiv.appendChild(qtySpan); qtyDiv.appendChild(plusBtn);
-    div.appendChild(qtyDiv);
-
-    const addBtn = document.createElement("button");
-    addBtn.className = "add-to-cart-btn";
-    addBtn.textContent = "Add to Cart";
-    addBtn.addEventListener("click",()=>{
-      const qty = parseInt(qtySpan.textContent);
-      cart[product.variantId] = (cart[product.variantId]||0)+qty;
-      openCart(); renderCart(); updateCartCount();
-    });
-    div.appendChild(addBtn);
-
-    grid.appendChild(div);
+  const addBtn = document.createElement("button"); addBtn.className="add-to-cart-btn"; addBtn.textContent="Add to Cart";
+  addBtn.addEventListener("click",()=>{
+    const qty = parseInt(qtySpan.textContent);
+    cart[product.variantId] = (cart[product.variantId]||0)+qty;
+    openCart(); renderCart(); updateCartCount();
   });
-}
+  div.appendChild(addBtn);
 
-/* --- Candy Box Builder --- */
-const candyBox = [];
-const candyBoxContainer = document.getElementById("candy-box");
-const addCandyBoxBtn = document.getElementById("add-candy-box-to-cart");
-
-function renderCandyBoxOptions() {
-  candyBoxContainer.innerHTML = "";
-
-  const candyProducts = products.filter(p => p.category === "Candy");
-
-  candyProducts.forEach(product => {
-    const btn = document.createElement("button");
-    btn.style.border = "2px solid #0567e8";
-    btn.style.borderRadius = "10px";
-    btn.style.padding = "0.3rem";
-    btn.style.cursor = "pointer";
-    btn.style.width = "60px";
-    btn.style.height = "60px";
-    btn.style.backgroundImage = `url(${product.img})`;
-    btn.style.backgroundSize = "cover";
-    btn.style.backgroundPosition = "center";
-
-    btn.addEventListener("click", () => {
-      if (candyBox.length < 4) {
-        candyBox.push(product.variantId);
-        updateCandyBoxDisplay();
-      } else {
-        candyBox.length = 0; // Reset for new box
-        candyBox.push(product.variantId);
-        updateCandyBoxDisplay();
-      }
-    });
-
-    candyBoxContainer.appendChild(btn);
-  });
-}
-
-function updateCandyBoxDisplay() {
-  candyBoxContainer.querySelectorAll("img").forEach(img => img.remove());
-  candyBox.forEach((variantId) => {
-    const product = products.find(p => p.variantId === variantId);
-    const img = document.createElement("img");
-    img.src = product.img;
-    img.style.width = "60px";
-    img.style.height = "60px";
-    img.style.borderRadius = "10px";
-    img.style.border = "2px solid #66cbed";
-    candyBoxContainer.appendChild(img);
-  });
-}
-
-addCandyBoxBtn.addEventListener("click", () => {
-  if (candyBox.length === 0) return alert("Please select at least one candy.");
-  candyBox.forEach(variantId => {
-    cart[variantId] = (cart[variantId] || 0) + 1;
-  });
-  candyBox.length = 0;
-  updateCandyBoxDisplay();
-  renderCart();
-  updateCartCount();
+  grid.appendChild(div);
 });
 
-// Initialize candy box
-renderCandyBoxOptions();
-
-
-// Render default
-renderProducts("Popcorn");
-
-// Tab switching logic
-document.querySelectorAll("#product-tabs .tab").forEach(tab => {
-  tab.addEventListener("click", () => {
-    document.querySelectorAll("#product-tabs .tab").forEach(t => t.classList.remove("active"));
-    tab.classList.add("active");
-    const category = tab.dataset.category;
-    renderProducts(category);
-  });
-});
 const cartSlideout = document.getElementById("cart-slideout");
 const cartOverlay = document.getElementById("cart-overlay");
 const cartItemsDiv = document.getElementById("cart-items");

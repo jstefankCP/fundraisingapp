@@ -163,11 +163,22 @@ h1 { color: #0567e8; text-align:center; margin-bottom:2rem; }
 <!-- Slide-out cart -->
 <div id="cart-overlay"></div>
 <div id="cart-slideout">
-<button class="continue-shopping" onclick="closeCart()">← Continue Shopping</button>
-<h2>Your Cart</h2>
-<div id="cart-items"></div>
-<div id="subtotal">Subtotal: $0</div>
-<button id="checkout-btn" class="checkout-btn">Secure Checkout</button>
+  <button class="continue-shopping" onclick="closeCart()">← Continue Shopping</button>
+  <h2>Your Cart</h2>
+  <div id="cart-items"></div>
+  
+  <div id="subtotal">Subtotal: $0</div>
+
+  <!-- Fundraiser Contribution -->
+  <div id="fundraiser-contribution" style="margin-top:1rem; text-align:center;">
+    <div style="font-weight:600; margin-bottom:0.5rem;">Your Contribution to the Fundraiser</div>
+    <div id="contribution-amount" style="font-size:1.2rem; color:#0567e8; font-weight:bold;">$0</div>
+    <div id="contribution-progress-container" style="background:#eee; border-radius:20px; height:12px; width:100%; margin-top:0.5rem;">
+      <div id="contribution-progress" style="height:100%; width:0%; background: linear-gradient(90deg,#ffdd00,#ff7a00); border-radius:20px;"></div>
+    </div>
+  </div>
+
+  <button id="checkout-btn" class="checkout-btn" style="margin-top:1rem;">Secure Checkout</button>
 </div>
 
 <!-- Floating Cart Button -->
@@ -439,36 +450,95 @@ function openCart(){ cartSlideout.style.right="0"; cartOverlay.style.display="bl
 function closeCart(){ cartSlideout.style.right="-100%"; cartOverlay.style.display="none"; }
 cartOverlay.addEventListener("click", closeCart);
 
-function renderCart(){
-  cartItemsDiv.innerHTML="";
+function renderCart() {
+  cartItemsDiv.innerHTML = "";
   let subtotal = 0;
-  for(const [variantId, qty] of Object.entries(cart)){
-    if(qty>0){
-      const product = products.find(p=>p.variantId===variantId);
-      subtotal += product.price*qty;
-      const itemDiv = document.createElement("div"); itemDiv.className="cart-item";
 
-      const img = document.createElement("img"); img.src=product.img;
-      const title = document.createElement("div"); title.className="cart-item-title"; title.textContent=product.title;
+  // Render each cart item
+  for (const [variantId, qty] of Object.entries(cart)) {
+    if (qty > 0) {
+      const product = products.find(p => p.variantId === variantId);
+      subtotal += product.price * qty;
 
-      const controls = document.createElement("div"); controls.className="cart-item-controls";
-      const minus = document.createElement("button"); minus.textContent="-";
-      const qtySpan = document.createElement("span"); qtySpan.textContent=qty;
-      const plus = document.createElement("button"); plus.textContent="+";
-      const trash = document.createElement("button"); trash.className="trash-btn"; trash.textContent="x";
+      const itemDiv = document.createElement("div");
+      itemDiv.className = "cart-item";
 
-      minus.addEventListener("click",()=>{ if(cart[variantId]>1){ cart[variantId]--; renderCart(); } });
-      plus.addEventListener("click",()=>{ cart[variantId]++; renderCart(); });
-      trash.addEventListener("click",()=>{ delete cart[variantId]; renderCart(); });
+      const img = document.createElement("img");
+      img.src = product.img;
 
-      controls.appendChild(minus); controls.appendChild(qtySpan); controls.appendChild(plus); controls.appendChild(trash);
-      itemDiv.appendChild(img); itemDiv.appendChild(title); itemDiv.appendChild(controls);
+      const title = document.createElement("div");
+      title.className = "cart-item-title";
+      title.textContent = product.title;
+
+      const controls = document.createElement("div");
+      controls.className = "cart-item-controls";
+
+      const minus = document.createElement("button");
+      minus.textContent = "-";
+
+      const qtySpan = document.createElement("span");
+      qtySpan.textContent = qty;
+
+      const plus = document.createElement("button");
+      plus.textContent = "+";
+
+      const trash = document.createElement("button");
+      trash.className = "trash-btn";
+      trash.textContent = "x";
+
+      // Event listeners for controls
+      minus.addEventListener("click", () => {
+        if (cart[variantId] > 1) {
+          cart[variantId]--;
+          renderCart();
+        }
+      });
+
+      plus.addEventListener("click", () => {
+        cart[variantId]++;
+        renderCart();
+      });
+
+      trash.addEventListener("click", () => {
+        delete cart[variantId];
+        renderCart();
+      });
+
+      controls.appendChild(minus);
+      controls.appendChild(qtySpan);
+      controls.appendChild(plus);
+      controls.appendChild(trash);
+
+      itemDiv.appendChild(img);
+      itemDiv.appendChild(title);
+      itemDiv.appendChild(controls);
+
       cartItemsDiv.appendChild(itemDiv);
     }
   }
-  subtotalDiv.textContent=`Subtotal: $${subtotal}`;
+
+  // Update subtotal display
+  subtotalDiv.textContent = `Subtotal: $${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  // --- Fundraiser contribution (50% of subtotal) ---
+  const contribution = subtotal * 0.5;
+  const contributionAmountEl = document.getElementById("contribution-amount");
+  if (contributionAmountEl) {
+    contributionAmountEl.textContent = `$${contribution.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+
+  // --- Update cart mini progress bar ---
+  const goal = parseFloat(goalEl.textContent.replace(/\$|,/g, "")) || 0;
+  const contributionPercent = goal > 0 ? Math.min((contribution / goal) * 100, 100) : 0;
+  const contributionProgressEl = document.getElementById("contribution-progress");
+  if (contributionProgressEl) {
+    contributionProgressEl.style.width = `${contributionPercent}%`;
+  }
+
+  // Update floating cart count
   updateCartCount();
 }
+
 
 function updateCartCount() {
   const totalItems = Object.values(cart).reduce((a,b)=>a+b,0);

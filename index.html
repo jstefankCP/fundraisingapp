@@ -291,18 +291,14 @@ overlay.onclick=closeCart;
 
 /* --- Checkout --- */
 document.getElementById("checkout-btn").onclick = () => {
-  const cartItems = Object.values(cart);
-  if (!cartItems.length) return alert("Your cart is empty!");
-
-  // Shopify expects: /cart/<variantId1>:<qty1>,<variantId2>:<qty2>
-  const shopifyCartPath = cartItems.map(item => `${item.product.variantId}:${item.qty}`).join(',');
-
-  // Include fundraiser query params in the URL
-  const extraParams = new URLSearchParams(fundraiserParams).toString();
-  const url = `https://${shopifyStore}/cart/${shopifyCartPath}?${extraParams ? extraParams + '&' : ''}CityPopApp=true`;
-
-  // Open Shopify cart
-  window.open(url, "_blank");
+  const line_items = Object.values(cart).map(item=>({
+      variantId: item.product.variantId,
+      quantity: item.qty
+  }));
+    const params = new URLSearchParams();
+    params.set("CityPopApp","true");
+    params.set("line_items", JSON.stringify(line_items));
+    window.open('https://${shopifyStore}/cart?${params.toString()]',"_blank")}
 };
 
 

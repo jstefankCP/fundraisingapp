@@ -211,7 +211,7 @@ async function fetchFundraiserInfo() {
   goalEl.textContent = formattedGoal;
 
   fundraiserEndDate = fundraiser.end_date;
-  endDateEl.textContent = "ends on " + fundraiser.end_date;
+  // endDateEl.textContent = "ends on " + fundraiser.end_date;
 
   // Fetch the total raised from fundraiser_orders
   const { data: orders, error: ordersError } = await supabaseClient

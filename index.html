@@ -294,16 +294,17 @@ document.getElementById("checkout-btn").onclick = () => {
   const cartItems = Object.values(cart);
   if (!cartItems.length) return alert("Your cart is empty!");
 
-  // Shopify expects /cart/variantId:qty,... format
-  const shopifyItems = cartItems.map(item => `${item.product.variantId}:${item.qty}`).join(',');
+  // Shopify expects: /cart/<variantId1>:<qty1>,<variantId2>:<qty2>
+  const shopifyCartPath = cartItems.map(item => `${item.product.variantId}:${item.qty}`).join(',');
 
-  // Preserve fundraiser params
+  // Include fundraiser query params in the URL
   const extraParams = new URLSearchParams(fundraiserParams).toString();
+  const url = `https://${shopifyStore}/cart/${shopifyCartPath}?${extraParams ? extraParams + '&' : ''}CityPopApp=true`;
 
-  // Open Shopify cart in new tab
-  const url = `https://${shopifyStore}/cart/${shopifyItems}?CityPopApp=true${extraParams ? "&" + extraParams : ""}`;
+  // Open Shopify cart
   window.open(url, "_blank");
 };
+
 
 </script>
 <!-- Footer -->

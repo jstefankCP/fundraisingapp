@@ -141,6 +141,10 @@ goalEl.textContent = `$${fundraiser.goal_amount}`;
 progressBar.style.width = "0%";
 progressBar.textContent = "$0";
 
+// Format as USD
+    const formattedTotal = `$${goalEl.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  raisedEl.textContent = formattedTotal;
+
 fundraiserEndDate = fundraiser.end_date;
 endDateEl.textContent = "ends on " + fundraiser.end_date;
 

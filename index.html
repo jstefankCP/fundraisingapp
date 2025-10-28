@@ -316,29 +316,17 @@ function updateCountdown() {
   if (diffMs <= 0) {
     endDateEl.textContent = "This Fundraiser Has Ended";
 
-    // Hide the product grid and floating cart
-    if (grid) grid.style.display = "none";
-    if (floatingCartBtn) floatingCartBtn.style.display = "none";
+    // Show a friendly message in the product grid area
+    grid.innerHTML = `
+        <div style="text-align:center; font-size:1.5rem; font-weight:600; padding:2rem; color:#0567e8;">
+            We appreciate your interest! This fundraiser has ended, so contributions aren't possible this time. 
+            Your support and enthusiasm mean a lot — stay tuned for future fundraisers!
+        </div>
+    `;
 
-    // Show a nice message to supporters
-    let messageEl = document.getElementById("fundraiser-ended-message");
-    if (!messageEl) {
-        messageEl = document.createElement("div");
-        messageEl.id = "fundraiser-ended-message";
-        messageEl.style.textAlign = "center";
-        messageEl.style.marginTop = "2rem";
-        messageEl.style.fontSize = "1.8rem";
-        messageEl.style.fontWeight = "700";
-        messageEl.style.color = "#0567e8";
-        messageEl.style.maxWidth = "600px";
-        messageEl.style.marginLeft = "auto";
-        messageEl.style.marginRight = "auto";
-        messageEl.style.lineHeight = "1.4";
-        document.body.insertBefore(messageEl, grid);
-    }
-    messageEl.textContent = "Although this fundraiser has closed, your support hasn’t gone unnoticed. We can’t wait to give you another chance to join in and make an impact soon!";
-    return;
-  }
+    return; // stop further countdown processing
+}
+
 
   const totalMinutes = Math.floor(diffMs / (1000 * 60));
   const days = Math.floor(totalMinutes / (60 * 24));

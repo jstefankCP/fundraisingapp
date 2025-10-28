@@ -57,6 +57,67 @@ h1 { color: #0567e8; text-align:center; margin-bottom:2rem; }
 /* Footer link styling */
 .footer-link { background:none; border:none; color:#fff; text-decoration:underline; cursor:pointer; font-size:0.9rem; }
 .footer-link:hover { color:#cce6ff; }
+
+/* Modern Fundraiser Header */
+#fundraiser-header {
+  background: linear-gradient(135deg, #0567e8, #66cbed);
+  color: #fff;
+  padding: 2rem 2.5rem;
+  border-radius: 20px;
+  margin-bottom: 2rem;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  transition: transform 0.3s;
+}
+#fundraiser-header:hover {
+  transform: translateY(-2px);
+}
+#fundraiser-cause {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+}
+#org-id-display, #user-id-display, #end-date-display {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+  opacity: 0.85;
+}
+  
+#progress-bar-container {
+  background: rgba(255,255,255,0.2);
+  border-radius: 50px;
+  overflow: hidden;
+  height: 25px;
+  max-width: 450px;
+  margin: 1rem auto;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+}
+#progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #ffdd00, #ff7a00);
+  text-align: right;
+  line-height: 25px;
+  font-weight: 600;
+  padding-right: 10px;
+  color: #333;
+  border-radius: 50px;
+  transition: width 1s ease-in-out;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.fundraiser-stats {
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-top: 0.5rem;
+  opacity: 0.9;
+}
+.fundraiser-stats span {
+  font-weight: 700;
+}
+  
 </style>
 
 <!-- Supabase CDN -->
@@ -66,14 +127,18 @@ h1 { color: #0567e8; text-align:center; margin-bottom:2rem; }
 
 <!-- Fundraiser Header -->
 <div id="fundraiser-header">
-<div id="fundraiser-cause">[Loading fundraiser...]</div>
-<div id="org-id-display">[organization_id]</div>
-<div id="user-id-display">[user_id]</div>
-<div id="end-date-display">[end_date]</div>
-<div id="progress-bar-container">
-<div id="progress-bar">$0</div>
-</div>
-<div style="font-size:0.85rem;">Raised <span id="raised-amount">$0</span> of <span id="goal-amount">$1000</span></div>
+  <div id="fundraiser-cause">[Loading fundraiser...]</div>
+  <div id="org-id-display">[organization_id]</div>
+  <div id="user-id-display">[user_id]</div>
+  <div id="end-date-display">[end_date]</div>
+
+  <div id="progress-bar-container">
+    <div id="progress-bar"></div>
+  </div>
+
+  <div class="fundraiser-stats">
+    <span id="raised-amount">$0</span> raised of <span id="goal-amount">$1000</span>
+  </div>
 </div>
 
 <div class="product-grid" id="product-grid"></div>

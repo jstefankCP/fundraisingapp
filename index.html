@@ -439,35 +439,133 @@ function openCart(){ cartSlideout.style.right="0"; cartOverlay.style.display="bl
 function closeCart(){ cartSlideout.style.right="-100%"; cartOverlay.style.display="none"; }
 cartOverlay.addEventListener("click", closeCart);
 
-function renderCart(){
-  cartItemsDiv.innerHTML="";
+function renderCart() {
+  cartItemsDiv.innerHTML = "";
   let subtotal = 0;
-  for(const [variantId, qty] of Object.entries(cart)){
-    if(qty>0){
-      const product = products.find(p=>p.variantId===variantId);
-      subtotal += product.price*qty;
-      const itemDiv = document.createElement("div"); itemDiv.className="cart-item";
 
-      const img = document.createElement("img"); img.src=product.img;
-      const title = document.createElement("div"); title.className="cart-item-title"; title.textContent=product.title;
+  // Loop through cart items
+  for (const [variantId, qty] of Object.entries(cart)) {
+    if (qty > 0) {
+      const product = products.find(p => p.variantId === variantId);
+      subtotal += product.price * qty;
 
-      const controls = document.createElement("div"); controls.className="cart-item-controls";
-      const minus = document.createElement("button"); minus.textContent="-";
-      const qtySpan = document.createElement("span"); qtySpan.textContent=qty;
-      const plus = document.createElement("button"); plus.textContent="+";
-      const trash = document.createElement("button"); trash.className="trash-btn"; trash.textContent="x";
+      const itemDiv = document.createElement("div");
+      itemDiv.className = "cart-item";
 
-      minus.addEventListener("click",()=>{ if(cart[variantId]>1){ cart[variantId]--; renderCart(); } });
-      plus.addEventListener("click",()=>{ cart[variantId]++; renderCart(); });
-      trash.addEventListener("click",()=>{ delete cart[variantId]; renderCart(); });
+      const img = document.createElement("img");
+      img.src = product.img;
 
-      controls.appendChild(minus); controls.appendChild(qtySpan); controls.appendChild(plus); controls.appendChild(trash);
-      itemDiv.appendChild(img); itemDiv.appendChild(title); itemDiv.appendChild(controls);
+      const title = document.createElement("div");
+      title.className = "cart-item-title";
+      title.textContent = product.title;
+
+      const controls = document.createElement("div");
+      controls.className = "cart-item-controls";
+
+      const minus = document.createElement("button");
+      minus.textContent = "-";
+
+      const qtySpan = document.createElement("span");
+      qtySpan.textContent = qty;
+
+      const plus = document.createElement("button");
+      plus.textContent = "+";
+
+      const trash = document.createElement("button");
+      trash.className = "trash-btn";
+      trash.textContent = "x";
+
+      minus.addEventListener("click", () => {
+        if (cart[variantId] > 1) {
+          cart[variantId]--;
+          renderCart();
+        }
+      });
+
+      plus.addEventListener("click", () => {
+        cart[variantId]++;
+        renderCart();
+      });
+
+      trash.addEventListener("click", () => {
+        delete cart[variantId];
+        renderCart();
+      });
+
+      controls.appendChild(minus);
+      controls.appendChild(qtySpan);
+      controls.appendChild(plus);
+      controls.appendChild(trash);
+
+      itemDiv.appendChild(img);
+      itemDiv.appendChild(title);
+      itemDiv.appendChild(controls);
+
       cartItemsDiv.appendChild(itemDiv);
     }
   }
-  subtotalDiv.textContent=`Subtotal: $${subtotal}`;
+
+  // Update subtotal
+  subtotalDiv.textContent = `Subtotal: $${subtotal.toFixed(2)}`;
+
+  // Update cart count
   updateCartCount();
+
+  /* --- WHAT IF FUNDRAISER --- */
+  let whatIfContainer = document.getElementById("what-if-container");
+  if (!whatIfContainer) {
+    whatIfContainer = document.createElement("div");
+    whatIfContainer.id = "what-if-container";
+    whatIfContainer.style.margin = "1rem 0";
+    whatIfContainer.style.padding = "0.8rem 1rem";
+    whatIfContainer.style.background = "rgba(102,203,237,0.1)";
+    whatIfContainer.style.borderRadius = "10px";
+    whatIfContainer.style.display = "none";
+    whatIfContainer.style.flexDirection = "column";
+
+    const whatIfText = document.createElement("div");
+    whatIfText.id = "what-if-text";
+    whatIfText.style.fontSize = "0.95rem";
+    whatIfText.style.fontWeight = "500";
+    whatIfText.style.marginBottom = "0.5rem";
+
+    const progressBarContainer = document.createElement("div");
+    progressBarContainer.style.background = "#fff";
+    progressBarContainer.style.borderRadius = "20px";
+    progressBarContainer.style.height = "20px";
+    progressBarContainer.style.width = "100%";
+    progressBarContainer.style.overflow = "hidden";
+    progressBarContainer.style.boxShadow = "inset 0 1px 3px rgba(0,0,0,0.1)";
+
+    const whatIfBar = document.createElement("div");
+    whatIfBar.id = "what-if-bar";
+    whatIfBar.style.height = "100%";
+    whatIfBar.style.width = "0%";
+    whatIfBar.style.background = "linear-gradient(90deg,#ffdd00,#ff7a00)";
+    whatIfBar.style.transition = "width 0.5s ease-in-out";
+
+    progressBarContainer.appendChild(whatIfBar);
+    whatIfContainer.appendChild(whatIfText);
+    whatIfContainer.appendChild(progressBarContainer);
+
+    cartSlideout.insertBefore(whatIfContainer, checkoutBtn);
+  }
+
+  if (subtotal > 0 && raisedEl && goalEl) {
+    const contribution = subtotal * 0.5;
+    const currentRaised = parseFloat(raisedEl.textContent.replace(/\$|,/g, "")) || 0;
+    const goal = parseFloat(goalEl.textContent.replace(/\$|,/g, "")) || 1;
+    const whatIfTotal = currentRaised + contribution;
+    const whatIfPercent = Math.min((whatIfTotal / goal) * 100, 100);
+
+    document.getElementById("what-if-text").textContent =
+      `This order would contribute an additional ${contribution.toLocaleString("en-US", { style:"currency", currency:"USD" })} and help push the fundraising goal to ${whatIfPercent.toFixed(0)}%`;
+
+    document.getElementById("what-if-bar").style.width = `${whatIfPercent}%`;
+    whatIfContainer.style.display = "flex";
+  } else {
+    whatIfContainer.style.display = "none";
+  }
 }
 
 function updateCartCount() {

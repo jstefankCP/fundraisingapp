@@ -217,6 +217,16 @@ h1 { color: #0567e8; text-align:center; margin-bottom:2rem; }
 
 <div class="product-grid" id="product-grid"></div>
 
+  <!-- Candy Box Builder -->
+  <div id="candy-box-builder" style="margin:2rem auto; max-width:600px; text-align:center;">
+    <h2>Build Your Candy Box (4 pieces)</h2>
+    <div id="candy-box" style="display:flex; justify-content:center; gap:10px; margin-bottom:1rem;">
+      <!-- Candy selections will appear here -->
+    </div>
+    <button id="add-candy-box-to-cart" class="add-to-cart-btn">Add Box to Cart</button>
+  </div>
+
+
 <div id="fundraiser-ended-message" style="
   display:none; 
   text-align:center; 
@@ -543,6 +553,72 @@ function renderProducts(category = "Popcorn") {
     grid.appendChild(div);
   });
 }
+
+/* --- Candy Box Builder --- */
+const candyBox = [];
+const candyBoxContainer = document.getElementById("candy-box");
+const addCandyBoxBtn = document.getElementById("add-candy-box-to-cart");
+
+function renderCandyBoxOptions() {
+  candyBoxContainer.innerHTML = "";
+
+  const candyProducts = products.filter(p => p.category === "Candy");
+
+  candyProducts.forEach(product => {
+    const btn = document.createElement("button");
+    btn.style.border = "2px solid #0567e8";
+    btn.style.borderRadius = "10px";
+    btn.style.padding = "0.3rem";
+    btn.style.cursor = "pointer";
+    btn.style.width = "60px";
+    btn.style.height = "60px";
+    btn.style.backgroundImage = `url(${product.img})`;
+    btn.style.backgroundSize = "cover";
+    btn.style.backgroundPosition = "center";
+
+    btn.addEventListener("click", () => {
+      if (candyBox.length < 4) {
+        candyBox.push(product.variantId);
+        updateCandyBoxDisplay();
+      } else {
+        candyBox.length = 0; // Reset for new box
+        candyBox.push(product.variantId);
+        updateCandyBoxDisplay();
+      }
+    });
+
+    candyBoxContainer.appendChild(btn);
+  });
+}
+
+function updateCandyBoxDisplay() {
+  candyBoxContainer.querySelectorAll("img").forEach(img => img.remove());
+  candyBox.forEach((variantId) => {
+    const product = products.find(p => p.variantId === variantId);
+    const img = document.createElement("img");
+    img.src = product.img;
+    img.style.width = "60px";
+    img.style.height = "60px";
+    img.style.borderRadius = "10px";
+    img.style.border = "2px solid #66cbed";
+    candyBoxContainer.appendChild(img);
+  });
+}
+
+addCandyBoxBtn.addEventListener("click", () => {
+  if (candyBox.length === 0) return alert("Please select at least one candy.");
+  candyBox.forEach(variantId => {
+    cart[variantId] = (cart[variantId] || 0) + 1;
+  });
+  candyBox.length = 0;
+  updateCandyBoxDisplay();
+  renderCart();
+  updateCartCount();
+});
+
+// Initialize candy box
+renderCandyBoxOptions();
+
 
 // Render default
 renderProducts("Popcorn");

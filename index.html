@@ -574,16 +574,28 @@ function updateCartCount() {
   cartCountEl.style.display = totalItems > 0 ? "flex" : "none";
 }
 
-checkoutBtn.addEventListener("click", ()=>{
-  const items = Object.entries(cart).filter(([v,q])=>q>0);
-  if(items.length===0){ alert("Please add at least one product."); return; }
-  const checkoutUrl = new URL(`https://${shopifyStore}/cart`);
-  items.forEach(([variantId, qty])=>{ checkoutUrl.pathname += `/${variantId}:${qty}`; });
-  Object.entries({...fundraiserParams, "City Pop App":"true"}).forEach(([key,value])=>{
-    if(value) checkoutUrl.searchParams.append(`attributes[${key}]`, value);
+checkoutBtn.addEventListener("click", () => {
+  const items = Object.entries(cart).filter(([v, q]) => q > 0);
+  if (items.length === 0) {
+    alert("Please add at least one product.");
+    return;
+  }
+
+  // Build Shopify cart path
+  const cartPath = items.map(([variantId, qty]) => `${variantId}:${qty}`).join(',');
+
+  // Build full checkout URL
+  const checkoutUrl = new URL(`https://${shopifyStore}/cart/${cartPath}`);
+
+  // Add fundraiser params as cart attributes
+  Object.entries({ ...fundraiserParams, "City Pop App": "true" }).forEach(([key, value]) => {
+    if (value) checkoutUrl.searchParams.append(`attributes[${key}]`, value);
   });
+
+  // Go to checkout
   window.location.href = checkoutUrl.toString();
 });
+
 </script>
     
 <!-- Footer -->

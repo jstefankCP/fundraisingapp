@@ -138,35 +138,13 @@ h1 { color: #0567e8; text-align:center; margin-bottom:2rem; }
   background: #e0e0e0 url('https://cdn-icons-png.flaticon.com/512/847/847969.png') center/50% no-repeat;
 }
 
-<!-- Floating Snack Image -->
-<img id="floating-snack" src="Assets/Snack_Bigger.png" alt="Snack" />
-
-<style>
-  #floating-snack {
-    display: block;
-    width: 100px; /* 50% size */
-    height: auto;
-    margin: 20px auto; /* center at the top */
-    transition: opacity 0.3s ease;
-    background: transparent; /* keep transparency */
-    z-index: 9999; /* in case you want to layer it above other things */
-  }
-
-  @media (max-width: 768px) {
-    #floating-snack {
-      width: 100px; /* slightly smaller on mobile */
-    }
-  }
-    
+  
 </style>
 
 <!-- Supabase CDN -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-
-<!-- Floating Snack Image -->
-<img id="floating-snack" src="Assets/Snack_Bigger.png" alt="Snack" />
 
 <!-- Fundraiser Header -->
 <div id="fundraiser-header">
@@ -708,22 +686,5 @@ checkoutBtn.addEventListener("click", () => {
   }
 </style>
 
-<script>
-  const floatingSnack = document.getElementById('floating-snack');
-
-  function updateSnackVisibility() {
-    const scrollY = window.scrollY || window.pageYOffset;
-    const hideThreshold = document.body.scrollHeight * 0.25; // hide after 1/4 of page
-    if (scrollY > hideThreshold) {
-      floatingSnack.style.opacity = 0;
-    } else {
-      floatingSnack.style.opacity = 1;
-    }
-  }
-
-  window.addEventListener('scroll', updateSnackVisibility);
-  updateSnackVisibility(); // initial check
-</script>
-  
 </body>
 </html>

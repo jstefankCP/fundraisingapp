@@ -141,24 +141,23 @@ h1 { color: #0567e8; text-align:center; margin-bottom:2rem; }
 <!-- Floating Snack Image -->
 <img id="floating-snack" src="Assets/Snack_Bigger.png" alt="Snack" />
 
-<style>
   #floating-snack {
     position: fixed;
     top: 10px;
     left: 10px;
-    width: 300px; /* ~300% bigger depending on original */
+    width: 150px; /* 50% of previous 300px size */
     height: auto;
-    z-index: 1200;
+    z-index: 9999; /* ensure it's on top of everything */
     pointer-events: none;
     transition: opacity 0.3s ease, transform 0.3s ease;
+    background: transparent; /* keeps transparency intact */
   }
 
   @media (max-width: 768px) {
     #floating-snack {
-      width: 200px; /* slightly smaller on mobile */
+      width: 100px; /* slightly smaller on mobile */
     }
   }
-
     
 </style>
 
@@ -718,7 +717,7 @@ checkoutBtn.addEventListener("click", () => {
     const hideThreshold = window.innerHeight * 0.25; // hide after 1/4 down the viewport
     if (scrollY > hideThreshold) {
       floatingSnack.style.opacity = 0;
-      floatingSnack.style.transform = 'scale(0.5)'; // optional shrink effect
+      floatingSnack.style.transform = 'scale(0.8)'; // optional slight shrink
     } else {
       floatingSnack.style.opacity = 1;
       floatingSnack.style.transform = 'scale(1)';
@@ -729,6 +728,6 @@ checkoutBtn.addEventListener("click", () => {
   window.addEventListener('resize', updateSnackVisibility);
   updateSnackVisibility(); // initial check
 </script>
-
+  
 </body>
 </html>

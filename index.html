@@ -439,81 +439,33 @@ function openCart(){ cartSlideout.style.right="0"; cartOverlay.style.display="bl
 function closeCart(){ cartSlideout.style.right="-100%"; cartOverlay.style.display="none"; }
 cartOverlay.addEventListener("click", closeCart);
 
-function renderCart() {
-  cartItemsDiv.innerHTML = "";
+function renderCart(){
+  cartItemsDiv.innerHTML="";
   let subtotal = 0;
+  for(const [variantId, qty] of Object.entries(cart)){
+    if(qty>0){
+      const product = products.find(p=>p.variantId===variantId);
+      subtotal += product.price*qty;
+      const itemDiv = document.createElement("div"); itemDiv.className="cart-item";
 
-  for (const [variantId, qty] of Object.entries(cart)) {
-    if (qty > 0) {
-      const product = products.find(p => p.variantId === variantId);
-      subtotal += product.price * qty;
+      const img = document.createElement("img"); img.src=product.img;
+      const title = document.createElement("div"); title.className="cart-item-title"; title.textContent=product.title;
 
-      const itemDiv = document.createElement("div");
-      itemDiv.className = "cart-item";
-      itemDiv.innerHTML = `
-        <img src="${product.img}" />
-        <div class="cart-item-title">${product.title}</div>
-        <div class="cart-item-controls">
-          <button class="minus">-</button>
-          <span>${qty}</span>
-          <button class="plus">+</button>
-          <button class="trash-btn">x</button>
-        </div>
-      `;
+      const controls = document.createElement("div"); controls.className="cart-item-controls";
+      const minus = document.createElement("button"); minus.textContent="-";
+      const qtySpan = document.createElement("span"); qtySpan.textContent=qty;
+      const plus = document.createElement("button"); plus.textContent="+";
+      const trash = document.createElement("button"); trash.className="trash-btn"; trash.textContent="x";
+
+      minus.addEventListener("click",()=>{ if(cart[variantId]>1){ cart[variantId]--; renderCart(); } });
+      plus.addEventListener("click",()=>{ cart[variantId]++; renderCart(); });
+      trash.addEventListener("click",()=>{ delete cart[variantId]; renderCart(); });
+
+      controls.appendChild(minus); controls.appendChild(qtySpan); controls.appendChild(plus); controls.appendChild(trash);
+      itemDiv.appendChild(img); itemDiv.appendChild(title); itemDiv.appendChild(controls);
       cartItemsDiv.appendChild(itemDiv);
-
-      // Attach events
-      itemDiv.querySelector(".minus").addEventListener("click", () => {
-        if (cart[variantId] > 1) cart[variantId]--;
-        renderCart();
-      });
-      itemDiv.querySelector(".plus").addEventListener("click", () => {
-        cart[variantId]++;
-        renderCart();
-      });
-      itemDiv.querySelector(".trash-btn").addEventListener("click", () => {
-        delete cart[variantId];
-        renderCart();
-      });
     }
   }
-
-  subtotalDiv.textContent = `Subtotal: $${subtotal.toFixed(2)}`;
-  updateCartCount();
-
-  // ---- WHAT IF FUNDRAISER ----
-  if (raisedEl && goalEl && cartSlideout) { // only run if these exist
-    const totalRaised = parseFloat(raisedEl.textContent.replace(/\$|,/g, "")) || 0;
-    const goal = parseFloat(goalEl.textContent.replace(/\$|,/g, "")) || 0;
-    const orderContribution = subtotal * 0.5;
-    const newTotal = totalRaised + orderContribution;
-    const newPercent = goal > 0 ? Math.min((newTotal / goal) * 100, 100) : 0;
-
-    // Remove old container
-    const oldContainer = document.getElementById("what-if-container");
-    if (oldContainer) oldContainer.remove();
-
-    const whatIfContainer = document.createElement("div");
-    whatIfContainer.id = "what-if-container";
-    whatIfContainer.style.marginTop = "1rem";
-
-    whatIfContainer.innerHTML = `
-      <div style="font-size:0.9rem; margin-bottom:0.3rem;">
-        This order would contribute an additional $${orderContribution.toFixed(2)} and help push their fundraising goal to ${newPercent.toFixed(0)}%
-      </div>
-      <div style="width:100%; height:20px; background:#eee; border-radius:10px; overflow:hidden;">
-        <div style="width:${newPercent}%; height:100%; background:#66cbed; transition:width 0.5s ease-in-out;"></div>
-      </div>
-      <div style="margin-top:0.5rem; text-align:right; font-size:0.9rem;">
-        <span style="background:#e74c3c; color:#fff; font-weight:700; font-size:0.8rem; padding:2px 6px; border-radius:5px; margin-right:5px;">NEW</span>
-        <span>New Amount Raised: $${newTotal.toFixed(2)} of $${goal.toLocaleString()}</span>
-      </div>
-    `;
-
-    cartSlideout.appendChild(whatIfContainer);
-  }
-}
-
   subtotalDiv.textContent=`Subtotal: $${subtotal}`;
   updateCartCount();
 }

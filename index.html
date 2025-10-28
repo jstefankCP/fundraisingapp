@@ -141,16 +141,15 @@ h1 { color: #0567e8; text-align:center; margin-bottom:2rem; }
 <!-- Floating Snack Image -->
 <img id="floating-snack" src="Assets/Snack_Bigger.png" alt="Snack" />
 
+<style>
   #floating-snack {
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    width: 150px; /* 50% of previous 300px size */
+    display: block;
+    width: 100px; /* 50% size */
     height: auto;
-    z-index: 9999; /* ensure it's on top of everything */
-    pointer-events: none;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    background: transparent; /* keeps transparency intact */
+    margin: 20px auto; /* center at the top */
+    transition: opacity 0.3s ease;
+    background: transparent; /* keep transparency */
+    z-index: 9999; /* in case you want to layer it above other things */
   }
 
   @media (max-width: 768px) {
@@ -714,18 +713,15 @@ checkoutBtn.addEventListener("click", () => {
 
   function updateSnackVisibility() {
     const scrollY = window.scrollY || window.pageYOffset;
-    const hideThreshold = window.innerHeight * 0.25; // hide after 1/4 down the viewport
+    const hideThreshold = document.body.scrollHeight * 0.25; // hide after 1/4 of page
     if (scrollY > hideThreshold) {
       floatingSnack.style.opacity = 0;
-      floatingSnack.style.transform = 'scale(0.8)'; // optional slight shrink
     } else {
       floatingSnack.style.opacity = 1;
-      floatingSnack.style.transform = 'scale(1)';
     }
   }
 
   window.addEventListener('scroll', updateSnackVisibility);
-  window.addEventListener('resize', updateSnackVisibility);
   updateSnackVisibility(); // initial check
 </script>
   

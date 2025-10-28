@@ -291,14 +291,11 @@ overlay.onclick=closeCart;
 
 /* --- Checkout --- */
 document.getElementById("checkout-btn").onclick = () => {
-const line_items = Object.values(cart).map(item=>({
-variantId: item.product.variantId,
-quantity: item.qty
-}));
-const params = new URLSearchParams();
-params.set("CityPopApp","true");
-params.set("line_items", JSON.stringify(line_items));
-window.open(`https://${shopifyStore}/cart?${params.toString()}`, "_blank");
+  const items = Object.values(cart).map(item => `${item.product.variantId}:${item.qty}`).join(',');
+  if (!items) return alert("Your cart is empty!");
+  // Preserve fundraiser params
+  const extra = new URLSearchParams(fundraiserParams).toString();
+  window.open(`https://${shopifyStore}/cart/${items}?CityPopApp=true${extra ? "&" + extra : ""}`, "_blank");
 };
 </script>
 

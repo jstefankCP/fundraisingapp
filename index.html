@@ -301,9 +301,6 @@ fetchTotalRaised();
 function updateCountdown() {
   if (!fundraiserEndDate) return;
 
-  // Parse the fundraiser end date
-  // If it's a string timestamp, new Date() handles it correctly
-  // Then force it to Eastern Time ending at 23:59:59
   const endDate = new Date(fundraiserEndDate);
   const etEndDate = new Date(
     endDate.toLocaleString("en-US", { timeZone: "America/New_York" })
@@ -316,8 +313,14 @@ function updateCountdown() {
 
   const diffMs = etEndDate - nowET;
 
+  const productGrid = document.getElementById("product-grid");
+  const floatingCartBtn = document.getElementById("floating-cart-btn");
+
   if (diffMs <= 0) {
     endDateEl.textContent = "This Fundraiser Has Ended";
+    // Hide products and cart
+    if (productGrid) productGrid.style.display = "none";
+    if (floatingCartBtn) floatingCartBtn.style.display = "none";
     return;
   }
 
@@ -331,8 +334,11 @@ function updateCountdown() {
   if (hours > 0 || days > 0) display += `${hours} hr${hours !== 1 ? "s" : ""} `;
   display += `${minutes} min${minutes !== 1 ? "s" : ""}`;
 
-
   endDateEl.textContent = display;
+
+  // Ensure products and cart are visible if fundraiser is ongoing
+  if (productGrid) productGrid.style.display = "flex";
+  if (floatingCartBtn) floatingCartBtn.style.display = "flex";
 }
 
 

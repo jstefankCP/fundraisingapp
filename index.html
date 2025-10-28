@@ -211,6 +211,8 @@ async function fetchFundraiserInfo() {
   goalEl.textContent = formattedGoal;
 
   fundraiserEndDate = fundraiser.end_date;
+  updateCountdown();
+  setInterval(updateCountdown, 1000 * 60); // update every minute
   // endDateEl.textContent = "ends on " + fundraiser.end_date;
 
   // Fetch the total raised from fundraiser_orders
@@ -299,12 +301,18 @@ fetchTotalRaised();
 function updateCountdown() {
   if (!fundraiserEndDate) return;
 
-  // Parse the fundraiser end date as Eastern Time, ending at 23:59:59
-  const [year, month, day] = fundraiserEndDate.split('-').map(Number);
-  const etEndDate = new Date(Date.UTC(year, month - 1, day, 23, 59, 59));
+  // Parse the fundraiser end date
+  // If it's a string timestamp, new Date() handles it correctly
+  // Then force it to Eastern Time ending at 23:59:59
+  const endDate = new Date(fundraiserEndDate);
+  const etEndDate = new Date(
+    endDate.toLocaleString("en-US", { timeZone: "America/New_York" })
+  );
+  etEndDate.setHours(23, 59, 59, 999); // end of day ET
 
-  // Current date in Eastern Time
-  const nowET = new Date(new Date().toLocaleString("en-US", { timeZone: "America/New_York" }));
+  const nowET = new Date(
+    new Date().toLocaleString("en-US", { timeZone: "America/New_York" })
+  );
 
   const diffMs = etEndDate - nowET;
 
@@ -325,6 +333,7 @@ function updateCountdown() {
 
   endDateEl.textContent = display;
 }
+
 
 // Update countdown every minute for smooth accuracy
 setInterval(updateCountdown, 1000 * 60);

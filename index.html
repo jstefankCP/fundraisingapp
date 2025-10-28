@@ -127,10 +127,10 @@ h1 { color: #0567e8; text-align:center; margin-bottom:2rem; }
 
 <!-- Fundraiser Header -->
 <div id="fundraiser-header">
-  <div id="fundraiser-cause">[Loading fundraiser...]</div>
+  <div id="fundraiser-cause">Loading fundraiser...</div>
   <div id="org-id-display"> </div>
-  <div id="user-id-display">[user_id]</div>
-  <div id="end-date-display">[end_date]</div>
+  <div id="user-id-display"> </div>
+  <div id="end-date-display"> </div>
 
   <div id="progress-bar-container">
     <div id="progress-bar"></div>
@@ -142,6 +142,11 @@ h1 { color: #0567e8; text-align:center; margin-bottom:2rem; }
 </div>
 
 <div class="product-grid" id="product-grid"></div>
+
+<div id="fundraiser-ended-message" style="display:none; text-align:center; font-size:1.5rem; font-weight:600; padding:2rem; color:#0567e8;">
+  Although this fundraiser has closed, your support hasn't gone unnoticed. 
+  We can't wait to give you another chance to join in on helping raise funds and making an impact soon!
+</div>
 
 <!-- Slide-out cart -->
 <div id="cart-overlay"></div>
@@ -319,10 +324,19 @@ function updateCountdown() {
 
   if (diffMs <= 0) {
     endDateEl.textContent = "This Fundraiser Has Ended";
+
+    // Hide products and floating cart
+    const productGrid = document.getElementById("product-grid");
+    const floatingCartBtn = document.getElementById("floating-cart-btn");
     if (productGrid) productGrid.style.display = "none";
     if (floatingCartBtn) floatingCartBtn.style.display = "none";
+
+    // Show the fundraiser ended message
+    const endedMessage = document.getElementById("fundraiser-ended-message");
+    if (endedMessage) endedMessage.style.display = "block";
+
     return;
-  }
+}
 
   const totalMinutes = Math.floor(diffMs / (1000 * 60));
   const days = Math.floor(totalMinutes / (60 * 24));

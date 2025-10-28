@@ -208,17 +208,6 @@ const products = [
   { title: "Low Salt Popcorn", variantId: "47971748217121", price: 12, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/LowSalt.png?v=1750196643" }
 ];
 
-function getFundraiserParams() {
-  const params = {};
-  const urlParams = new URLSearchParams(window.location.search);
-  ['fundraiser_id', 'organization_id', 'user_id'].forEach(key => {
-    const value = urlParams.get(key);
-    if (value) params[key] = value;
-  });
-  return params;
-}
-const fundraiserParams = getFundraiserParams();
-
 const cart = {};
 
 const grid = document.getElementById("product-grid");

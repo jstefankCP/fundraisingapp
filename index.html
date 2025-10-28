@@ -559,7 +559,7 @@ function renderCart() {
     const whatIfPercent = Math.min((whatIfTotal / goal) * 100, 100);
 
     document.getElementById("what-if-text").textContent =
-      `This order would contribute an additional ${contribution.toLocaleString("en-US", { style:"currency", currency:"USD" })} and help push them to ${whatIfPercent.toFixed(0)}% of goal!`;
+      `This order would contribute an additional ${contribution.toLocaleString("en-US", { style:"currency", currency:"USD" })} and help achieve ${whatIfPercent.toFixed(0)}% of goal!`;
 
     document.getElementById("what-if-bar").style.width = `${whatIfPercent}%`;
     whatIfContainer.style.display = "flex";

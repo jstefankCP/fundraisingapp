@@ -326,10 +326,11 @@ function updateCountdown() {
   const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
   const minutes = totalMinutes % 60;
 
-  let display = "";
+  let display = "This fundraiser ends in: ";
   if (days > 0) display += `${days} day${days !== 1 ? "s" : ""} `;
   if (hours > 0 || days > 0) display += `${hours} hr${hours !== 1 ? "s" : ""} `;
-  display += `This fundraiser ends in: ${minutes} min${minutes !== 1 ? "s" : ""}`;
+  display += `${minutes} min${minutes !== 1 ? "s" : ""}`;
+
 
   endDateEl.textContent = display;
 }

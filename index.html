@@ -137,13 +137,19 @@ const { data: fundraiser, error } = await supabaseClient
 if (error) { console.error(error); return; }
 
 fundraiserCauseEl.textContent = fundraiser.name;
-goalEl.textContent = `$${fundraiser.goal_amount}`;
-progressBar.style.width = "0%";
-progressBar.textContent = "$0";
 
-// Format as USD
-    const formattedTotal = `$${goalEl.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  raisedEl.textContent = formattedTotal;
+// Format goal as USD
+const formattedGoal = Number(fundraiser.goal_amount || 0).toLocaleString('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2
+});
+goalEl.textContent = formattedGoal;
+
+// Initialize progress bar
+progressBar.style.width = "0%";
+progressBar.textContent = "$0.00";
 
 fundraiserEndDate = fundraiser.end_date;
 endDateEl.textContent = "ends on " + fundraiser.end_date;

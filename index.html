@@ -404,7 +404,7 @@ function updateCountdown() {
   if (!fundraiserEndDate) return;
 
   // Parse the fundraiser end date safely (cross-browser)
-  const endDate = new Date(fundraiserEndDate);
+  const endDate = new Date(fundraiserEndDate + "Z")
   if (isNaN(endDate.getTime())) {
     console.error("Invalid end date:", fundraiserEndDate);
     endDateEl.textContent = "Date unavailable";

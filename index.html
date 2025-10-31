@@ -403,40 +403,42 @@ fetchTotalRaised();
 function updateCountdown() {
   if (!fundraiserEndDate) return;
 
-  // Parse the fundraiser end date safely (cross-browser)
-  const endDate = new Date(fundraiserEndDate + "Z")
+  // Parse the YYYY-MM-DD date and set time to end of day (23:59:59)
+  const [year, month, day] = fundraiserEndDate.split("-").map(Number);
+  const endDate = new Date(year, month - 1, day, 23, 59, 59); // local time
+
   if (isNaN(endDate.getTime())) {
     console.error("Invalid end date:", fundraiserEndDate);
     endDateEl.textContent = "Date unavailable";
     return;
   }
 
-  // Get current time in user's local timezone
+  // Current time
   const now = new Date();
 
-  // Convert both to the same reference (milliseconds)
+  // Difference in milliseconds
   const diffMs = endDate.getTime() - now.getTime();
 
   const productGrid = document.getElementById("product-grid");
   const floatingCartBtn = document.getElementById("floating-cart-btn");
+  const endedMessage = document.getElementById("fundraiser-ended-message");
 
   if (diffMs <= 0) {
+    // Fundraiser ended
     endDateEl.textContent = "This Fundraiser Has Ended";
-
     if (productGrid) productGrid.style.display = "none";
     if (floatingCartBtn) floatingCartBtn.style.display = "none";
-
-    const endedMessage = document.getElementById("fundraiser-ended-message");
     if (endedMessage) endedMessage.style.display = "block";
-
     return;
   }
 
+  // Calculate days, hours, minutes left
   const totalMinutes = Math.floor(diffMs / (1000 * 60));
   const days = Math.floor(totalMinutes / (60 * 24));
   const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
   const minutes = totalMinutes % 60;
 
+  // Build display string
   let display = "This fundraiser ends in: ";
   if (days > 0) display += `${days} day${days !== 1 ? "s" : ""} `;
   if (hours > 0 || days > 0) display += `${hours} hr${hours !== 1 ? "s" : ""} `;
@@ -444,11 +446,13 @@ function updateCountdown() {
 
   endDateEl.textContent = display;
 
+  // Ensure product grid and floating cart are visible
   if (productGrid) productGrid.style.display = "flex";
   if (floatingCartBtn) floatingCartBtn.style.display = "flex";
+  if (endedMessage) endedMessage.style.display = "none";
 }
 
-// Update countdown every minute for smooth accuracy
+// Update every minute (or change to 1000 for every second)
 setInterval(updateCountdown, 1000 * 60);
 updateCountdown();
 

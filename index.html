@@ -346,23 +346,46 @@ orgIdDisplay.textContent = org.name;
 
 /* --- Fetch User --- */
 async function fetchUserName(userId) {
-if (!userId) return;
-const { data: user, error } = await supabaseClient
-.from('user_profiles')
-.select('first_name, last_name, profile_photo_url')
-.eq('id', userId)
-.single();
+    if (!userId) return;
 
-if (error) { console.error(error); return; }
+    const { data: user, error } = await supabaseClient
+        .from('user_profiles')
+        .select('first_name, last_name, profile_photo_url')
+        .eq('id', userId)
+        .single();
 
-document.getElementById("user-id-display").textContent =
-"supporting " + user.first_name + " " + user.last_name;
+    if (error) { 
+        console.error(error); 
+        return; 
+    }
 
-// Profile photo
-const photoEl = document.getElementById("user-profile-photo");
-if (user && user.profile_photo_url) {
-photoEl.src = user.profile_photo_url;
-}
+    document.getElementById("user-id-display").textContent =
+        "supporting " + user.first_name + " " + user.last_name;
+
+    // Profile photo container
+    const photoEl = document.getElementById("user-profile-photo");
+
+    if (user && user.profile_photo_url) {
+        // If it's an emoji, display as text inside a <div> instead of <img>
+        if (/[\u{1F300}-\u{1FAFF}]/u.test(user.profile_photo_url)) { // basic emoji check
+            photoEl.style.background = "#e0e0e0"; // keep background
+            photoEl.src = ""; // clear the src
+            photoEl.alt = "User Emoji";
+            photoEl.style.fontSize = "60px";
+            photoEl.style.display = "flex";
+            photoEl.style.alignItems = "center";
+            photoEl.style.justifyContent = "center";
+            photoEl.textContent = user.profile_photo_url;
+        } else {
+            // It's a URL, display normally
+            photoEl.src = user.profile_photo_url;
+            photoEl.textContent = "";
+        }
+    } else {
+        // Default silhouette
+        photoEl.src = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+        photoEl.textContent = "";
+    }
 }
 
 /* --- Fetch Total Raised --- */

@@ -461,7 +461,7 @@ const shopifyStore = "city-pop-fundraising.myshopify.com";
 
 const products = [
 // --- Popcorn ---
-{ title: "Classic Bundle", category: "Popcorn", variantId: "48012301336865", price: 34, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/files/Classic_Popcorn_Combo.png?v=1706728547" }, 
+{ title: "Classic Bundle", category: "Popcorn", variantId: "48012301336865", price: 34, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/files/Classic_Popcorn_Combo.png?v=1706728547", description: "Test", ingredients: "Test" }, 
 { title: "The All Star Line Up", category: "Popcorn", variantId: "51956539490593", price: 59, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/files/The_All_Star_Line_Up_9192b142-9ece-4dc5-8811-3c9d24ad3b19.png?v=1761705077" },
 { title: "Supreme Combo", category: "Popcorn", variantId: "47907478077729", price: 99, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/files/Supreme_Combo.png?v=1761705864" },  
 { title: "Cheese & Caramel Mix Popcorn", category: "Popcorn", variantId: "47907478077729", price: 16, img:"https://cdn.shopify.com/s/files/1/0792/2191/5937/products/CheeseCaramel.png?v=1750196665" },
@@ -596,12 +596,20 @@ function renderProducts(category = "Popcorn") {
         price.textContent = `$${product.price}`;
         div.appendChild(price);
 
-        // Nutrition link
+        // Nutrition / Additional Details link
         const nutrition = document.createElement("div");
         nutrition.className = "nutrition-link";
         nutrition.textContent = "Additional Details";
-        nutrition.addEventListener("click", () => alert("Nutritional info placeholder"));
-        div.appendChild(nutrition);
+
+        nutrition.addEventListener("click", () => {
+        // Use product.description and product.ingredients
+        const desc = product.description || "No description available";
+        const ingredients = product.ingredients || "No ingredient info available";
+    
+        alert(`Description: ${desc}\nIngredients: ${ingredients}`);
+        });
+
+div.appendChild(nutrition);
 
         // Quantity selector
         const qtyDiv = document.createElement("div");

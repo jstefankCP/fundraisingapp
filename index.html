@@ -218,12 +218,6 @@ color: #fff;
 <button class="tab" data-category="Cotton Candy">Cotton Candy</button>
 </div>
 
-<!-- Category Header -->
-<h2 id="category-header"></h2>
-
-<!-- Container for products -->
-<div id="product-container"></div>
-  
 <div class="product-grid" id="product-grid"></div>
 
 <div id="fundraiser-ended-message" style="
@@ -563,36 +557,7 @@ const products = [
 
 const cart = {};
 const grid = document.getElementById("product-grid");
-const categoryHeaders = {
-  "Popcorn": "Each bag contains 6 cups of popcorn.",
-  "Seasoned Pretzels": "Each bag contains approximately 6 cups of pretzels.",
-  "Cotton Candy": "Each container is approximately 3oz of cotton candy."
-};
 
-function showCategory(category) {
-  // Update category header
-  const headerEl = document.getElementById("category-header");
-  headerEl.textContent = categoryHeaders[category] || "";
-
-  // Filter products by category
-  const filteredProducts = products.filter(p => p.category === category);
-
-  // Render products in container
-  const container = document.getElementById("product-container");
-  container.innerHTML = ""; // Clear previous products
-
-  filteredProducts.forEach(product => {
-    const div = document.createElement("div");
-    div.innerHTML = `
-      <h3>${product.title}</h3>
-      <img src="${product.img}" alt="${product.title}" />
-      <p>${product.description}</p>
-      <p>${product.ingredients || ""}</p>
-    `;
-    container.appendChild(div);
-  });
-}
-  
 function renderProducts(category = "Popcorn") {
     grid.innerHTML = "";
     const filtered = products.filter(p => p.category === category);
